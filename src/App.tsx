@@ -21,7 +21,7 @@ import ReviewCollocation from "./pages/ReviewCollocation";
 import ReviewCollocationRedirect from "./pages/ReviewCollocationRedirect";
 import ProfilePage from "./pages/Profile";
 import WallOfLovePage from './pages/WallOfLovePage'
-import IeltsHubPage from "./features/website/components/IELTSHubPage";
+import IeltsHubPage from "./features/website/components/IeltsHubPage";
 import VocabHubPage from "./features/website/components/VocabHubPage";
 
 // Protected Route Component
