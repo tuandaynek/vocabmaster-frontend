@@ -55,6 +55,7 @@ export function useVocabExtractor() {
 
     try {
       await vocabApi.save({ selectedWords });
+      setExtractedList([]);
       toast.success(`Đã lưu ${selectedWords.length} từ vào VocabMaster.`);
     } catch (error) {
       console.error("Vocab save error:", error);

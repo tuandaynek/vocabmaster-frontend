@@ -28,7 +28,7 @@ export interface InlineCorrection {
 
 export interface HighValueVocabulary {
   originalPhrase: string;
-  band8Upgrade: string;
+  bandUpgrade: string;
   contextExample: string;
 }
 

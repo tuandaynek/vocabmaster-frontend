@@ -6,6 +6,9 @@ export const ENDPOINTS = {
     REFRESH: "/auth/refresh",
     LOGOUT: "/auth/logout",
   },
+  PROFILE: {
+    GET: "/profile",
+  },
   VOCAB: {
     EXTRACT: "/vocab/extract",
     SAVE: "/vocab/save",
@@ -29,7 +32,10 @@ export const ENDPOINTS = {
     NEXT_REVIEW: "/collocation/next-review",
     GET_REVIEW: (collocationId: string) => `/collocation/review/${collocationId}`,
     GET_VARIATIONS: (collocationId: string) => `/collocation/review/${collocationId}/variations`,
-    COMPLETE_PHASE3: (collocationId: string) => `/collocation/review/${collocationId}/complete-phase3`,
+    GET_PHASE1: (collocationId: string) => `/collocation/review/${collocationId}/phase1`,
+    EVALUATE_PHASE2: "/collocation/review/evaluate-phase2",
+    EVALUATE_PHASE3: "/collocation/review/evaluate-phase3",
+    COMPLETE_REVIEW: (collocationId: string) => `/collocation/review/${collocationId}/complete`,
   },
   SPEAKING: {
     CHAT_STEP: "/speaking/chat-step",
@@ -46,4 +52,9 @@ export const ENDPOINTS = {
     EVALUATE: "/writing/evaluate",
     SAVE: "/writing/save",
   },
+  WEBSITE: {
+    SUBMIT_RATING: "/website/submit-rating",
+    GET_MY_RATING: "/website/my-rating",
+    STATS_PUBLIC: "/website/stats/public",
+  }
 };

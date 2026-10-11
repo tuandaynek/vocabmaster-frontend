@@ -4,13 +4,11 @@ import { authApi } from "@/features/auth/api/authApi";
 import { toast } from "sonner";
 import {
   BookOpen,
-  Sparkles,
   LogOut,
   User as UserIcon,
   GraduationCap,
   Mic2,
   ArrowRight,
-  Volume2,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -19,59 +17,80 @@ export default function HomePage() {
 
   const handleSignOut = async () => {
     try {
-      await authApi.logout(); // Gọi API xoá Cookie/Session ở Backend nếu có
+      await authApi.logout();
     } catch (error) {
       console.error("Lỗi signout:", error);
     } finally {
-      logout(); // Xoá state trong Zustand & localStorage
+      logout();
       toast.success("Đã đăng xuất thành công");
       navigate("/signin");
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      {/* HEADER / NAVBAR */}
-      <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-indigo-600 rounded-lg text-white">
-              <GraduationCap className="h-6 w-6" />
-            </div>
-            <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              IELTS Prep Workspace
-            </span>
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white">
+      {/* HEADER / NAVBAR CỰC KỲ GỌN GÀNG & HIỆN ĐẠI */}
+      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+          <div className="flex items-center space-x-8">
+            <Link to="/" className="flex items-center space-x-3 group cursor-pointer">
+              <div className="p-2.5 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl text-white shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition">
+                <GraduationCap className="h-6 w-6" />
+              </div>
+              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
+                IELTS Prep AI
+              </span>
+            </Link>
+
+            {/* NAVIGATION TABS CHÍNH */}
+            <nav className="hidden md:flex items-center space-x-2">
+              <Link
+                to="/about"
+                className="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition"
+              >
+                Về chúng tôi (About)
+              </Link>
+              <Link
+                to="/ielts"
+                className="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition flex items-center gap-1.5"
+              >
+                IELTS Hub
+              </Link>
+              <Link
+                to="/vocab"
+                className="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition flex items-center gap-1.5"
+              >
+                <BookOpen className="w-4 h-4 text-emerald-400" /> Vocab & SRS
+              </Link>
+            </nav>
           </div>
 
-          {/* USER PROFILE OR AUTH BUTTONS */}
+          {/* USER PROFILE / AUTH */}
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full text-sm font-medium">
-                  <UserIcon className="h-4 w-4 text-indigo-600" />
-                  <span>{user?.username || user?.email}</span>
-                </div>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 px-4 py-2 rounded-2xl text-sm font-medium text-slate-200 hover:text-white transition shadow-sm group"
+                >
+                  <UserIcon className="h-4 w-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                  <span>{user?.username || user?.email?.split("@")[0]}</span>
+                </Link>
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition"
+                  className="p-2.5 rounded-2xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                  title="Đăng xuất"
                 >
-                  <LogOut className="h-4 w-4" />
-                  Đăng xuất
+                  <LogOut className="h-5 w-5" />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/signin"
-                  className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 transition"
-                >
+              <div className="flex items-center gap-3">
+                <Link to="/signin" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition">
                   Đăng nhập
                 </Link>
-                <Link
-                  to="/signup"
-                  className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm"
-                >
-                  Đăng ký
+                <Link to="/signup" className="px-5 py-2.5 text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-lg shadow-indigo-600/30 transition">
+                  Đăng ký ngay
                 </Link>
               </div>
             )}
@@ -79,161 +98,48 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
-            Hệ thống Học tập & Luyện thi{" "}
-            <span className="text-indigo-600 dark:text-indigo-400">
-              IELTS AI
-            </span>
+      {/* HERO / WELCOME BANNER CHO TRANG CHỦ */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center max-w-3xl mx-auto space-y-6 mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+            Nền tảng luyện thi thông minh thế hệ mới
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
+            Chinh phục band điểm mơ ước cùng <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">AI Tutor</span>
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            {isAuthenticated
-              ? `Chào mừng ${user?.username || "bạn"} trở lại! Chọn một tính năng bên dưới để bắt đầu buổi học.`
-              : "Nền tảng hỗ trợ luyện thi IELTS toàn diện kết hợp AI. Đăng nhập để sử dụng đầy đủ các tính năng."}
+          <p className="text-slate-400 text-base sm:text-lg">
+            Hệ thống tối ưu hóa toàn diện các kỹ năng IELTS và từ vựng chuyên sâu, giúp học sinh bứt phá điểm số một cách tự nhiên nhất.
           </p>
         </div>
 
-        {/* FUNCTION GRID (CÁC TÍNH NĂNG CỦA PROJECT) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Vocabulary Master (Tính năng mở rộng sau này) */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between opacity-80">
-            <div>
-              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-4">
-                <BookOpen className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Kho Từ Vựng (Vocab)</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Học từ vựng theo chủ đề IELTS với hệ thống Flashcard thông minh
-                và thuật toán lặp lại ngắt quãng (Spaced Repetition).
-              </p>
+        {/* 2 LỐI RẼ CHÍNH ĐỂ HỌC SINH KHÔNG BỊ NGỢP */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Card Luyện thi IELTS */}
+          <div onClick={() => navigate("/ielts")} className="group relative bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-slate-800 hover:border-indigo-500/50 rounded-3xl p-8 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10">
+            <div className="w-14 h-14 bg-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/30 group-hover:scale-110 transition-transform">
+              <Mic2 className="h-7 w-7" />
             </div>
-            <button
-              onClick={() => navigate("/vocab-extractor")}
-              className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
-            >
-              Vào Vocab Extractor
-              <BookOpen className="h-4 w-4" />
-            </button>
+            <h3 className="text-2xl font-bold text-white mb-3">IELTS Workspace</h3>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              Trải nghiệm phòng luyện Speaking ảo với AI Examiner và công cụ chấm bài Writing chuyên sâu theo chuẩn 4 tiêu chí quốc tế.
+            </p>
+            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm group-hover:translate-x-1 transition-transform">
+              Khám phá ngay <ArrowRight className="w-4 h-4" />
+            </div>
           </div>
 
-          {/* Dictionary page */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between opacity-90">
-            <div>
-              <div className="w-12 h-12 bg-violet-100 dark:bg-violet-950 text-violet-600 dark:text-violet-400 rounded-xl flex items-center justify-center mb-4">
-                <BookOpen className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">
-                Dictionary & Kho từ của tôi
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Xem danh sách từ vựng bạn đã lưu, nghe phát âm, theo dõi trạng
-                thái học và câu ngữ cảnh cá nhân.
-              </p>
+          {/* Card Học từ vựng & SRS */}
+          <div onClick={() => navigate("/vocab")} className="group relative bg-gradient-to-b from-slate-900/80 to-slate-900/40 border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-8 cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10">
+            <div className="w-14 h-14 bg-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/30 group-hover:scale-110 transition-transform">
+              <BookOpen className="h-7 w-7" />
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => navigate("/dictionary")}
-                className="w-full py-2.5 px-4 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
-              >
-                Mở Dictionary
-                <BookOpen className="h-4 w-4" />
-              </button>
+            <h3 className="text-2xl font-bold text-white mb-3">Vocab & SRS Studio</h3>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              Hệ thống trích xuất từ vựng thông minh, ôn tập ngắt quãng (Flashcards SRS) và luyện tập collocation phản xạ cực nhạy.
+            </p>
+            <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm group-hover:translate-x-1 transition-transform">
+              Vào kho từ vựng <ArrowRight className="w-4 h-4" />
             </div>
-            <button
-              onClick={() => navigate("/my-vocab")}
-              className="mt-2 w-full py-2.5 px-4 border border-violet-200 text-violet-700 hover:bg-violet-50 font-medium rounded-xl transition"
-            >
-              Xem kho từ cá nhân
-            </button>
-          </div>
-
-          {/* Feature 3: Flashcards SRS */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between opacity-90">
-            <div>
-              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center mb-4">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Flashcards SRS</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Ôn tập các từ đã lưu theo lộ trình lặp lại ngắt quãng, chấm điểm
-                Again / Hard / Good / Easy và theo dõi tiến độ học mỗi ngày.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/flashcards")}
-              className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
-            >
-              Mở Flashcards
-              <Sparkles className="h-4 w-4" />
-            </button>
-          </div>
-
-          {/* Feature 4: IELTS Speaking Practice */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-4">
-                <Mic2 className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">
-                IELTS Speaking Practice
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Luyện Speaking theo Part 1, 2, 3 với AI Examiner, gợi ý ý tưởng
-                và đánh giá câu trả lời.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/ielts/speaking")}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
-            >
-              Mở Speaking Hub
-              <Mic2 className="h-4 w-4" />
-            </button>
-          </div>
-
-          {/* Feature 5: Writing Evaluation */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center mb-4">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">
-                Luyện Writing Task 1 & 2
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Nộp bài luận để nhận phân tích chi tiết về Coherence, Lexical
-                Resource, và Grammatical Range.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/ielts/writing")}
-              className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl transition flex items-center justify-center gap-2"
-            >
-              Mở Writing Tutor
-              <Sparkles className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-4">
-                <Volume2 className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Collocation Routine</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Luyện tập phản xạ cụm từ qua kịch bản Shadowing 4 bước, làm chủ
-                cách dùng tự nhiên và cải thiện độ chính xác phát âm.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/collocation/review")}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition flex items-center justify-center gap-2 shadow-sm"
-            >
-              Luyện Collocations
-              <ArrowRight className="h-4 w-4" />
-            </button>
           </div>
         </div>
       </main>

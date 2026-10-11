@@ -80,27 +80,24 @@ export const speakingApi = {
   },
 
   evaluate: async (payload: EvaluatePayload): Promise<EvaluationResponse> => {
-    const response = await axiosClient.post<SpeakingApiResponse<EvaluationApiPayload>>(ENDPOINTS.SPEAKING.EVALUATE, payload) as unknown as SpeakingApiResponse<EvaluationApiPayload>;
-    return normalizeEvaluation(response.data);
-  },
-
-  evaluateAudioSession: async (
-    audioBlob: Blob,
-    question: string,
-    targetBand: string,
-    transcriptHistory: EvaluatePayload["fullTranscript"],
-  ): Promise<EvaluationResponse> => {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "speaking_session.webm");
-    formData.append("question", question);
-    formData.append("targetBand", targetBand);
-    formData.append("history", JSON.stringify(transcriptHistory));
+    formData.append("question", payload.question);
+    formData.append("targetBand", payload.targetBand);
+    // Backend cần dạng chuỗi để parse lại
+    formData.append("fullTranscript", payload.fullTranscript); 
+
+    // Nếu có audio, append file vào form data
+    if (payload.audioBlob) {
+      formData.append("audio", payload.audioBlob, "speaking_session.webm");
+      formData.append("mimeType", payload.audioBlob.type);
+    }
 
     const response = await axiosClient.post<SpeakingApiResponse<EvaluationApiPayload>>(
-      ENDPOINTS.SPEAKING.EVALUATE_AUDIO,
+      ENDPOINTS.SPEAKING.EVALUATE, // Chỉ dùng chung 1 endpoint
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } },
+      { headers: { "Content-Type": "multipart/form-data" } }
     ) as unknown as SpeakingApiResponse<EvaluationApiPayload>;
+    
     return normalizeEvaluation(response.data);
   },
 

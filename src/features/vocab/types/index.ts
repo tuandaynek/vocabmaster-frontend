@@ -27,6 +27,12 @@ export interface VocabSavePayload {
 
 export interface VocabListItem extends VocabExtractItem {
   selected: boolean;
+  word_family?: Array<{ word?: string; pos?: string; meaning?: string }>;
+  prefix_suffix?: Record<string, string>;
+  ipa?: string | null;
+  pos?: string;
+  meaning?: string;
+  usage_note?: string;
 }
 
 export interface GlobalWordInfo {

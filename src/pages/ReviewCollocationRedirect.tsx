@@ -23,8 +23,10 @@ export default function ReviewCollocationRedirect() {
         );
 
         if (dueItem?.collocation_id) {
+          const itemStep = (dueItem as any).step ?? (dueItem as any).user_step ?? 0;
           navigate(`/collocation/review/${dueItem.collocation_id}`, {
             replace: true,
+            state: { step: itemStep },
           });
           return;
         }
@@ -35,17 +37,20 @@ export default function ReviewCollocationRedirect() {
         );
 
         if (learningItem?.collocation_id) {
+          const itemStep = (learningItem as any).step ?? (learningItem as any).user_step ?? 0;
           navigate(`/collocation/review/${learningItem.collocation_id}`, {
             replace: true,
+            state: { step: itemStep },
           });
           return;
         }
 
-        // 3. Lấy từ mới từ kho collocations
+        // 3. Lấy từ mới từ kho collocations (Từ mới nên step = 0)
         const defaultCollocation = await collocationApi.getNextCollocation();
         if (defaultCollocation?.id) {
           navigate(`/collocation/review/${defaultCollocation.id}`, {
             replace: true,
+            state: { step: 0 },
           });
           return;
         }
@@ -67,10 +72,10 @@ export default function ReviewCollocationRedirect() {
   // Screen Loading
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 text-slate-300">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600" />
-          <p className="text-slate-600 font-medium text-sm">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500/20 border-t-indigo-500" />
+          <p className="text-slate-300 font-semibold text-sm">
             Đang tìm bài tập Collocation phù hợp...
           </p>
         </div>
@@ -81,35 +86,35 @@ export default function ReviewCollocationRedirect() {
   // Screen Empty State / All Clear (khi không có bài tập nào cần ôn)
   if (noData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col items-center animate-in zoom-in-95 duration-300">
-          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-5 ring-8 ring-emerald-50/50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 text-slate-100">
+        <div className="bg-slate-900 border border-slate-800 rounded-[32px] p-8 max-w-md w-full text-center shadow-2xl flex flex-col items-center animate-in zoom-in-95 duration-300">
+          <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-5 shadow-inner">
             <CheckCircle2 className="w-9 h-9" />
           </div>
 
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-50 text-violet-600 text-xs font-semibold mb-2">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-bold mb-3">
             <Sparkles className="w-3.5 h-3.5" /> Tuyệt vời!
           </span>
 
-          <h2 className="text-xl font-bold text-slate-800 mb-2">
+          <h2 className="text-xl font-black text-white mb-2 tracking-tight">
             Không còn bài tập nào lúc này!
           </h2>
 
-          <p className="text-slate-500 text-sm mb-6 leading-relaxed">
+          <p className="text-slate-400 text-sm mb-6 leading-relaxed">
             Bạn đã hoàn thành tất cả các mục tiêu ôn tập hiện tại. Hãy quay lại sau khi tới lịch SRS tiếp theo nhé!
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
             <button
               onClick={() => navigate("/collocations")}
-              className="w-full py-2.5 px-4 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 text-xs font-bold text-slate-300 bg-slate-800 border border-slate-700/60 hover:bg-slate-700 hover:text-white rounded-2xl transition flex items-center justify-center gap-2"
             >
               <BookOpen className="w-4 h-4" />
               Xem danh sách từ
             </button>
             <button
               onClick={() => navigate("/")}
-              className="w-full py-2.5 px-4 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition shadow-lg shadow-violet-200 flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 rounded-2xl transition shadow-lg shadow-violet-600/30 flex items-center justify-center gap-2"
             >
               <Home className="w-4 h-4" />
               Trang chủ

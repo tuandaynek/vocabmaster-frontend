@@ -95,3 +95,24 @@ export interface EvaluationResponse {
 
 // (Optional) Giữ lại EvaluationResult nếu cần làm Alias để không vỡ các code cũ
 export type EvaluationResult = EvaluationResponse;
+
+export interface ChatStepRequest {
+  question: string;
+  targetBand: string;
+  history: { role: string; content: string }[];
+  userResponse: string;
+}
+
+export interface EvaluatePayload {
+  question: string;
+  targetBand: string;
+  fullTranscript: string;
+  audioBlob?: Blob;
+  mimeType?: string;
+}
+
+export interface CollocationsPayload {
+  vietnamesePhrase: string;
+  currentQuestion: string;
+  targetBand: string;
+}

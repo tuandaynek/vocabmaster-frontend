@@ -12,7 +12,7 @@ import { DictionaryFilters } from "@/features/vocab/components/DictionaryFilters
 import { CollocationCard } from "@/features/collocations/components/CollocationCard";
 import { CollocationFilters } from "@/features/collocations/components/CollocationFilters";
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 6;
 
 export type DictionaryTab = "words" | "collocations";
 type DictionaryItem = GlobalWordInfo | GlobalCollocationItem;
@@ -156,23 +156,29 @@ export default function DictionaryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900">
-      <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
+    <div className="relative min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Hiệu ứng ánh sáng nền Ambient Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[500px] h-[350px] bg-purple-600/10 rounded-full blur-[130px] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+          <div className="flex items-center gap-4">
             <button
               type="button"
-              onClick={() => navigate("/")}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100"
+              onClick={() => navigate("/vocab")}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-700/60 bg-slate-800/50 text-slate-300 transition hover:bg-slate-800 hover:text-white shadow-sm"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-violet-600">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
                 Global Knowledge
-              </p>
-              <h1 className="text-3xl font-bold">Từ điển toàn cục</h1>
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Từ điển toàn cục
+              </h1>
             </div>
           </div>
 
@@ -180,7 +186,7 @@ export default function DictionaryPage() {
             type="button"
             onClick={handleAddSelectedToPersonalDictionary}
             disabled={selectedItems.length === 0}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 font-medium text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-600/25 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
             <Plus className="h-4 w-4" />
             {activeTab === "words" ? "Thêm từ đã chọn" : "Thêm cụm từ đã chọn"} ({selectedItems.length})
@@ -188,14 +194,14 @@ export default function DictionaryPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="mb-6 flex gap-2 border-b border-slate-200 pb-2">
+        <div className="flex gap-3 border-b border-slate-800/80 pb-4">
           <button
             type="button"
             onClick={() => handleTabChange("words")}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+            className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition-all ${
               activeTab === "words"
-                ? "bg-violet-600 text-white shadow-sm"
-                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 scale-105"
+                : "bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800/80"
             }`}
           >
             <BookOpen className="h-4 w-4" /> Từ đơn (Words)
@@ -203,10 +209,10 @@ export default function DictionaryPage() {
           <button
             type="button"
             onClick={() => handleTabChange("collocations")}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+            className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition-all ${
               activeTab === "collocations"
-                ? "bg-violet-600 text-white shadow-sm"
-                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 scale-105"
+                : "bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800/80"
             }`}
           >
             <Sparkles className="h-4 w-4" /> Cụm từ (Collocations)
@@ -214,7 +220,7 @@ export default function DictionaryPage() {
         </div>
 
         {/* Content Layout */}
-        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] items-start">
           {activeTab === "words" ? (
             <DictionaryFilters
               search={search}
@@ -247,16 +253,16 @@ export default function DictionaryPage() {
             />
           )}
 
-          <main className="relative">
-            <div className={loading ? "pointer-events-none opacity-55 blur-[1px]" : ""}>
+          <main className="relative min-h-[400px]">
+            <div className={`transition-all duration-300 ${loading ? "pointer-events-none opacity-40 blur-[2px]" : ""}`}>
               {items.length === 0 && !loading ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center shadow-sm">
-                  <p className="text-lg font-semibold text-slate-700">Không tìm thấy kết quả phù hợp.</p>
-                  <p className="mt-2 text-sm text-slate-500">Hãy thử thay đổi từ khóa hoặc bộ lọc.</p>
+                <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/30 p-12 text-center shadow-xl backdrop-blur-md">
+                  <p className="text-lg font-semibold text-slate-300">Không tìm thấy kết quả phù hợp.</p>
+                  <p className="mt-2 text-sm text-slate-500">Hãy thử thay đổi từ khóa hoặc bộ lọc tìm kiếm.</p>
                 </div>
               ) : (
                 <>
-                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-5 md:grid-cols-1 xl:grid-cols-2">
                     {items.map((item) =>
                       activeTab === "words" && isWordItem(item) ? (
                         <DictionaryCard
@@ -277,16 +283,16 @@ export default function DictionaryPage() {
                   </div>
 
                   {/* Pagination */}
-                  <div className="mt-6 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                    <div className="text-sm text-slate-600">
-                      Trang {currentPage} / {totalPages} · {totalItems} {activeTab === "words" ? "từ" : "cụm từ"}
+                  <div className="mt-8 flex items-center justify-between gap-3 rounded-3xl border border-slate-800/80 bg-slate-900/50 px-6 py-4 shadow-xl backdrop-blur-xl">
+                    <div className="text-sm font-medium text-slate-400">
+                      Trang <span className="text-white font-bold">{currentPage}</span> / {totalPages} · <span className="text-white font-bold">{totalItems}</span> {activeTab === "words" ? "từ" : "cụm từ"}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       <button
                         type="button"
                         onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium disabled:opacity-50"
+                        className="rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Trước
                       </button>
@@ -294,7 +300,7 @@ export default function DictionaryPage() {
                         type="button"
                         onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                         disabled={currentPage === totalPages}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium disabled:opacity-50"
+                        className="rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Sau
                       </button>
@@ -305,10 +311,10 @@ export default function DictionaryPage() {
             </div>
 
             {loading && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center">
-                <div className="rounded-2xl border border-violet-200 bg-white/90 p-6 shadow-2xl backdrop-blur-sm">
-                  <div className="mx-auto mb-3 h-12 w-12 animate-spin rounded-full border-4 border-violet-100 border-t-violet-600" />
-                  <p className="text-sm font-semibold text-violet-700">Đang tải dữ liệu...</p>
+              <div className="absolute inset-0 z-20 flex items-center justify-center">
+                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl backdrop-blur-xl text-center space-y-3">
+                  <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-violet-500/20 border-t-violet-500" />
+                  <p className="text-sm font-bold text-violet-400 tracking-wide">Đang tải dữ liệu...</p>
                 </div>
               </div>
             )}

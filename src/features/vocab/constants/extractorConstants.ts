@@ -1,18 +1,24 @@
 import type { FocusMode } from "../types";
 
-export const LIMIT_OPTIONS = [5, 10, 15] as const;
+export const LIMIT_OPTIONS = [6, 9, 12, 15] as const;
 
 export const FOCUS_MODES: Array<{ value: FocusMode; description: string }> = [
-  { value: "IELTS Academic", description: "Từ vựng học thuật trọng tâm" },
-  { value: "SAT / GMAT", description: "Ngôn ngữ học thuật & suy luận" },
+  { 
+    value: "IELTS Academic", 
+    description: "Nhặt từ đơn học thuật (Band 6.5+) dùng cho Reading & Writing" 
+  },
+  { 
+    value: "SAT / GMAT", 
+    description: "Nhặt từ nâng cao, trang trọng & giàu tính lập luận" 
+  },
   {
     value: "Collocations & Phrasal Verbs",
-    description: "Cụm từ tự nhiên trong ngữ cảnh",
+    description: "Chỉ nhặt cụm từ ghép & cụm động từ tự nhiên trong bài"
   },
-  {
-    value: "Prefix & Suffix Deep Dive",
-    description: "Bóc tách cấu tạo từ chuyên sâu",
-  },
+  // {
+  //   value: "Prefix & Suffix Deep Dive",
+  //   description: "Bóc tách cấu tạo từ chuyên sâu",
+  // },
 ];
 
 export const SAMPLE_PASSAGES: Record<string, string> = {

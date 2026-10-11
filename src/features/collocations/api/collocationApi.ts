@@ -8,6 +8,11 @@ import type {
   NextCollocationItem,
   ReviewRequestPayload,
   UserCollocationListResponse,
+  Phase1DataResponse,
+  EvaluatePhase2Payload,
+  EvaluatePhase2Response,
+  EvaluatePhase3Payload,
+  EvaluatePhase3Response,
 } from "../types";
 
 export const collocationApi = {
@@ -62,9 +67,30 @@ export const collocationApi = {
     axiosClient.get<CollocationReviewData>(
       ENDPOINTS.COLLOCATION.GET_VARIATIONS(collocationId),
     ) as unknown as Promise<CollocationReviewData>,
-  completePhase3: (collocationId: string, rating: "good" | "easy") =>
-    axiosClient.post(
-      ENDPOINTS.COLLOCATION.COMPLETE_PHASE3(collocationId),
-      { rating }
-    )
+
+  // --- API MỚI CHO LUỒNG HỌC MỚI ---
+
+  // Phase 1: Lấy thông tin câu dịch tiếng Việt + gợi ý từ vựng
+  getPhase1Translation: (collocationId: string) =>
+    axiosClient.get<Phase1DataResponse>(
+      ENDPOINTS.COLLOCATION.GET_PHASE1(collocationId),
+    ) as unknown as Promise<Phase1DataResponse>,
+
+  // Phase 2: AI Chấm câu User tự đặt + Trả về result state ("Not completed" | "Good" | "Excellent") + Existed Answers
+  evaluatePhase2: (payload: EvaluatePhase2Payload) =>
+    axiosClient.post<EvaluatePhase2Response>(
+      ENDPOINTS.COLLOCATION.EVALUATE_PHASE2,
+      payload,
+    ) as unknown as Promise<EvaluatePhase2Response>,
+
+  // Phase 3: AI Chấm đoạn văn ngắn / bài dịch mẩu chuyện
+  evaluatePhase3: (payload: EvaluatePhase3Payload) =>
+    axiosClient.post<EvaluatePhase3Response>(
+      ENDPOINTS.COLLOCATION.EVALUATE_PHASE3,
+      payload,
+    ) as unknown as Promise<EvaluatePhase3Response>,
+
+  // Hoàn tất bài học
+  completeReview: (collocationId: string, rating: "good" | "easy") =>
+    axiosClient.post(ENDPOINTS.COLLOCATION.COMPLETE_REVIEW(collocationId), { rating }),
 };

@@ -36,10 +36,6 @@ export interface GlobalCollocationItem {
   cefr_level: CEFRLevel;
   topic: string;
   meaning: string;
-  usage_note?: string;
-  explanation?: string;
-  ipa?: string;
-  context_sentence?: string;
   base_sentence?: string;
   drill_variations?: DrillVariations;
   audio_url?: string | null;
@@ -107,4 +103,46 @@ export interface NextCollocationItem {
   meaning: string;
   audioUrl?: string | null;
   baseSentence?: string;
+}
+
+export interface SuggestedVocab {
+  word: string;
+  meaning: string;
+}
+
+export interface Phase1DataResponse {
+  collocationId: string;
+  phrase: string;
+  viSentence: string;        // AI generate hoặc lấy từ Cache
+  acceptedAnswer: string;    // Đáp án mẫu đơn giản, tự nhiên sát context
+  suggestedVocab: SuggestedVocab[];
+}
+
+export type EvaluationState = "Not completed" | "Good" | "Excellent";
+
+export interface EvaluatePhase2Payload {
+  collocationId: string;
+  userSentence: string;
+  audioBlob?: Blob; // Nếu nói ở lần ôn tập sau
+}
+
+export interface EvaluatePhase2Response {
+  state: EvaluationState;
+  feedback: string;
+  correctedSentence?: string;
+  communitySentences: string[]; // Trả về tối đa 5 câu Excellent đã lưu trong DB
+}
+
+export interface EvaluatePhase3Payload {
+  collocationId: string;
+  userStory: string; // Tối đa/Tối thiểu >= 3 câu
+  mode: "custom_story" | "translate_story";
+}
+
+// Response cho Phase 3 (Short Story / Translation)
+export interface EvaluatePhase3Response {
+  state: EvaluationState;
+  feedback: string;
+  correctedStory?: string;
+  communityStories: string[]; // Tối đa 5 bài Short Story Excellent
 }

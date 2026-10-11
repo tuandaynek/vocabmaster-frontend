@@ -3,6 +3,7 @@ import type { CollocationReviewData } from "../types";
 import { collocationApi } from "../api/collocationApi";
 import { useSpeechPractice } from "../hooks/useSpeechPractice";
 import { isWordInCollocation, getCleanWords } from "../utils/collocationUtils";
+import { Mic, Sparkles, RefreshCw, ArrowRight, Quote, Loader2, Award } from "lucide-react";
 
 interface VariationItem {
   id: number;
@@ -29,7 +30,7 @@ export default function Phase3VariationPractice({
     collocation.sample_sentences?.[0] ||
     `Buying products with less packaging is a good way to ${collocation.phrase}.`;
 
-  // 1. Fetch 3 câu biến thể từ Backend (Fallback Mock nếu lỗi)
+  // 1. Fetch 3 câu biến thể từ Backend (GIỮ NGUYÊN LOGIC & FALLBACK)
   useEffect(() => {
     const fetchVariations = async () => {
       setLoading(true);
@@ -38,7 +39,7 @@ export default function Phase3VariationPractice({
           collocation.collocationId || collocation.id,
         );
 
-        const variationsList = response?.data ?? response?.variations ?? [];
+        const variationsList = response?.data?.variations ?? response?.variations ?? [];
 
         if (variationsList.length > 0) {
           setVariations(variationsList);
@@ -79,14 +80,14 @@ export default function Phase3VariationPractice({
 
   const currentItem = variations[currentIndex];
 
-  // 2. Tích hợp custom hook quản lý thu âm & lấy thêm resetSpeech
+  // 2. Custom hook quản lý thu âm (GIỮ NGUYÊN LOGIC)
   const {
     isRecording,
     spokenText,
     score,
     startRecording,
     setScore,
-    resetSpeech, // 👈 Lấy hàm reset từ hook ra
+    resetSpeech,
   } = useSpeechPractice({
     targetSentence: currentItem?.sentence || "",
   });
@@ -117,7 +118,7 @@ export default function Phase3VariationPractice({
     const spokenWordsClean = spokenText ? getCleanWords(spokenText) : [];
 
     return (
-      <div className="flex flex-wrap justify-center items-center gap-2 leading-relaxed my-2">
+      <div className="flex flex-wrap justify-center items-center gap-2 leading-relaxed my-2 min-h-[80px]">
         {rawWords.map((word, idx) => {
           const cleanWord = targetWordsClean[idx];
           const spokenAtIdx = spokenWordsClean[idx];
@@ -131,10 +132,10 @@ export default function Phase3VariationPractice({
             return (
               <span
                 key={idx}
-                className={`text-xl font-bold transition-all px-2 py-0.5 rounded-md ${
+                className={`text-lg font-bold transition-all px-3 py-1.5 rounded-xl border ${
                   isTargetCollocation
-                    ? "text-yellow-300 bg-white/20 border-b-2 border-yellow-300 font-extrabold"
-                    : "text-white"
+                    ? "text-amber-300 bg-amber-500/15 border-amber-500/30 shadow-inner"
+                    : "text-slate-200 bg-slate-900 border-slate-800"
                 }`}
               >
                 {word}
@@ -148,16 +149,16 @@ export default function Phase3VariationPractice({
           return (
             <div key={idx} className="flex flex-col items-center">
               <span
-                className={`text-lg font-extrabold px-2.5 py-1 rounded-xl border transition-all ${
+                className={`text-lg font-bold px-3 py-1.5 rounded-xl border transition-all ${
                   isCorrect
-                    ? "bg-emerald-500/20 text-emerald-200 border-emerald-400"
-                    : "bg-red-500/30 text-red-200 border-red-400"
+                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                    : "bg-rose-500/10 text-rose-300 border-rose-500/30"
                 }`}
               >
                 {word}
               </span>
               {!isCorrect && (
-                <span className="mt-1 px-1.5 py-0.5 text-[10px] font-bold tracking-wide rounded bg-red-500 text-white shadow animate-bounce">
+                <span className="mt-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-md bg-rose-500/20 border border-rose-500/30 text-rose-300 shadow animate-bounce uppercase">
                   {isMissing ? "thiếu" : `≠ "${spokenAtIdx}"`}
                 </span>
               )}
@@ -170,63 +171,63 @@ export default function Phase3VariationPractice({
 
   if (loading) {
     return (
-      <div className="max-w-md mx-auto p-12 bg-white rounded-3xl shadow-xl text-center border border-gray-100">
-        <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-sm font-bold text-gray-500">
-          Đang tạo 3 câu biến thể cho bạn...
+      <div className="max-w-md mx-auto p-10 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl text-center">
+        <Loader2 className="w-10 h-10 text-purple-400 animate-spin mx-auto mb-3" />
+        <p className="text-sm font-bold text-purple-300">
+          Đang tạo các câu biến thể cho bạn...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-3xl shadow-2xl border border-gray-100 text-center">
-      {/* Header Badge & Progress Indicator */}
-      <div className="flex justify-between items-center mb-3">
-        <span className="text-xs font-bold px-3 py-1 bg-purple-100 text-purple-700 rounded-full tracking-wide">
-          PHASE 3: VARIATION PRACTICE
+    <div className="max-w-md mx-auto p-7 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl text-center relative transition-all">
+      
+      {/* Header Tag Cute & Progress Indicator */}
+      <div className="flex justify-between items-center mb-4">
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 bg-purple-500/10 text-purple-300 rounded-2xl border border-purple-500/20 shadow-sm">
+          <Sparkles className="w-3.5 h-3.5 text-purple-400" /> PHASE 3: VARIATION
         </span>
-        <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">
-          Biến thể {currentIndex + 1} / {variations.length}
+        <span className="text-xs font-bold text-purple-300 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-2xl">
+          Biến thể {currentIndex + 1}/{variations.length}
         </span>
       </div>
 
-      {/* Target Collocation Ribbon */}
-      <div className="mb-3 inline-flex items-center gap-2 px-3 py-1 bg-purple-50 rounded-xl text-purple-800 text-xs font-bold border border-purple-100">
-        <span>🎯 Cụm từ trọng tâm:</span>
-        <span className="text-purple-600 font-extrabold underline">
+      {/* Target Collocation Badge */}
+      <div className="mb-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-500/10 rounded-2xl text-purple-300 text-xs font-bold border border-purple-500/20">
+        <span>🎯 Cụm trọng tâm:</span>
+        <span className="text-purple-400 font-black underline decoration-2 underline-offset-2">
           {collocation.phrase}
         </span>
       </div>
 
-      {/* Variation Card với Gradient Tím */}
-      <div className="relative overflow-hidden my-3 p-6 bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-3xl shadow-xl border-4 border-purple-300/40">
-        <div className="absolute top-2 right-3 opacity-20 text-5xl font-serif">
-          “
-        </div>
+      {/* Variation Sentence Card */}
+      <div className="relative overflow-hidden my-3 p-6 bg-slate-900/60 rounded-3xl border border-slate-800 shadow-xl">
+        <Quote className="absolute -top-1 -right-1 w-12 h-12 text-slate-800/40 rotate-180 pointer-events-none" />
+
         {renderSentenceWithFeedback()}
 
         {currentItem && (
-          <div className="mt-3 pt-2 border-t border-white/20 text-[12.5px] text-purple-100 italic">
+          <div className="mt-4 text-xs font-semibold text-slate-400 italic border-t border-slate-800 pt-3">
             💡 {currentItem.note}
           </div>
         )}
       </div>
 
-      {/* Score Dashboard */}
+      {/* Score Box */}
       {score !== null && (
-        <div className="my-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 flex justify-between items-center px-6">
+        <div className="my-4 p-4 bg-slate-900/60 rounded-2xl border border-slate-800 shadow-inner flex justify-between items-center px-5">
           <div className="text-left">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
               Phản xạ biến thể
             </p>
-            <p className="text-xs font-semibold text-slate-600">
+            <p className="text-xs font-bold text-white mt-0.5">
               {score >= 80 ? "🎯 Phát âm chuẩn xác!" : "⚠️ Cần chuẩn xác hơn"}
             </p>
           </div>
           <div
             className={`text-3xl font-black ${
-              score >= 80 ? "text-emerald-500" : "text-amber-500"
+              score >= 80 ? "text-emerald-400" : "text-amber-400"
             }`}
           >
             {score}%
@@ -235,46 +236,53 @@ export default function Phase3VariationPractice({
       )}
 
       {/* Actions Section */}
-      <div className="mt-6">
+      <div className="mt-5">
         {score === null ? (
           <button
             onClick={startRecording}
             disabled={isRecording}
-            className={`w-full py-4 text-white font-bold rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 ${
+            className={`w-full py-4 text-white font-bold text-sm rounded-2xl border transition-all flex items-center justify-center gap-2 shadow-xl ${
               isRecording
-                ? "bg-red-500 animate-pulse shadow-red-200"
-                : "bg-purple-600 hover:bg-purple-700 shadow-purple-200 active:scale-95"
-            }`}
+                ? "bg-rose-600 border-rose-500 animate-pulse"
+                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 border-purple-500 shadow-purple-600/30"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {isRecording
-              ? "🎙️ Đang lắng nghe..."
-              : "🎙️ Thu âm đọc câu biến thể"}
+            <Mic className="w-4 h-4" />
+            {isRecording ? "Đang lắng nghe..." : "Thu âm đọc câu biến thể"}
           </button>
         ) : (
           <div className="flex gap-3">
             <button
               onClick={startRecording}
               disabled={isRecording}
-              className={`flex-1 py-3.5 border-2 border-purple-500 text-purple-600 font-bold rounded-2xl hover:bg-purple-50 transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
+              className={`flex-1 py-3.5 border border-slate-700 bg-slate-900 text-slate-200 font-bold text-xs rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-1.5 ${
                 isRecording
-                  ? "bg-red-500 text-white border-red-500 animate-pulse"
+                  ? "bg-rose-600 text-white border-rose-500 animate-pulse"
                   : ""
               }`}
             >
-              {isRecording ? "🎙️ Đang lắng nghe..." : "🔄 Thu âm lại"}
+              <RefreshCw className={`w-4 h-4 ${isRecording ? "animate-spin" : ""}`} />
+              {isRecording ? "Lắng nghe..." : "Thu âm lại"}
             </button>
 
             <button
               onClick={handleNextVariation}
-              className="flex-1 py-3.5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95 flex items-center justify-center gap-1.5"
+              className="flex-1 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold text-xs rounded-2xl border border-purple-500 transition-all shadow-xl flex items-center justify-center gap-1.5"
             >
-              {currentIndex < variations.length - 1
-                ? "Câu tiếp theo ➔"
-                : "Hoàn tất Phase 3 ➔"}
+              {currentIndex < variations.length - 1 ? (
+                <>
+                  Câu tiếp theo <ArrowRight className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  Hoàn tất Phase 3 <Award className="w-4 h-4 text-amber-300" />
+                </>
+              )}
             </button>
           </div>
         )}
       </div>
+
     </div>
   );
 }
