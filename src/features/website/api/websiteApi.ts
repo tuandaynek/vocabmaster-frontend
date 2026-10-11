@@ -10,5 +10,10 @@ export const websiteApi = {
     getStatsPublic: async () => {
         const response = await axiosClient.get(ENDPOINTS.WEBSITE.STATS_PUBLIC);
         return response.data;
+    },
+
+    getRatedFeatures: async () => {
+        const response = await axiosClient.get(ENDPOINTS.WEBSITE.GET_MY_RATING);
+        return response.data;
     }
 }
