@@ -36,13 +36,13 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
   };
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-[32px] p-7 shadow-2xl space-y-6">
+    <div className="space-y-6 rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm sm:p-7">
       <div>
-        <span className="px-3.5 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold">
+        <span className="rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-xs font-bold text-sky-800">
           Phase 2: Tự đặt câu tự do
         </span>
-        <h3 className="text-lg font-bold text-white mt-3">
-          Hãy viết 1 câu có chứa cụm: <span className="text-purple-400 underline">&ldquo;{phrase}&rdquo;</span>
+        <h3 className="mt-3 text-lg font-bold text-slate-800">
+          Hãy viết 1 câu có chứa cụm: <span className="text-emerald-700 underline">&ldquo;{phrase}&rdquo;</span>
         </h3>
       </div>
 
@@ -51,14 +51,14 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
         onChange={(e) => setSentence(e.target.value)}
         disabled={loading || !!result}
         placeholder="Nhập câu tiếng Anh của bạn tại đây..."
-        className="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none font-medium text-sm resize-none h-32 transition"
+        className="h-32 w-full resize-none rounded-2xl border-2 border-slate-200 bg-white p-4 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50"
       />
 
       {!result ? (
         <button
           onClick={handleSubmit}
           disabled={loading || !sentence.trim()}
-          className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold rounded-2xl border border-purple-500 shadow-lg shadow-purple-600/30 disabled:opacity-50 transition flex items-center justify-center gap-2"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-4 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "AI đang thẩm định..." : "Gửi AI Chấm điểm"}
         </button>
@@ -67,23 +67,23 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
           
           {/* 3 STATES UI BADGES */}
           <div className={`p-4 rounded-2xl border ${
-            result.state === "Not completed" ? "bg-rose-500/10 border-rose-500/20 text-rose-300" :
-            result.state === "Good" ? "bg-amber-500/10 border-amber-500/20 text-amber-300" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+            result.state === "Not completed" ? "border-rose-200 bg-rose-50 text-rose-700" :
+            result.state === "Good" ? "border-amber-200 bg-amber-50 text-amber-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"
           }`}>
             <div className="flex items-center gap-2">
-              {result.state === "Not completed" && <AlertCircle className="w-5 h-5 text-rose-400" />}
-              {result.state === "Good" && <Sparkles className="w-5 h-5 text-amber-400" />}
-              {result.state === "Excellent" && <Trophy className="w-5 h-5 text-emerald-400" />}
+              {result.state === "Not completed" && <AlertCircle className="h-5 w-5 text-rose-600" />}
+              {result.state === "Good" && <Sparkles className="h-5 w-5 text-amber-600" />}
+              {result.state === "Excellent" && <Trophy className="h-5 w-5 text-emerald-600" />}
               
               <span className="text-sm font-bold uppercase tracking-wider">
                 Kết quả: {result.state}
               </span>
             </div>
 
-            <p className="text-xs font-medium mt-2 leading-relaxed text-slate-200">{result.feedback}</p>
+            <p className="mt-2 text-xs font-medium leading-relaxed text-slate-700">{result.feedback}</p>
             
             {result.correctedSentence && (
-              <p className="text-xs font-semibold text-indigo-300 mt-3 bg-slate-900 p-3 rounded-xl border border-slate-800">
+              <p className="mt-3 rounded-xl border border-sky-200 bg-sky-50 p-3 text-xs font-semibold text-sky-800">
                 Gợi ý sửa: &ldquo;{result.correctedSentence}&rdquo;
               </p>
             )}
@@ -91,13 +91,13 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
 
           {/* DỮ LIỆU CỘNG ĐỒNG */}
           {result.communitySentences && result.communitySentences.length > 0 && (
-            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Globe className="w-4 h-4 text-sky-400" /> Tham khảo các câu Excellent khác từ cộng đồng:
+            <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600">
+                <Globe className="h-4 w-4 text-sky-600" /> Tham khảo các câu Excellent khác từ cộng đồng:
               </p>
               <ul className="space-y-1.5 pl-1">
                 {result.communitySentences.map((ex, idx) => (
-                  <li key={idx} className="text-xs font-medium text-slate-300 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                  <li key={idx} className="rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-medium text-slate-700">
                     &bull; &ldquo;{ex}&rdquo;
                   </li>
                 ))}
@@ -109,14 +109,14 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
           {result.state === "Not completed" ? (
             <button
               onClick={() => setResult(null)}
-              className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl border border-slate-700 transition shadow-lg"
+              className="w-full rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-4 font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
             >
               Thử lại câu khác
             </button>
           ) : (
             <button
               onClick={onNext}
-              className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold rounded-2xl border border-emerald-500 shadow-lg shadow-emerald-600/30 transition"
+              className="w-full rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-4 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
             >
               Tiếp tục sang Phase 3
             </button>

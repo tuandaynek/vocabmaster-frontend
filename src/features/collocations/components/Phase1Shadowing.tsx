@@ -169,7 +169,7 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
 
     if (!activeAttemptData) {
       return (
-        <h2 className="text-3xl font-black text-white tracking-tight mt-2">
+        <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-800">
           {collocation.phrase}
         </h2>
       );
@@ -193,17 +193,17 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
           return (
             <div key={idx} className="flex flex-col items-center">
               <span
-                className={`text-2xl font-black px-4 py-2 rounded-2xl border transition-all ${
+                className={`rounded-2xl border-2 px-4 py-2 text-2xl font-extrabold transition-all ${
                   isCorrect
-                    ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30 shadow-lg shadow-emerald-500/10"
-                    : "text-rose-400 bg-rose-500/10 border-rose-500/30 shadow-lg shadow-rose-500/10"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-rose-200 bg-rose-50 text-rose-700"
                 }`}
               >
                 {word}
               </span>
 
               {!isCorrect && (
-                <span className="mt-2 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 shadow animate-bounce">
+                <span className="mt-2 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 shadow-sm">
                   {isMissing ? "⚠️ thiếu" : `≠ "${spokenAtIdx}"`}
                 </span>
               )}
@@ -218,16 +218,16 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
   const lastScore = attempts.length > 0 ? attempts[attempts.length - 1].score : null;
 
   return (
-    <div className="max-w-md mx-auto p-7 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl text-center relative transition-all">
+    <div className="relative mx-auto max-w-md rounded-3xl border-2 border-slate-100 bg-white p-6 text-center shadow-sm transition-all sm:p-7">
       
       {/* Header Tag */}
       <div className="flex justify-between items-center mb-5">
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 bg-sky-500/10 text-sky-400 rounded-2xl border border-sky-500/20 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-sky-400" /> PHASE 1: DEEP SHADOWING
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-xs font-bold text-sky-800 shadow-sm">
+          <Sparkles className="h-3.5 w-3.5 text-sky-600" /> PHASE 1: DEEP SHADOWING
         </span>
-        <span className="text-xs font-semibold text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-2xl">
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
           Lượt:{" "}
-          <span className="text-sky-400 font-bold">
+          <span className="font-bold text-sky-700">
             {selectedAttemptIndex}/{stage === "BONUS" ? 4 : 3}
           </span>
         </span>
@@ -235,21 +235,21 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
 
       {/* Main Phrase & Meaning */}
       {renderInteractivePhrase()}
-      <p className="text-slate-400 font-medium italic text-sm mt-3 mb-5 bg-slate-900/60 py-2 px-4 rounded-2xl inline-block border border-slate-800">
+      <p className="mb-5 mt-3 inline-block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium italic text-slate-600">
         &ldquo;{collocation.meaning}&rdquo;
       </p>
 
       {/* Điểm số */}
       <div className="grid grid-cols-2 gap-3 my-5">
-        <div className="p-4 bg-slate-900/60 rounded-2xl border border-slate-800 shadow-inner">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LẦN 1</p>
-          <p className="text-2xl font-black text-white mt-0.5">
+        <div className="rounded-2xl border-2 border-slate-100 bg-white p-4 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">LẦN 1</p>
+          <p className="mt-0.5 text-2xl font-extrabold text-slate-800">
             {firstScore !== null ? `${firstScore}%` : "--"}
           </p>
         </div>
-        <div className="p-4 bg-emerald-950/20 rounded-2xl border border-emerald-500/20 shadow-inner">
-          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">LẦN MỚI NHẤT</p>
-          <p className="text-2xl font-black text-emerald-400 mt-0.5">
+        <div className="rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-4 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">LẦN MỚI NHẤT</p>
+          <p className="mt-0.5 text-2xl font-extrabold text-emerald-700">
             {lastScore !== null ? `${lastScore}%` : "--"}
           </p>
         </div>
@@ -265,20 +265,21 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
           return (
             <button
               key={step}
+              type="button"
               onClick={() => {
                 if (attemptData) setSelectedAttemptIndex(step);
               }}
               disabled={!attemptData}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center text-xs font-bold transition-all border ${
-                isSelected ? "ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-950 scale-105" : ""
+              className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 text-xs font-bold transition-all ${
+                isSelected ? "ring-2 ring-sky-400 ring-offset-2 ring-offset-white scale-105" : ""
               } ${
                 attemptData
                   ? attemptData.score === 100
-                    ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-600/30"
-                    : "bg-amber-600 border-amber-500 text-white shadow-lg shadow-amber-600/30"
+                    ? "border-emerald-700 bg-emerald-500 text-white shadow-sm"
+                    : "border-amber-600 bg-amber-400 text-amber-950 shadow-sm"
                   : isCurrentAction
-                  ? "bg-sky-500/10 border-sky-400 text-sky-400 animate-pulse border-2"
-                  : "bg-slate-900 border-slate-800 text-slate-600 cursor-not-allowed"
+                  ? "border-sky-300 bg-sky-50 text-sky-700 animate-pulse"
+                  : "border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed"
               }`}
             >
               {step === 4 ? <Award className="w-4 h-4 text-white" /> : attemptData ? `${attemptData.score}%` : step}
@@ -290,26 +291,26 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
       {/* Thông báo trạng thái */}
       <div className="min-h-[48px] flex flex-col items-center justify-center text-xs font-bold">
         {resetMessage && (
-          <p className="text-rose-400 bg-rose-500/10 px-3.5 py-1.5 rounded-2xl border border-rose-500/20 animate-bounce flex items-center gap-1.5">
+          <p className="flex items-center gap-1.5 rounded-2xl border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-rose-700">
             <AlertCircle className="w-4 h-4" /> {resetMessage}
           </p>
         )}
 
         {!resetMessage && isPlayingAudio && (
-          <p className="text-sky-400 bg-sky-500/10 px-3.5 py-1.5 rounded-2xl border border-sky-500/20 animate-pulse flex items-center gap-1.5">
+          <p className="flex items-center gap-1.5 rounded-2xl border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-sky-700 animate-pulse">
             <Volume2 className="w-4 h-4 animate-bounce" /> Đang phát âm chuẩn... Hãy chú ý nhại theo!
           </p>
         )}
 
         {!resetMessage && !isPlayingAudio && stage === "BONUS" && !isRecording && (
-          <p className="text-amber-400 bg-amber-500/10 px-4 py-1.5 rounded-2xl border border-amber-500/20 shadow-sm flex items-center gap-1.5">
+          <p className="flex items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-1.5 text-amber-800 shadow-sm">
             ⚠️ Lượt Quyết Định! Cần đạt 100% để qua bài.
           </p>
         )}
 
         {stage === "COMPLETED" && (
-          <div className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 p-3 rounded-2xl font-bold text-xs w-full flex items-center justify-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Hoàn thành xuất sắc Phase 1!
+          <div className="flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-bold text-emerald-800">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Hoàn thành xuất sắc Phase 1!
           </div>
         )}
       </div>
@@ -318,14 +319,15 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
       <div className="mt-4">
         {stage !== "COMPLETED" ? (
           <button
+            type="button"
             onClick={handleRecord}
             disabled={isRecording || isPlayingAudio || !!resetMessage}
-            className={`w-full py-4 text-white font-bold text-sm rounded-2xl border transition-all flex items-center justify-center gap-2 shadow-xl ${
+            className={`flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 px-4 py-4 text-sm font-bold text-white shadow-sm transition-all duration-150 active:translate-y-1 active:border-b-0 ${
               isRecording
-                ? "bg-rose-600 border-rose-500 animate-pulse"
+                ? "border-rose-700 bg-rose-500 animate-pulse"
                 : stage === "BONUS"
-                ? "bg-gradient-to-r from-amber-600 to-orange-600 hover:opacity-90 border-amber-500 shadow-amber-600/30"
-                : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-90 border-indigo-500 shadow-indigo-600/30"
+                ? "border-amber-600 bg-amber-400 text-amber-950 hover:bg-amber-500"
+                : "border-emerald-700 bg-emerald-500 hover:bg-emerald-600"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <Mic className="w-4 h-4" />
@@ -337,8 +339,9 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
           </button>
         ) : (
           <button
+            type="button"
             onClick={onComplete}
-            className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-2xl border border-slate-700 transition-all shadow-xl flex items-center justify-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 py-4 text-sm font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
           >
             Hoàn thành Phase 1 ➔
           </button>

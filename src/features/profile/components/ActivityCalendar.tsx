@@ -44,33 +44,33 @@ export default function ActivityCalendar({
     {/* Header Lịch */}
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-indigo-400 shadow-inner">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-2.5 text-emerald-700">
           <CalendarIcon className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="font-bold text-lg text-white">Hành trình học tập</h2>
-          <p className="text-xs text-slate-400">{currentMonthName}</p>
+          <h2 className="text-lg font-bold text-slate-800">Hành trình học tập</h2>
+          <p className="text-xs text-slate-500">{currentMonthName}</p>
         </div>
       </div>
 
       {/* Legend chú thích màu sắc */}
-      <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+      <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
         <span>Ít</span>
         <div className="flex gap-1">
           <div
-            className="w-3.5 h-3.5 rounded-md bg-slate-950 border border-slate-800"
+            className="h-3.5 w-3.5 rounded-md border border-slate-200 bg-slate-100"
             title="Chưa học"
           />
           <div
-            className="w-3.5 h-3.5 rounded-md bg-emerald-950 border border-emerald-800/80"
+            className="h-3.5 w-3.5 rounded-md border border-emerald-200 bg-emerald-100"
             title="1-15 XP"
           />
           <div
-            className="w-3.5 h-3.5 rounded-md bg-emerald-700 border border-emerald-600"
+            className="h-3.5 w-3.5 rounded-md border border-emerald-400 bg-emerald-300"
             title="16-35 XP"
           />
           <div
-            className="w-3.5 h-3.5 rounded-md bg-emerald-500 border border-emerald-400 shadow-sm shadow-emerald-500/20"
+            className="h-3.5 w-3.5 rounded-md border border-emerald-600 bg-emerald-500 shadow-sm"
             title=">35 XP"
           />
         </div>
@@ -86,7 +86,7 @@ export default function ActivityCalendar({
           <div
             key={day}
             className={`text-xs font-bold py-1 ${
-              idx === 0 || idx === 6 ? "text-rose-400/80" : "text-slate-400"
+              idx === 0 || idx === 6 ? "text-rose-600" : "text-slate-500"
             }`}
           >
             {day}
@@ -100,7 +100,7 @@ export default function ActivityCalendar({
         {Array.from({ length: firstDayOfMonth }).map((_, i) => (
           <div
             key={`empty-${i}`}
-            className="h-10 md:h-12 rounded-2xl bg-slate-950/40 border border-slate-800/50"
+            className="h-10 rounded-2xl border-2 border-slate-100 bg-slate-50 md:h-12"
           />
         ))}
 
@@ -115,16 +115,16 @@ export default function ActivityCalendar({
           const xp = activityMap.get(dateKey) || 0;
           const isToday = dayNum === todayDateNumber;
 
-          let bgStyle = "bg-slate-950 border-slate-800 text-slate-500";
+          let bgStyle = "bg-slate-50 border-slate-200 text-slate-500";
           if (xp > 0 && xp <= 15) {
             bgStyle =
-              "bg-emerald-950/80 border-emerald-800/80 text-emerald-300";
+              "bg-emerald-50 border-emerald-200 text-emerald-800";
           } else if (xp > 15 && xp <= 35) {
             bgStyle =
-              "bg-emerald-700/80 border-emerald-600 text-emerald-100 font-bold";
+              "bg-emerald-200 border-emerald-300 text-emerald-900 font-bold";
           } else if (xp > 35) {
             bgStyle =
-              "bg-emerald-500 border-emerald-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20";
+              "bg-emerald-500 border-emerald-600 text-white font-black shadow-sm";
           }
 
           return (
@@ -133,7 +133,7 @@ export default function ActivityCalendar({
               title={`Ngày ${dayStr}/${monthStr}/${currentYear}: +${xp} XP`}
               className={`h-10 md:h-12 rounded-2xl border p-1.5 flex flex-col justify-between transition-all hover:scale-105 cursor-pointer relative ${bgStyle} ${
                 isToday
-                  ? "ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-900"
+                  ? "ring-2 ring-emerald-400 ring-offset-2 ring-offset-white"
                   : ""
               }`}
             >
@@ -142,7 +142,7 @@ export default function ActivityCalendar({
                   {dayNum}
                 </span>
                 {isToday && (
-                  <span className="text-[8px] bg-indigo-600 text-white px-1.5 py-0.5 rounded-md leading-none font-sans font-bold shadow-sm">
+                  <span className="rounded-md bg-emerald-500 px-1.5 py-0.5 font-sans text-[8px] font-bold leading-none text-white shadow-sm">
                     Hôm nay
                   </span>
                 )}

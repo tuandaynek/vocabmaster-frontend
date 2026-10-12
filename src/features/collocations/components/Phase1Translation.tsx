@@ -58,9 +58,9 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
 
   if (loading) {
     return (
-      <div className="bg-slate-950 border border-slate-800 rounded-[32px] p-8 shadow-2xl flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
-        <p className="text-xs font-bold text-slate-400">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border-2 border-slate-100 bg-white p-8 shadow-sm">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        <p className="text-xs font-bold text-slate-500">
           Đang khởi tạo bài tập dịch thuật...
         </p>
       </div>
@@ -68,14 +68,14 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
   }
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-[32px] p-7 shadow-2xl space-y-6">
+    <div className="space-y-6 rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm sm:p-7">
       <div className="flex items-center justify-between">
-        <span className="px-3.5 py-1.5 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold">
+        <span className="rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-xs font-bold text-sky-800">
           Phase 1: Dịch câu đơn giản
         </span>
         <button
           onClick={() => setShowHint(!showHint)}
-          className="text-xs font-bold text-amber-400 flex items-center gap-1 hover:underline"
+          className="flex items-center gap-1 rounded-xl px-2 py-1 text-xs font-bold text-amber-700 transition hover:bg-amber-50 hover:underline"
         >
           <HelpCircle className="w-4 h-4" />{" "}
           {showHint ? "Ẩn gợi ý" : "Gợi ý từ vựng"}
@@ -83,11 +83,11 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
       </div>
 
       {/* Câu Tiếng Việt từ AI/Cache */}
-      <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
           Dịch câu sau sang tiếng Anh:
         </p>
-        <p className="text-base font-bold text-white mt-1.5">
+        <p className="mt-1.5 text-base font-bold text-slate-800">
           &ldquo;{phaseData?.viSentence || "Đang tải câu dịch..."}&rdquo;
         </p>
       </div>
@@ -96,13 +96,13 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
       {showHint &&
         phaseData?.suggestedVocab &&
         phaseData.suggestedVocab.length > 0 && (
-          <div className="flex flex-wrap gap-2 bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">
+          <div className="flex flex-wrap gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             {phaseData.suggestedVocab.map((v, i) => (
               <span
                 key={i}
-                className="text-xs font-bold text-amber-300 bg-slate-900 px-3 py-1.5 rounded-xl border border-amber-500/30"
+                className="rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-xs font-bold text-amber-800"
               >
-                {v.word}: <span className="font-normal text-slate-300">{v.meaning}</span>
+                {v.word}: <span className="font-normal text-slate-600">{v.meaning}</span>
               </span>
             ))}
           </div>
@@ -114,31 +114,31 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
         onChange={(e) => setInput(e.target.value)}
         disabled={isSubmitted}
         placeholder="Gõ bản dịch đơn giản nhất của bạn..."
-        className="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900 text-slate-100 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none font-medium text-sm resize-none h-28 transition"
+        className="h-28 w-full resize-none rounded-2xl border-2 border-slate-200 bg-white p-4 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 disabled:bg-slate-50"
       />
 
       {!isSubmitted ? (
         <button
           onClick={handleCheck}
           disabled={!input.trim()}
-          className="w-full py-4 bg-gradient-to-r from-sky-600 to-blue-600 hover:opacity-90 text-white font-bold rounded-2xl border border-sky-500 shadow-lg shadow-sky-600/30 disabled:opacity-50 transition"
+          className="flex w-full items-center justify-center rounded-2xl border-b-4 border-amber-600 bg-amber-400 px-4 py-4 font-bold text-amber-950 shadow-sm transition-all duration-150 hover:bg-amber-500 active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Kiểm tra đáp án
         </button>
       ) : (
         <div className="space-y-4 animate-in fade-in duration-300">
-          <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl">
-            <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4" /> Đáp án gợi ý tự nhiên nhất:
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700">
+              <CheckCircle2 className="h-4 w-4" /> Đáp án gợi ý tự nhiên nhất:
             </p>
-            <p className="text-sm font-bold text-emerald-200 mt-1.5">
+            <p className="mt-1.5 text-sm font-bold text-emerald-800">
               &ldquo;{phaseData?.acceptedAnswer}&rdquo;
             </p>
           </div>
 
           <button
             onClick={onNext}
-            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold rounded-2xl border border-emerald-500 shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-4 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
           >
             Chuyển sang Phase 2 <ArrowRight className="w-4 h-4" />
           </button>

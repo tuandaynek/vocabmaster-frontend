@@ -27,28 +27,28 @@ export default function VocabExtractorPage() {
   } = useVocabExtractor();
 
   return (
-  <main className="min-h-screen bg-slate-950 p-4 md:p-8 text-slate-100">
+  <main className="min-h-screen bg-slate-50 p-4 text-slate-800 md:p-8">
     <div className="mx-auto max-w-7xl space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between rounded-3xl border-2 border-slate-100 bg-white p-5 shadow-sm sm:p-6">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate("/vocab")}
             aria-label="Back to vocab"
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-700/60 bg-slate-900 text-slate-300 shadow-sm transition hover:bg-slate-800 hover:text-white"
+            className="flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-b-4 border-slate-200 bg-white text-slate-700 shadow-sm transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-400">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
               Vocabulary AI
             </p>
-            <h1 className="mt-1 text-2xl font-black text-white sm:text-3xl tracking-tight">
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-800 sm:text-3xl">
               Vocab Extractor
             </h1>
           </div>
         </div>
-        <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/30 sm:flex">
+        <div className="hidden h-12 w-12 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-700 sm:flex">
           <FileText className="h-5 w-5" />
         </div>
       </header>

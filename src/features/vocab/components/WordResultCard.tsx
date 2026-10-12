@@ -31,10 +31,10 @@ export function WordResultCard({ item, index, onToggle }: WordResultCardProps) {
   };
 
   return (
-  <article className={`rounded-3xl border p-6 transition-all duration-300 ${
-    item.selected 
-      ? "border-indigo-500/80 bg-indigo-950/20 shadow-xl shadow-indigo-500/10" 
-      : "border-slate-800 bg-slate-900/40 hover:border-slate-700"
+  <article className={`rounded-3xl border-2 bg-white p-6 shadow-sm transition-all duration-200 ${
+    item.selected
+      ? "border-emerald-300"
+      : "border-slate-100 hover:border-emerald-200 hover:shadow-md"
   }`}>
     <div className="flex items-start gap-4">
       <input
@@ -42,20 +42,20 @@ export function WordResultCard({ item, index, onToggle }: WordResultCardProps) {
         checked={item.selected}
         onChange={onToggle}
         aria-label={`Chọn ${item.word}`}
-        className="mt-1.5 h-4 w-4 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+        className="mt-1.5 h-4 w-4 cursor-pointer rounded border-slate-300 bg-white text-emerald-600 focus:ring-emerald-500"
       />
       
       <div className="min-w-0 flex-1">
         {/* Title, Meaning & IPA */}
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h3 className="text-xl font-black text-white tracking-tight">{item.word}</h3>
+          <h3 className="text-xl font-extrabold tracking-tight text-slate-800">{item.word}</h3>
           {item.ipa && (
-            <span className="text-sm font-semibold text-slate-400">
+            <span className="text-sm font-semibold text-slate-500">
               {item.ipa}
             </span>
           )}
           {item.pos && (
-            <span className="rounded-xl border border-slate-700/60 bg-slate-800/60 px-2.5 py-1 text-xs font-semibold text-slate-300">
+            <span className="rounded-xl border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800">
               {item.pos}
             </span>
           )}
@@ -63,34 +63,34 @@ export function WordResultCard({ item, index, onToggle }: WordResultCardProps) {
 
         {/* Nghĩa tiếng Việt */}
         {item.meaning && (
-          <p className="mt-1.5 text-sm font-bold text-emerald-400">
+          <p className="mt-1.5 text-sm font-bold text-emerald-700">
             {item.meaning}
           </p>
         )}
 
         {/* Context Sentence */}
         {item.context_sentence && (
-          <p className="mt-3 text-sm leading-relaxed text-slate-300 italic bg-slate-800/40 p-3 rounded-2xl border-l-2 border-indigo-500">
+          <p className="mt-3 rounded-2xl border-l-4 border-sky-300 bg-sky-50 p-3 text-sm italic leading-relaxed text-slate-600">
             &ldquo;{item.context_sentence}&rdquo;
           </p>
         )}
 
         {/* Metadata Grid (Word Family & Prefix/Suffix) */}
-        <div className="mt-4 grid gap-3 border-t border-slate-800 pt-3.5 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 border-t-2 border-slate-100 pt-3.5 sm:grid-cols-2">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Word family
             </p>
-            <p className="mt-1 text-xs text-slate-300 font-medium">
+            <p className="mt-1 text-xs font-medium text-slate-600">
               {renderWordFamily()}
             </p>
           </div>
 
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Prefix / Suffix
             </p>
-            <p className="mt-1 text-xs text-slate-300 font-medium">
+            <p className="mt-1 text-xs font-medium text-slate-600">
               {renderAffix()}
             </p>
           </div>
@@ -98,11 +98,11 @@ export function WordResultCard({ item, index, onToggle }: WordResultCardProps) {
 
         {/* Usage Note */}
         {item.usage_note && (
-          <div className="mt-3.5 rounded-2xl border border-indigo-500/20 bg-indigo-500/10 p-3.5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 mb-1">
+          <div className="mt-3.5 rounded-2xl border border-amber-200 bg-amber-50 p-3.5">
+            <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-amber-800">
               Usage note
             </p>
-            <p className="text-xs leading-relaxed text-slate-200">
+            <p className="text-xs leading-relaxed text-slate-700">
               {item.usage_note}
             </p>
           </div>

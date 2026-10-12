@@ -66,19 +66,19 @@ export function ResultsWorkspace({
   };
 
   return (
-  <section className="rounded-3xl border border-slate-800 bg-slate-900/60 p-5 sm:p-8 space-y-6 shadow-2xl">
+  <section className="space-y-6 rounded-3xl border-2 border-slate-100 bg-white p-5 shadow-sm sm:p-8">
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-400">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">
           Result workspace
         </p>
-        <h2 className="mt-1 text-2xl font-black text-white tracking-tight">
+        <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-800">
           Kết quả trích xuất
         </h2>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-sm font-semibold text-slate-400">
-          Đã chọn <span className="text-white font-bold">{selectedCount}</span>/{extractedList.length} từ
+        <span className="text-sm font-semibold text-slate-500">
+          Đã chọn <span className="font-bold text-slate-800">{selectedCount}</span>/{extractedList.length} từ
         </span>
         <Button
           type="button"
@@ -86,7 +86,7 @@ export function ResultsWorkspace({
           size="sm"
           onClick={onToggleAll}
           disabled={isSaving}
-          className="rounded-2xl border-slate-700/60 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white"
+          className="rounded-2xl border-2 border-b-4 border-slate-200 bg-white text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
         >
           {allSelected ? "Deselect All" : "Select All"}
         </Button>
@@ -109,10 +109,10 @@ export function ResultsWorkspace({
         type="button"
         onClick={handleSave}
         disabled={!selectedCount || !onSave || isSaving || isSaved}
-        className={`rounded-2xl px-6 py-3 font-bold text-white transition-all duration-200 ${
+        className={`rounded-2xl border-b-4 px-6 py-3.5 font-bold text-white shadow-sm transition-all duration-150 active:translate-y-1 active:border-b-0 ${
           isSaved
-            ? "bg-emerald-600 hover:bg-emerald-600 cursor-default shadow-lg shadow-emerald-600/30"
-            : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-indigo-600/30"
+            ? "cursor-default border-emerald-700 bg-emerald-500 hover:bg-emerald-500"
+            : "border-emerald-700 bg-emerald-500 hover:bg-emerald-600"
         }`}
       >
         {isSaving ? (

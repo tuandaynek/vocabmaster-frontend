@@ -43,17 +43,17 @@ export default function SignUpForm() {
   };
 
   return (
-  <Card className="w-full max-w-md rounded-[32px] border border-slate-800 bg-slate-900 shadow-2xl p-4 sm:p-6 text-slate-100">
+  <Card className="w-full max-w-md rounded-3xl border-2 border-slate-100 bg-white p-4 text-slate-800 shadow-sm sm:p-6">
     <CardHeader className="space-y-2 text-center pb-6">
-      <CardTitle className="text-2xl font-black tracking-tight text-white">Tạo tài khoản</CardTitle>
-      <CardDescription className="text-sm text-slate-400">
+      <CardTitle className="text-2xl font-extrabold tracking-tight text-slate-800">Tạo tài khoản</CardTitle>
+      <CardDescription className="text-sm text-slate-500">
         Tạo tài khoản mới để trải nghiệm VocabAI tối tân
       </CardDescription>
     </CardHeader>
     <CardContent>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-slate-600">
             Email
           </Label>
           <Input
@@ -64,11 +64,11 @@ export default function SignUpForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-12 bg-slate-950 border-slate-800 rounded-2xl text-white placeholder:text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+            className="h-12 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus-visible:border-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-100"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-slate-600">
             Username
           </Label>
           <Input
@@ -79,11 +79,11 @@ export default function SignUpForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            className="h-12 bg-slate-950 border-slate-800 rounded-2xl text-white placeholder:text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+            className="h-12 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus-visible:border-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-100"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-600">
             Mật khẩu
           </Label>
           <Input
@@ -94,11 +94,11 @@ export default function SignUpForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="h-12 bg-slate-950 border-slate-800 rounded-2xl text-white placeholder:text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+            className="h-12 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus-visible:border-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-100"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-wider text-slate-600">
             Xác nhận mật khẩu
           </Label>
           <Input
@@ -109,20 +109,20 @@ export default function SignUpForm() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className="h-12 bg-slate-950 border-slate-800 rounded-2xl text-white placeholder:text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/20"
+            className="h-12 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus-visible:border-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-100"
           />
         </div>
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-12 bg-gradient-to-r from-indigo-600 to-violet-600 hover:opacity-90 text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/30 transition-all duration-200 mt-2"
+          className="mt-2 h-12 w-full rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
         >
           {loading ? "Đang tạo tài khoản..." : "Đăng ký ngay"}
         </Button>
       </form>
-      <div className="mt-6 text-center text-xs font-semibold text-slate-400">
+      <div className="mt-6 text-center text-xs font-semibold text-slate-500">
         Đã có tài khoản?{" "}
-        <Link to="/signin" className="text-indigo-400 hover:underline font-bold">
+        <Link to="/signin" className="font-bold text-emerald-700 hover:underline">
           Đăng nhập
         </Link>
       </div>

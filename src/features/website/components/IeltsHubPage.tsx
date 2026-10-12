@@ -5,80 +5,81 @@ export default function IeltsHubPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Hiệu ứng ánh sáng nền */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[400px] bg-indigo-600/15 rounded-full blur-[150px] pointer-events-none" />
-      
-      <div className="max-w-6xl mx-auto space-y-10 relative z-10">
+    <div className="min-h-screen overflow-hidden bg-slate-50 px-4 py-10 text-slate-800 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-6xl space-y-8 sm:space-y-10">
         {/* Nút quay lại */}
-        <button 
+        <button
+          type="button"
           onClick={() => navigate("/")}
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition"
+          className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
         >
-          <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+          <ArrowLeft className="h-4 w-4" /> Quay lại trang chủ
         </button>
 
         {/* Hero Section của Hub */}
-        <div className="relative bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-slate-900/60 border border-slate-800/80 rounded-3xl p-8 sm:p-12 backdrop-blur-xl shadow-2xl overflow-hidden">
-          <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="max-w-2xl space-y-4">
-            <span className="px-3.5 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider border border-indigo-500/30">
+        <div className="overflow-hidden rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm sm:p-12">
+          <div className="max-w-3xl space-y-4">
+            <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wider text-sky-800">
+              <Mic2 className="h-4 w-4" />
               IELTS Examination Suite
             </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-              Phòng luyện tập <span className="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">Speaking & Writing</span>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-800 sm:text-5xl">
+              Phòng luyện tập{" "}
+              <span className="text-sky-600">Speaking & Writing</span>
             </h1>
-            <p className="text-slate-300 text-base sm:text-lg">
+            <p className="text-base leading-relaxed text-slate-500 sm:text-lg">
               Tương tác trực tiếp với trợ lý AI Examiner, nhận báo cáo chi tiết theo chuẩn giám khảo quốc tế giúp bạn tự tin đạt band 7.0+.
             </p>
           </div>
         </div>
 
         {/* Grid Tính năng IELTS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
           {/* Speaking Card */}
-          <div className="group bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-indigo-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10">
+          <div className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sky-200 hover:shadow-md sm:p-8">
             <div className="space-y-4">
-              <div className="w-14 h-14 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center border border-indigo-500/20 group-hover:scale-110 transition-transform">
-                <Mic2 className="w-7 h-7" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-600 transition-transform duration-200 group-hover:scale-105">
+                <Mic2 className="h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold text-white">IELTS Speaking Practice</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-slate-800">IELTS Speaking Practice</h3>
+              <p className="text-sm leading-relaxed text-slate-500">
                 Luyện tập đầy đủ Part 1, 2, 3 với hệ thống ghi âm giọng nói, chấm điểm chi tiết về Phát âm, Độ lưu loát, Từ vựng và Ngữ pháp.
               </p>
-              <ul className="space-y-2 text-xs text-slate-300 pt-2">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-400" /> Phát âm mẫu giọng bản xứ</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-400" /> Gợi ý từ vựng nâng cấp (Lexical Upgrade)</li>
+              <ul className="space-y-2 pt-2 text-xs text-slate-600">
+                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> Phát âm mẫu giọng bản xứ</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> Gợi ý từ vựng nâng cấp (Lexical Upgrade)</li>
               </ul>
             </div>
             <button
+              type="button"
               onClick={() => navigate("/ielts/speaking")}
-              className="mt-8 w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2"
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-3.5 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
             >
-              Vào phòng Speaking <Sparkles className="w-4 h-4" />
+              Vào phòng Speaking <Sparkles className="h-4 w-4" />
             </button>
           </div>
 
           {/* Writing Card */}
-          <div className="group bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10">
+          <div className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-amber-200 hover:shadow-md sm:p-8">
             <div className="space-y-4">
-              <div className="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center border border-purple-500/20 group-hover:scale-110 transition-transform">
-                <Award className="w-7 h-7" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-700 transition-transform duration-200 group-hover:scale-105">
+                <Award className="h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Luyện Writing Task 1 & 2</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-slate-800">Luyện Writing Task 1 & 2</h3>
+              <p className="text-sm leading-relaxed text-slate-500">
                 Nộp bài luận trực tiếp để AI phân tích cấu trúc bài viết, chỉ ra lỗi sai ngữ pháp và đưa ra các câu paraphrase mượt mà hơn.
               </p>
-              <ul className="space-y-2 text-xs text-slate-300 pt-2">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Đánh giá Task Achievement chuẩn xác</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Sửa lỗi trực quan từng câu chữ</li>
+              <ul className="space-y-2 pt-2 text-xs text-slate-600">
+                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> Đánh giá Task Achievement chuẩn xác</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> Sửa lỗi trực quan từng câu chữ</li>
               </ul>
             </div>
             <button
+              type="button"
               onClick={() => navigate("/ielts/writing")}
-              className="mt-8 w-full py-3 px-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-2xl shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2"
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-amber-600 bg-amber-400 px-4 py-3.5 font-bold text-amber-950 shadow-sm transition-all duration-150 hover:bg-amber-500 active:translate-y-1 active:border-b-0"
             >
-              Vào phòng Writing <Sparkles className="w-4 h-4" />
+              Vào phòng Writing <Sparkles className="h-4 w-4" />
             </button>
           </div>
         </div>

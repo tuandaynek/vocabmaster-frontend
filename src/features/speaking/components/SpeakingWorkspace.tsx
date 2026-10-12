@@ -333,17 +333,18 @@ export function SpeakingWorkspace({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
       {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/60 shadow-xl">
+      <header className="border-b-2 border-slate-100 bg-white shadow-sm">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 lg:px-8">
           <button
+            type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-xs font-bold text-slate-400 transition hover:text-white"
+            className="flex items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
           >
             <ArrowLeft className="h-4 w-4" /> Back to library
           </button>
-          <span className="rounded-2xl bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 text-xs font-bold text-indigo-400 shadow-sm">
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1.5 text-xs font-bold text-amber-800 shadow-sm">
             Target Band: {targetBand}
           </span>
         </div>
@@ -355,17 +356,17 @@ export function SpeakingWorkspace({
           {/* Conversation Area */}
           <div className="flex flex-col space-y-4">
             {/* Question Banner */}
-            <div className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 shadow-xl sm:p-8 backdrop-blur-xl">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+            <div className="rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm sm:p-8">
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
                 CURRENT QUESTION
               </span>
-              <h1 className="mt-2 text-xl font-black text-white sm:text-2xl tracking-tight">
+              <h1 className="mt-2 text-xl font-extrabold tracking-tight text-slate-800 sm:text-2xl">
                 {question.text}
               </h1>
             </div>
 
             {/* Conversation Box */}
-            <div className="flex h-[450px] flex-col rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl">
+            <div className="flex h-[450px] flex-col rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm">
               <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                 {messages.map((msg) => (
                   <div
@@ -379,8 +380,8 @@ export function SpeakingWorkspace({
                     <div
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold border ${
                         msg.sender === "candidate"
-                          ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/30"
-                          : "bg-slate-800 border-slate-700 text-slate-300"
+                          ? "border-emerald-700 bg-emerald-500 text-white shadow-sm"
+                          : "border-sky-200 bg-sky-50 text-sky-700"
                       }`}
                     >
                       {msg.sender === "candidate" ? (
@@ -393,8 +394,8 @@ export function SpeakingWorkspace({
                     <div
                       className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                         msg.sender === "candidate"
-                          ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-tr-none shadow-lg shadow-indigo-600/20"
-                          : "bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700"
+                          ? "rounded-tr-none bg-emerald-500 text-white shadow-sm"
+                          : "rounded-tl-none border border-slate-200 bg-slate-50 text-slate-700"
                       }`}
                     >
                       {msg.text}
@@ -404,7 +405,7 @@ export function SpeakingWorkspace({
 
                 {/* Trạng thái đang chuyển giọng nói thành text */}
                 {isTranscribing && (
-                  <div className="flex items-center gap-2 text-xs text-indigo-400 italic">
+                  <div className="flex items-center gap-2 text-xs italic text-sky-700">
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     Converting audio to text...
                   </div>
@@ -412,7 +413,7 @@ export function SpeakingWorkspace({
 
                 {/* Trạng thái Examiner đang phản hồi */}
                 {isProcessingStep && (
-                  <div className="flex items-center gap-2 text-xs text-slate-400 italic">
+                  <div className="flex items-center gap-2 text-xs italic text-slate-500">
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     Examiner is typing...
                   </div>
@@ -421,16 +422,16 @@ export function SpeakingWorkspace({
               </div>
 
               {/* Chat Input Bar */}
-              <div className="mt-4 flex items-center gap-3 border-t border-slate-800 pt-4">
+              <div className="mt-4 flex items-center gap-3 border-t-2 border-slate-100 pt-4">
                 {/* Nút Mic / Stop Recording */}
                 <button
                   type="button"
                   onClick={handleToggleRecord}
                   disabled={isTranscribing || isProcessingStep}
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition disabled:opacity-50 border ${
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-b-4 transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
                     isRecording
-                      ? "bg-rose-600 border-rose-500 text-white animate-pulse shadow-lg shadow-rose-600/30"
-                      : "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20"
+                      ? "border-rose-700 bg-rose-500 text-white animate-pulse shadow-sm active:translate-y-1 active:border-b-0"
+                      : "border-2 border-b-4 border-slate-200 bg-white text-slate-600 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
                   }`}
                   title={isRecording ? "Stop recording" : "Start recording"}
                 >
@@ -455,18 +456,19 @@ export function SpeakingWorkspace({
                         : "Type your answer here..."
                     }
                     disabled={isRecording || isTranscribing}
-                    className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 pr-10 text-xs font-medium text-slate-200 placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none disabled:bg-slate-900"
+                    className="w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 pr-10 text-xs font-medium text-slate-800 placeholder-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none disabled:bg-slate-100"
                   />
                   <button
                     type="button"
                     onClick={() => handleSendMessage(textInput)}
+                    aria-label="Send answer"
                     disabled={
                       !textInput.trim() ||
                       isProcessingStep ||
                       isRecording ||
                       isTranscribing
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-indigo-400 disabled:opacity-40"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-500 transition hover:text-emerald-700 disabled:opacity-40"
                   >
                     <Send className="h-4 w-4" />
                   </button>

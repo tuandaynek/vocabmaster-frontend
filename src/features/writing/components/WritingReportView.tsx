@@ -31,29 +31,31 @@ export function WritingReportView({
   ] as const;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-xl shadow-xl">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <header className="border-b-2 border-slate-100 bg-white shadow-sm">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={onBackToWorkspace}
-              className="rounded-2xl p-2.5 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800 transition"
+              className="rounded-2xl border-2 border-b-4 border-slate-200 bg-white p-2.5 text-slate-600 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
               aria-label="Quay lại workspace"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-400">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-700">
                 Examiner report
               </p>
-              <h1 className="font-black text-white text-base">
+              <h1 className="text-base font-extrabold text-slate-800">
                 Writing Task 2 Feedback
               </h1>
             </div>
           </div>
           <button
+            type="button"
             onClick={onResetSession}
-            className="flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition"
+            className="flex items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
           >
             <RotateCcw className="h-4 w-4" /> Bài mới
           </button>
@@ -62,11 +64,11 @@ export function WritingReportView({
 
       <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">
         {/* Counselor Summary */}
-        <section className="rounded-[32px] border border-indigo-500/30 bg-indigo-950/20 p-6 shadow-xl backdrop-blur-xl">
-          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400">
+        <section className="rounded-3xl border-2 border-amber-200 bg-amber-50 p-6 shadow-sm">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-amber-800">
             Counselor summary
           </p>
-          <p className="text-sm leading-relaxed text-slate-300 font-medium">
+          <p className="text-sm font-medium leading-relaxed text-slate-700">
             {evaluation.counselorSummary}
           </p>
         </section>
@@ -76,16 +78,16 @@ export function WritingReportView({
           {(["overall", ...criteriaKeys] as const).map((key) => (
             <div
               key={key}
-              className={`rounded-2xl border p-4 shadow-xl transition ${
+              className={`rounded-2xl border-2 p-4 shadow-sm transition ${
                 key === "overall"
-                  ? "border-indigo-500/40 bg-indigo-950/40 shadow-indigo-500/10"
-                  : "border-slate-800 bg-slate-900/60"
+                  ? "border-amber-200 bg-amber-50"
+                  : "border-slate-100 bg-white"
               }`}
             >
-              <p className="text-xs font-semibold text-slate-400">
+              <p className="text-xs font-semibold text-slate-500">
                 {SCORE_LABELS[key] || key}
               </p>
-              <p className="mt-2 text-3xl font-black text-indigo-400">
+              <p className={`mt-2 text-3xl font-extrabold ${key === "overall" ? "text-amber-700" : "text-slate-800"}`}>
                 {evaluation.bandScores[key]}
               </p>
             </div>
@@ -94,7 +96,7 @@ export function WritingReportView({
 
         {/* Detailed breakdown */}
         <section>
-          <h2 className="mb-4 text-lg font-black text-white tracking-tight">
+          <h2 className="mb-4 text-lg font-extrabold tracking-tight text-slate-800">
             Detailed criteria breakdown
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
@@ -104,40 +106,40 @@ export function WritingReportView({
               return (
                 <article
                   key={key}
-                  className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl"
+                  className="rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm"
                 >
-                  <h3 className="mb-4 font-bold text-indigo-400 text-sm uppercase tracking-wider">
+                  <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-sky-700">
                     {SCORE_LABELS[key]}
                   </h3>
                   <div className="space-y-4 text-xs font-medium">
                     <div>
-                      <p className="mb-2 font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
+                      <p className="mb-2 flex items-center gap-1.5 font-bold uppercase tracking-wider text-emerald-700">
                         ✓ Strengths
                       </p>
                       <ul className="space-y-2">
                         {diagnostic.strengths.map((item) => (
-                          <li key={item} className="flex gap-2 text-slate-300">
-                            <span className="text-emerald-400">✓</span>
+                          <li key={item} className="flex gap-2 text-slate-700">
+                            <span className="text-emerald-600">✓</span>
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <p className="mb-2 font-bold text-rose-400 flex items-center gap-1.5 uppercase tracking-wider">
+                      <p className="mb-2 flex items-center gap-1.5 font-bold uppercase tracking-wider text-rose-700">
                         ✗ Areas for improvement
                       </p>
                       <ul className="space-y-2">
                         {diagnostic.weaknesses.map((item) => (
-                          <li key={item} className="flex gap-2 text-slate-300">
-                            <span className="text-rose-400">✗</span>
+                          <li key={item} className="flex gap-2 text-slate-700">
+                            <span className="text-rose-600">✗</span>
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
-                    <div className="rounded-2xl bg-indigo-950/40 border border-indigo-500/20 p-3.5 text-indigo-200 leading-relaxed">
-                      <p className="mb-1 font-bold text-indigo-300 uppercase tracking-wider text-[10px]">
+                    <div className="rounded-2xl border border-sky-200 bg-sky-50 p-3.5 leading-relaxed text-sky-900">
+                      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-sky-800">
                         Action plan
                       </p>
                       <p>{diagnostic.actionPlan}</p>
@@ -150,28 +152,28 @@ export function WritingReportView({
         </section>
 
         {/* Corrections */}
-        <section className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h2 className="mb-4 text-lg font-black text-white tracking-tight">
+        <section className="rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-extrabold tracking-tight text-slate-800">
             Key sentence upgrades
           </h2>
           <div className="space-y-4">
             {evaluation.inlineCorrections.map((item, index) => (
               <div
                 key={`${item.originalSentence}-${index}`}
-                className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-xs space-y-2"
+                className="space-y-2 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs"
               >
-                <span className="inline-block rounded-xl bg-slate-900 border border-slate-800 px-3 py-1 font-bold text-slate-400 uppercase tracking-wider text-[10px]">
+                <span className="inline-block rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
                   {item.type}
                 </span>
-                <p className="text-rose-400 font-medium">
-                  <strong className="text-rose-300">Original:</strong>{" "}
+                <p className="font-medium text-rose-700">
+                  <strong className="text-rose-800">Original:</strong>{" "}
                   {item.originalSentence}
                 </p>
-                <p className="text-emerald-400 font-medium">
-                  <strong className="text-emerald-300">Upgraded:</strong>{" "}
+                <p className="font-medium text-emerald-700">
+                  <strong className="text-emerald-800">Upgraded:</strong>{" "}
                   {item.correctedSentence}
                 </p>
-                <p className="text-slate-400 leading-relaxed">
+                <p className="leading-relaxed text-slate-600">
                   {item.explanation}
                 </p>
               </div>
@@ -180,21 +182,21 @@ export function WritingReportView({
         </section>
 
         {/* Vocabulary */}
-        <section className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h2 className="mb-4 text-lg font-black text-white tracking-tight">
+        <section className="rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-extrabold tracking-tight text-slate-800">
             High-value vocabulary
           </h2>
           <div className="grid gap-3 md:grid-cols-2">
             {evaluation.highValueVocabulary.map((item) => (
               <div
                 key={`${item.originalPhrase}-${item.bandUpgrade}`}
-                className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-xs space-y-1.5"
+                className="space-y-1.5 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs"
               >
-                <p className="text-rose-400 font-medium line-through">
+                <p className="font-medium text-rose-700 line-through">
                   {item.originalPhrase}
                 </p>
-                <p className="font-bold text-emerald-400">{item.bandUpgrade}</p>
-                <p className="text-slate-400 leading-relaxed pt-1">
+                <p className="font-bold text-emerald-800">{item.bandUpgrade}</p>
+                <p className="pt-1 leading-relaxed text-slate-600">
                   {item.contextExample}
                 </p>
               </div>
@@ -203,11 +205,11 @@ export function WritingReportView({
         </section>
 
         {/* Rewrite */}
-        <section className="rounded-[32px] border border-indigo-500/30 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl">
-          <h2 className="mb-4 text-lg font-black text-white tracking-tight">
+        <section className="rounded-3xl border-2 border-violet-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-extrabold tracking-tight text-slate-800">
             Incremental Upgrade
           </h2>
-          <div className="prose prose-invert max-w-none text-xs leading-relaxed text-slate-300 whitespace-pre-wrap">
+          <div className="prose max-w-none whitespace-pre-wrap text-xs leading-relaxed text-slate-700 prose-headings:text-slate-800 prose-strong:text-slate-800 prose-a:text-emerald-700">
             <ReactMarkdown>
               {evaluation.incrementalUpgradedEssay
                 ? evaluation.incrementalUpgradedEssay.replace(/\\n/g, "\n")

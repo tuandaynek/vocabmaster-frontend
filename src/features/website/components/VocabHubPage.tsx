@@ -12,80 +12,81 @@ export default function VocabHubPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Hiệu ứng ánh sáng nền đặc trưng */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] bg-emerald-600/15 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[350px] bg-indigo-600/10 rounded-full blur-[130px] pointer-events-none" />
-      
-      <div className="max-w-6xl mx-auto space-y-10 relative z-10">
+    <div className="min-h-screen overflow-hidden bg-slate-50 px-4 py-10 text-slate-800 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-6xl space-y-8 sm:space-y-10">
         
         {/* Nút quay lại */}
-        <button 
+        <button
+          type="button"
           onClick={() => navigate("/")}
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition"
+          className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
         >
-          <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+          <ArrowLeft className="h-4 w-4" /> Quay lại trang chủ
         </button>
 
         {/* Hero Section của Vocab Hub */}
-        <div className="relative bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-indigo-950/40 border border-slate-800/80 rounded-3xl p-8 sm:p-12 backdrop-blur-xl shadow-2xl overflow-hidden">
-          <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="max-w-2xl space-y-4">
-            <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
+        <div className="overflow-hidden rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm sm:p-12">
+          <div className="max-w-3xl space-y-4">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-800">
+              <Sparkles className="h-4 w-4" />
               Vocabulary & SRS Workspace
             </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-              Trạm không gian <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Từ vựng & Trí nhớ</span>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-800 sm:text-5xl">
+              Trạm học tập{" "}
+              <span className="text-emerald-600">Từ vựng & Trí nhớ</span>
             </h1>
-            <p className="text-slate-300 text-base sm:text-lg">
+            <p className="text-base leading-relaxed text-slate-500 sm:text-lg">
               Làm chủ vốn từ vựng học thuật IELTS thông qua công cụ trích xuất thông minh, từ điển cá nhân hóa và thuật toán ôn tập ngắt quãng (SRS).
             </p>
           </div>
         </div>
 
         {/* Grid Tính năng Từ vựng & SRS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
           
           {/* 1. Vocab Extractor */}
-          <div className="group bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10">
+          <div className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md sm:p-8">
             <div className="space-y-4">
-              <div className="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
-                <Sparkles className="w-7 h-7" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-600 transition-transform duration-200 group-hover:scale-105">
+                <Sparkles className="h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Vocab Extractor</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-slate-800">Vocab Extractor</h3>
+              <p className="text-sm leading-relaxed text-slate-500">
                 Trích xuất ngay lập tức các từ vựng và cụm từ ăn điểm từ bất kỳ đoạn văn bản hoặc bài báo tiếng Anh nào cùng định nghĩa và ví dụ chi tiết.
               </p>
             </div>
             <button
+              type="button"
               onClick={() => navigate("/vocab-extractor")}
-              className="mt-8 w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-2xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2"
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-3.5 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
             >
-              Trích xuất từ vựng <ArrowRight className="w-4 h-4" />
+              Trích xuất từ vựng <ArrowRight className="h-4 w-4" />
             </button>
           </div>
 
           {/* 2. Dictionary & Kho từ cá nhân */}
-          <div className="group bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-violet-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10">
+          <div className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sky-200 hover:shadow-md sm:p-8">
             <div className="space-y-4">
-              <div className="w-14 h-14 bg-violet-500/10 text-violet-400 rounded-2xl flex items-center justify-center border border-violet-500/20 group-hover:scale-110 transition-transform">
-                <Search className="w-7 h-7" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-600 transition-transform duration-200 group-hover:scale-105">
+                <Search className="h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Dictionary & Kho Từ Của Tôi</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-slate-800">Dictionary & Kho Từ Của Tôi</h3>
+              <p className="text-sm leading-relaxed text-slate-500">
                 Tra cứu nghĩa từ vựng, nghe phát âm chuẩn bản xứ và quản lý toàn bộ danh sách từ đã lưu kèm ngữ cảnh cá nhân hóa của riêng bạn.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 mt-8">
               <button
+                type="button"
                 onClick={() => navigate("/dictionary")}
-                className="py-3 px-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-2xl shadow-lg shadow-violet-600/30 transition text-sm flex items-center justify-center gap-1.5"
+                className="flex items-center justify-center gap-1.5 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-3 py-3 text-sm font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
               >
                 Tra từ điển
               </button>
               <button
+                type="button"
                 onClick={() => navigate("/my-vocab")}
-                className="py-3 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-2xl border border-slate-700 transition text-sm flex items-center justify-center gap-1.5"
+                className="flex items-center justify-center gap-1.5 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
               >
                 Kho từ cá nhân
               </button>
@@ -93,40 +94,42 @@ export default function VocabHubPage() {
           </div>
 
           {/* 3. Flashcards SRS */}
-          <div className="group bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-amber-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/10">
+          <div className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-amber-200 hover:shadow-md sm:p-8">
             <div className="space-y-4">
-              <div className="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform">
-                <BrainCircuit className="w-7 h-7" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-700 transition-transform duration-200 group-hover:scale-105">
+                <BrainCircuit className="h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Flashcards SRS (Spaced Repetition)</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-slate-800">Flashcards SRS (Spaced Repetition)</h3>
+              <p className="text-sm leading-relaxed text-slate-500">
                 Ôn tập từ vựng khoa học theo thuật toán lặp lại ngắt quãng. Tự đánh giá mức độ nhớ (Again / Hard / Good / Easy) để ghi nhớ sâu vào bộ nhớ dài hạn.
               </p>
             </div>
             <button
+              type="button"
               onClick={() => navigate("/flashcards")}
-              className="mt-8 w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-2xl shadow-lg shadow-amber-600/30 transition flex items-center justify-center gap-2"
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-amber-600 bg-amber-400 px-4 py-3.5 font-bold text-amber-950 shadow-sm transition-all duration-150 hover:bg-amber-500 active:translate-y-1 active:border-b-0"
             >
-              Bắt đầu ôn tập SRS <ArrowRight className="w-4 h-4" />
+              Bắt đầu ôn tập SRS <ArrowRight className="h-4 w-4" />
             </button>
           </div>
 
           {/* 4. Collocation Routine */}
-          <div className="group bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between hover:border-indigo-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10">
+          <div className="group flex flex-col justify-between rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-rose-200 hover:shadow-md sm:p-8">
             <div className="space-y-4">
-              <div className="w-14 h-14 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center border border-indigo-500/20 group-hover:scale-110 transition-transform">
-                <Layers className="w-7 h-7" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 transition-transform duration-200 group-hover:scale-105">
+                <Layers className="h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Collocation Routine</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-slate-800">Collocation Routine</h3>
+              <p className="text-sm leading-relaxed text-slate-500">
                 Luyện tập phản xạ cụm từ tự nhiên qua kịch bản Shadowing 4 bước, giúp nâng cấp điểm số Lexical Resource trong văn bản và bài nói.
               </p>
             </div>
             <button
+              type="button"
               onClick={() => navigate("/collocation/review")}
-              className="mt-8 w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2"
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-3.5 font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
             >
-              Luyện Collocations <ArrowRight className="w-4 h-4" />
+              Luyện Collocations <ArrowRight className="h-4 w-4" />
             </button>
           </div>
 

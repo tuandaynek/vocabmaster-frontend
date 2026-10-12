@@ -38,52 +38,52 @@ export function ExtractionConfig({
   };
 
   return (
-  <aside className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-xl sm:p-6 space-y-6">
+  <aside className="space-y-6 rounded-3xl border-2 border-slate-100 bg-white p-5 shadow-sm sm:p-6">
     <div className="flex items-center gap-3">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-inner">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-700">
         <Search className="h-5 w-5" />
       </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-400">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">
           Settings
         </p>
-        <h2 className="font-bold text-white">Cấu hình trích xuất</h2>
+        <h2 className="font-extrabold text-slate-800">Cấu hình trích xuất</h2>
       </div>
     </div>
 
     <div>
-      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">Chế độ lọc</p>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Chế độ lọc</p>
       <div className="space-y-2.5">
         {FOCUS_MODES.map((mode) => (
           <button
             key={mode.value}
             type="button"
             onClick={() => onFocusModeChange(mode.value)}
-            className={`w-full rounded-2xl border p-3.5 text-left transition ${
+            className={`w-full rounded-2xl border-2 p-3.5 text-left transition-all duration-150 ${
               focusMode === mode.value
-                ? "border-indigo-500/80 bg-indigo-950/30 text-white shadow-lg shadow-indigo-500/10"
-                : "border-slate-800 bg-slate-950/50 text-slate-300 hover:border-slate-700 hover:bg-slate-950"
+                ? "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm"
+                : "border-slate-100 bg-white text-slate-700 hover:border-slate-200 hover:bg-slate-50"
             }`}
           >
-            <span className="block text-sm font-bold text-white">{mode.value}</span>
-            <span className="mt-0.5 block text-xs text-slate-400">{mode.description}</span>
+            <span className="block text-sm font-bold text-slate-800">{mode.value}</span>
+            <span className="mt-0.5 block text-xs text-slate-500">{mode.description}</span>
           </button>
         ))}
       </div>
     </div>
 
     <div>
-      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">Số lượng từ tối đa</p>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Số lượng từ tối đa</p>
       <div className="flex gap-2">
         {LIMIT_OPTIONS.map((option) => (
           <button
             key={option}
             type="button"
             onClick={() => onLimitChange(option)}
-            className={`flex-1 rounded-2xl border px-3 py-2.5 text-xs font-bold transition ${
+            className={`flex-1 rounded-2xl border-b-4 px-3 py-2.5 text-xs font-bold transition-all duration-150 active:translate-y-1 active:border-b-0 ${
               limit === option
-                ? "border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                : "border-slate-800 bg-slate-950/50 text-slate-300 hover:border-slate-700 hover:bg-slate-950"
+                ? "border-amber-600 bg-amber-400 text-amber-950 shadow-sm hover:bg-amber-500"
+                : "border-2 border-b-4 border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
             {option} từ
@@ -93,14 +93,14 @@ export function ExtractionConfig({
     </div>
 
     <div>
-      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-400" htmlFor="must-include">
+      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="must-include">
         Từ bắt buộc ưu tiên
       </label>
-      <div className="flex min-h-12 flex-wrap items-center gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20">
+      <div className="flex min-h-12 flex-wrap items-center gap-2 rounded-2xl border-2 border-slate-200 bg-slate-50 p-2.5 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100">
         {mustIncludeWords.map((word) => (
           <span
             key={word}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800"
           >
             {word}
             <button
@@ -109,7 +109,7 @@ export function ExtractionConfig({
                 onMustIncludeWordsChange(mustIncludeWords.filter((item) => item !== word))
               }
               aria-label={`Xóa ${word}`}
-              className="hover:text-white"
+              className="rounded-lg text-emerald-700 transition hover:text-rose-600"
             >
               <X className="h-3 w-3" />
             </button>
@@ -122,7 +122,7 @@ export function ExtractionConfig({
           onKeyDown={handleKeyDown}
           onBlur={addWord}
           placeholder={mustIncludeWords.length ? "Thêm từ..." : "Gõ từ và nhấn Enter"}
-          className="min-w-[130px] flex-1 bg-transparent px-1 py-1 text-sm text-slate-200 outline-none placeholder:text-slate-500"
+          className="min-w-[130px] flex-1 bg-transparent px-1 py-1 text-sm text-slate-800 outline-none placeholder:text-slate-400"
         />
       </div>
       <p className="mt-2 text-xs text-slate-500">Nhấn Enter hoặc dấu phẩy để thêm tag</p>

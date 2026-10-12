@@ -132,10 +132,10 @@ export default function Phase3VariationPractice({
             return (
               <span
                 key={idx}
-                className={`text-lg font-bold transition-all px-3 py-1.5 rounded-xl border ${
+                className={`rounded-2xl border-2 px-3 py-1.5 text-lg font-bold transition-all ${
                   isTargetCollocation
-                    ? "text-amber-300 bg-amber-500/15 border-amber-500/30 shadow-inner"
-                    : "text-slate-200 bg-slate-900 border-slate-800"
+                    ? "border-amber-300 bg-amber-50 text-amber-800"
+                    : "border-slate-200 bg-white text-slate-700"
                 }`}
               >
                 {word}
@@ -149,16 +149,16 @@ export default function Phase3VariationPractice({
           return (
             <div key={idx} className="flex flex-col items-center">
               <span
-                className={`text-lg font-bold px-3 py-1.5 rounded-xl border transition-all ${
+                className={`rounded-2xl border-2 px-3 py-1.5 text-lg font-bold transition-all ${
                   isCorrect
-                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                    : "bg-rose-500/10 text-rose-300 border-rose-500/30"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : "border-rose-200 bg-rose-50 text-rose-700"
                 }`}
               >
                 {word}
               </span>
               {!isCorrect && (
-                <span className="mt-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-md bg-rose-500/20 border border-rose-500/30 text-rose-300 shadow animate-bounce uppercase">
+                <span className="mt-1.5 rounded-xl border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-700 shadow-sm">
                   {isMissing ? "thiếu" : `≠ "${spokenAtIdx}"`}
                 </span>
               )}
@@ -171,9 +171,9 @@ export default function Phase3VariationPractice({
 
   if (loading) {
     return (
-      <div className="max-w-md mx-auto p-10 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl text-center">
-        <Loader2 className="w-10 h-10 text-purple-400 animate-spin mx-auto mb-3" />
-        <p className="text-sm font-bold text-purple-300">
+      <div className="mx-auto max-w-md rounded-3xl border-2 border-slate-100 bg-white p-10 text-center shadow-sm">
+        <Loader2 className="mx-auto mb-3 h-10 w-10 animate-spin text-emerald-600" />
+        <p className="text-sm font-bold text-slate-600">
           Đang tạo các câu biến thể cho bạn...
         </p>
       </div>
@@ -181,34 +181,34 @@ export default function Phase3VariationPractice({
   }
 
   return (
-    <div className="max-w-md mx-auto p-7 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl text-center relative transition-all">
+    <div className="relative mx-auto max-w-md rounded-3xl border-2 border-slate-100 bg-white p-6 text-center shadow-sm transition-all sm:p-7">
       
       {/* Header Tag Cute & Progress Indicator */}
       <div className="flex justify-between items-center mb-4">
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 bg-purple-500/10 text-purple-300 rounded-2xl border border-purple-500/20 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-purple-400" /> PHASE 3: VARIATION
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3.5 py-1.5 text-xs font-bold text-violet-800 shadow-sm">
+          <Sparkles className="h-3.5 w-3.5 text-violet-600" /> PHASE 3: VARIATION
         </span>
-        <span className="text-xs font-bold text-purple-300 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-2xl">
+        <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">
           Biến thể {currentIndex + 1}/{variations.length}
         </span>
       </div>
 
       {/* Target Collocation Badge */}
-      <div className="mb-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-500/10 rounded-2xl text-purple-300 text-xs font-bold border border-purple-500/20">
+      <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1.5 text-xs font-bold text-amber-800">
         <span>🎯 Cụm trọng tâm:</span>
-        <span className="text-purple-400 font-black underline decoration-2 underline-offset-2">
+        <span className="font-extrabold text-amber-800 underline decoration-2 underline-offset-2">
           {collocation.phrase}
         </span>
       </div>
 
       {/* Variation Sentence Card */}
-      <div className="relative overflow-hidden my-3 p-6 bg-slate-900/60 rounded-3xl border border-slate-800 shadow-xl">
-        <Quote className="absolute -top-1 -right-1 w-12 h-12 text-slate-800/40 rotate-180 pointer-events-none" />
+      <div className="relative my-3 overflow-hidden rounded-3xl border-2 border-slate-100 bg-slate-50 p-6 shadow-sm">
+        <Quote className="pointer-events-none absolute -right-1 -top-1 h-12 w-12 rotate-180 text-slate-200" />
 
         {renderSentenceWithFeedback()}
 
         {currentItem && (
-          <div className="mt-4 text-xs font-semibold text-slate-400 italic border-t border-slate-800 pt-3">
+          <div className="mt-4 border-t border-slate-200 pt-3 text-xs font-semibold italic text-slate-500">
             💡 {currentItem.note}
           </div>
         )}
@@ -216,18 +216,18 @@ export default function Phase3VariationPractice({
 
       {/* Score Box */}
       {score !== null && (
-        <div className="my-4 p-4 bg-slate-900/60 rounded-2xl border border-slate-800 shadow-inner flex justify-between items-center px-5">
+        <div className="my-4 flex items-center justify-between rounded-2xl border-2 border-slate-100 bg-white px-5 p-4 shadow-sm">
           <div className="text-left">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               Phản xạ biến thể
             </p>
-            <p className="text-xs font-bold text-white mt-0.5">
+            <p className="mt-0.5 text-xs font-bold text-slate-800">
               {score >= 80 ? "🎯 Phát âm chuẩn xác!" : "⚠️ Cần chuẩn xác hơn"}
             </p>
           </div>
           <div
             className={`text-3xl font-black ${
-              score >= 80 ? "text-emerald-400" : "text-amber-400"
+              score >= 80 ? "text-emerald-600" : "text-amber-600"
             }`}
           >
             {score}%
@@ -241,10 +241,10 @@ export default function Phase3VariationPractice({
           <button
             onClick={startRecording}
             disabled={isRecording}
-            className={`w-full py-4 text-white font-bold text-sm rounded-2xl border transition-all flex items-center justify-center gap-2 shadow-xl ${
+            className={`flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 px-4 py-4 text-sm font-bold text-white shadow-sm transition-all duration-150 active:translate-y-1 active:border-b-0 ${
               isRecording
-                ? "bg-rose-600 border-rose-500 animate-pulse"
-                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 border-purple-500 shadow-purple-600/30"
+                ? "border-rose-700 bg-rose-500 animate-pulse"
+                : "border-emerald-700 bg-emerald-500 hover:bg-emerald-600"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <Mic className="w-4 h-4" />
@@ -255,9 +255,9 @@ export default function Phase3VariationPractice({
             <button
               onClick={startRecording}
               disabled={isRecording}
-              className={`flex-1 py-3.5 border border-slate-700 bg-slate-900 text-slate-200 font-bold text-xs rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-2xl border-2 border-b-4 border-slate-200 bg-white py-3.5 text-xs font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2 ${
                 isRecording
-                  ? "bg-rose-600 text-white border-rose-500 animate-pulse"
+                  ? "border-rose-700 bg-rose-500 text-white animate-pulse"
                   : ""
               }`}
             >
@@ -267,7 +267,7 @@ export default function Phase3VariationPractice({
 
             <button
               onClick={handleNextVariation}
-              className="flex-1 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-bold text-xs rounded-2xl border border-purple-500 transition-all shadow-xl flex items-center justify-center gap-1.5"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 py-3.5 text-xs font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0"
             >
               {currentIndex < variations.length - 1 ? (
                 <>

@@ -136,11 +136,10 @@ export default function ReviewCollocation() {
 
   if (loading) {
     return (
-      <div className="relative min-h-screen flex items-center justify-center bg-slate-950 px-4 text-slate-300 overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="relative rounded-3xl border border-slate-800 bg-slate-900/60 p-8 text-center shadow-2xl backdrop-blur-xl flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500/20 border-t-indigo-500" />
-          <p className="text-slate-200 font-bold text-sm tracking-wide">
+      <div className="flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-4 text-slate-600">
+        <div className="relative flex flex-col items-center gap-4 rounded-3xl border-2 border-slate-100 bg-white p-8 text-center shadow-sm">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-100 border-t-emerald-500" />
+          <p className="text-sm font-bold tracking-wide text-slate-700">
             Đang tải không gian luyện tập...
           </p>
         </div>
@@ -150,15 +149,14 @@ export default function ReviewCollocation() {
 
   if (error || !collocation) {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center bg-slate-950 gap-4 p-4 overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-rose-600/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="relative bg-slate-900/60 border border-rose-500/30 p-8 rounded-3xl text-center max-w-sm w-full shadow-2xl backdrop-blur-xl">
-          <p className="text-rose-400 font-bold text-base mb-6">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 overflow-hidden bg-slate-50 p-4">
+        <div className="relative w-full max-w-sm rounded-3xl border-2 border-rose-200 bg-white p-8 text-center shadow-sm">
+          <p className="mb-6 text-base font-bold text-rose-700">
             {error || "Không tìm thấy dữ liệu bài học"}
           </p>
           <button
             onClick={() => navigate("/vocab")}
-            className="w-full py-3 px-4 text-sm font-bold bg-slate-800 text-slate-200 rounded-2xl border border-slate-700 hover:bg-slate-700 hover:text-white transition-all flex items-center justify-center gap-2 shadow-lg"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
           >
             <Home className="w-4 h-4" />
             Quay lại
@@ -171,61 +169,58 @@ export default function ReviewCollocation() {
   const isActiveMode = currentStep >= 1;
 
   return (
-    <div className="relative min-h-screen bg-slate-950 py-8 px-4 text-slate-100 overflow-hidden">
-      {/* Hiệu ứng ánh sáng nền Ambient Glow */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[400px] bg-indigo-600/15 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-[500px] h-[350px] bg-sky-600/10 rounded-full blur-[130px] pointer-events-none" />
-
+    <div className="min-h-screen overflow-hidden bg-slate-50 px-4 py-8 text-slate-800">
       {/* Top Header Bar */}
-      <header className="max-w-5xl mx-auto mb-8 bg-slate-900/60 border border-slate-800/80 px-6 py-4 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-4 relative z-10">
+      <header className="relative z-10 mx-auto mb-8 flex max-w-5xl flex-wrap items-center justify-between gap-4 rounded-3xl border-2 border-slate-100 bg-white px-5 py-4 shadow-sm sm:px-6">
         <button
+          type="button"
           onClick={() => navigate("/vocab")}
-          className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-300 bg-slate-800/60 border border-slate-700/60 rounded-2xl hover:bg-slate-800 hover:text-white transition"
+          className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
         >
-          <ArrowLeft className="w-4 h-4 text-slate-400" />
+          <ArrowLeft className="h-4 w-4 text-slate-500" />
           Quay lại
         </button>
 
         {/* Phase Progress Segmented Bar */}
         <div className="flex-1 max-w-md mx-2 flex items-center gap-3">
-          <div className="flex-1 grid grid-cols-3 gap-2 bg-slate-950/60 p-2 rounded-2xl border border-slate-800">
+          <div className="grid flex-1 grid-cols-3 gap-2 rounded-2xl border-2 border-slate-100 bg-slate-50 p-2">
             {[1, 2, 3].map((phase) => (
               <div
                 key={phase}
                 className={`h-2.5 rounded-xl transition-all duration-300 ${
                   currentPhase === phase
-                    ? "bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.5)]"
+                    ? "bg-sky-400"
                     : currentPhase > phase
                     ? "bg-emerald-500"
-                    : "bg-slate-800"
+                    : "bg-slate-200"
                 }`}
               />
             ))}
           </div>
-          <span className="text-xs font-bold text-slate-400 shrink-0">
-            Phase <strong className="text-white">{currentPhase}</strong>/3
+          <span className="shrink-0 text-xs font-bold text-slate-500">
+            Phase <strong className="text-slate-800">{currentPhase}</strong>/3
           </span>
         </div>
 
         {/* Mode & Streak Badge */}
         <div className="flex items-center gap-3">
           {isActiveMode && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold text-xs shrink-0">
-              <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-extrabold text-amber-700">
+              <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
               SRS Step {currentStep}
             </span>
           )}
-          <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-2xl text-amber-400 font-bold text-xs shadow-sm shrink-0">
-            <Flame className="w-4 h-4 fill-amber-400 text-amber-400 animate-bounce" />
+          <div className="flex shrink-0 items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3.5 py-1.5 text-xs font-extrabold text-orange-600 shadow-sm">
+            <Flame className="h-4 w-4 animate-bounce fill-orange-500 text-orange-500" />
             <span>5 Ngày Streak</span>
           </div>
         </div>
       </header>
 
       {/* Main Content Layout Grid */}
-      <main className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative z-10">
+      <main className="relative z-10 mx-auto grid max-w-5xl grid-cols-1 items-start gap-6 lg:grid-cols-12">
         {/* CỘT TRÁI: BÀI LUYỆN TẬP CHÍNH */}
-        <div className="lg:col-span-8 w-full">
+        <div className="w-full lg:col-span-8">
           <div className="w-full transition-all duration-300">
             {!isActiveMode ? (
               <>
@@ -274,17 +269,17 @@ export default function ReviewCollocation() {
         </div>
 
         {/* CỘT PHẢI: SIDEBAR (STICKY) */}
-        <div className="lg:col-span-4 space-y-4 w-full lg:sticky lg:top-6">
+        <div className="w-full space-y-4 lg:sticky lg:top-6 lg:col-span-4">
           {/* Card 1: Mascot Assistant */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-4 shadow-xl backdrop-blur-xl flex items-start gap-3.5">
-            <div className="w-10 h-10 bg-gradient-to-tr from-sky-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shrink-0 border border-sky-400/30 shadow-md">
-              <Bot className="w-5 h-5" />
+          <div className="flex items-start gap-3.5 rounded-3xl border-2 border-slate-100 bg-white p-4 shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-600">
+              <Bot className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-sky-400 font-bold text-[11px] uppercase tracking-wider">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-sky-700">
                 <Sparkles className="w-3.5 h-3.5" /> Trợ lý AI
               </div>
-              <h4 className="font-bold text-white text-xs">
+              <h4 className="text-xs font-bold text-slate-800">
                 {!isActiveMode ? (
                   <>
                     {currentPhase === 1 && "Luyện phát âm chuẩn nhịp"}
@@ -299,7 +294,7 @@ export default function ReviewCollocation() {
                   </>
                 )}
               </h4>
-              <p className="text-xs text-slate-400 leading-relaxed pt-0.5">
+              <p className="pt-0.5 text-xs leading-relaxed text-slate-500">
                 {!isActiveMode ? (
                   <>
                     {currentPhase === 1 && "Nhại giọng bản xứ để tăng phản xạ ghi nhớ."}
@@ -318,13 +313,13 @@ export default function ReviewCollocation() {
           </div>
 
           {/* Card 2: Academic IELTS Tip Widget */}
-          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-4 text-white shadow-xl border border-purple-500/30 space-y-1.5">
-            <div className="flex items-center gap-1.5 text-amber-300 font-bold text-[11px] tracking-wider uppercase">
-              <Lightbulb className="w-4 h-4 fill-amber-300" /> IELTS Tip
+          <div className="space-y-1.5 rounded-3xl border-2 border-amber-200 bg-amber-50 p-4 shadow-sm">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-800">
+              <Lightbulb className="h-4 w-4 fill-amber-400 text-amber-600" /> IELTS Tip
             </div>
-            <p className="text-xs text-purple-100 font-medium leading-relaxed">
+            <p className="text-xs font-medium leading-relaxed text-slate-600">
               Dùng cụm{" "}
-              <strong className="text-amber-300 underline font-bold">
+              <strong className="font-bold text-amber-800 underline">
                 {collocation.phrase}
               </strong>{" "}
               sẽ giúp tăng điểm Lexical Resource rõ rệt!
@@ -332,21 +327,21 @@ export default function ReviewCollocation() {
           </div>
 
           {/* Card 3: Phase Overview Badge */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-4 shadow-xl backdrop-blur-xl flex items-center justify-between">
+          <div className="flex items-center justify-between rounded-3xl border-2 border-slate-100 bg-white p-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-                <Trophy className="w-4 h-4" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 font-bold text-amber-700">
+                <Trophy className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                   Mục tiêu
                 </p>
-                <p className="text-xs font-bold text-white mt-0.5">
+                <p className="mt-0.5 text-xs font-bold text-slate-800">
                   {isActiveMode ? "Active Recall" : "Passive Drill"}
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl">
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-extrabold text-amber-700">
               +15 XP
             </span>
           </div>
@@ -355,22 +350,22 @@ export default function ReviewCollocation() {
 
       {/* Overlay Chúc mừng hoàn thành */}
       {isCompletedAll && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-          <div className="bg-slate-900 rounded-[32px] p-8 max-w-sm w-full text-center shadow-2xl border border-emerald-500/30 animate-in zoom-in-95 duration-300 space-y-4">
-            <div className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm fade-in duration-300">
+          <div className="w-full max-w-sm space-y-4 rounded-3xl border-2 border-emerald-100 bg-white p-8 text-center shadow-xl animate-in zoom-in-95 duration-300">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-emerald-200 bg-emerald-50 text-emerald-600">
               <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h3 className="text-2xl font-black text-white flex items-center justify-center gap-2 tracking-tight">
-              Xuất sắc! <PartyPopper className="w-6 h-6 text-purple-400" />
+            <h3 className="flex items-center justify-center gap-2 text-2xl font-extrabold tracking-tight text-slate-800">
+              Xuất sắc! <PartyPopper className="h-6 w-6 text-amber-500" />
             </h3>
-            <p className="text-slate-300 text-sm font-medium leading-relaxed">
+            <p className="text-sm font-medium leading-relaxed text-slate-600">
               Bạn đã hoàn thành trọn vẹn cả 3 Phase cho cụm từ{" "}
-              <span className="font-bold text-purple-400 underline">
+              <span className="font-bold text-emerald-700 underline">
                 &ldquo;{collocation.phrase}&rdquo;
               </span>
             </p>
-            <div className="pt-3 border-t border-slate-800">
-              <p className="text-xs font-semibold text-slate-400">
+            <div className="border-t-2 border-slate-100 pt-3">
+              <p className="text-xs font-semibold text-slate-500">
                 🚀 Đang chuyển hướng về trang danh sách...
               </p>
             </div>

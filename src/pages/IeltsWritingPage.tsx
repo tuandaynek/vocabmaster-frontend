@@ -144,44 +144,47 @@ export default function IeltsWritingPage() {
 
   // Màn hình làm bài (Workspace)
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-slate-950 text-slate-100">
-      <header className="z-10 shrink-0 border-b border-slate-800 bg-slate-900/60 shadow-xl backdrop-blur-xl">
+    <div className="flex h-screen flex-col overflow-hidden bg-slate-50 text-slate-800">
+      <header className="z-10 shrink-0 border-b-2 border-slate-100 bg-white shadow-sm">
         <div className="flex h-16 items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={() => navigate("/ielts")}
-              className="rounded-2xl p-2.5 text-slate-400 transition hover:bg-slate-800 hover:text-white border border-slate-800"
+              className="rounded-2xl border-2 border-b-4 border-slate-200 bg-white p-2.5 text-slate-600 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
               aria-label="Quay về"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="hidden sm:block">
-              <p className="text-xs font-bold uppercase tracking-widest text-indigo-400">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-700">
                 IELTS Prep Workspace
               </p>
-              <h1 className="font-black text-white text-base">Writing Task 2 Studio</h1>
+              <h1 className="text-base font-extrabold text-slate-800">Writing Task 2 Studio</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <div
               className={`hidden items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold sm:flex border ${
                 secondsLeft < 300
-                  ? "bg-rose-500/10 border-rose-500/20 text-rose-400 animate-pulse"
-                  : "bg-slate-900 border-slate-800 text-slate-300"
+                  ? "border-rose-200 bg-rose-50 text-rose-700 animate-pulse"
+                  : "border-amber-200 bg-amber-50 text-amber-800"
               }`}
             >
               <Clock3 className="h-4 w-4" /> {formatTime(secondsLeft)}
             </div>
             <button
+              type="button"
               onClick={() => setTimerRunning((value) => !value)}
-              className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition"
+              className="rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
             >
               {timerRunning ? "Pause" : "Start timer"}
             </button>
             <button
+              type="button"
               onClick={() => void requestEvaluation()}
               disabled={loading !== null}
-              className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 hover:opacity-90 disabled:opacity-60 transition"
+              className="flex items-center gap-2 rounded-2xl border-b-4 border-emerald-700 bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-150 hover:bg-emerald-600 active:translate-y-1 active:border-b-0 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Send className="h-4 w-4" />
               <span className="hidden sm:inline">Nộp bài & Chấm điểm</span>
@@ -193,7 +196,7 @@ export default function IeltsWritingPage() {
 
       <div className="flex min-h-0 flex-1">
         {leftVisible && (
-          <aside className="flex w-full shrink-0 flex-col overflow-hidden border-r border-slate-800 bg-slate-900/60 p-4 md:w-[56%] lg:w-[56%] backdrop-blur-xl">
+          <aside className="flex w-full shrink-0 flex-col overflow-hidden border-r-2 border-slate-100 bg-slate-50 p-4 md:w-[56%] lg:w-[56%]">
             <WritingTutorChat
               questionText={questionText}
               onQuestionChange={setQuestionText}
@@ -201,35 +204,37 @@ export default function IeltsWritingPage() {
               onTargetBandChange={setTargetBand}
             />
             <button
+              type="button"
               onClick={() => setLeftVisible(false)}
-              className="mt-3 flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 px-3.5 py-2 text-xs font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition"
+              className="mt-3 flex shrink-0 items-center justify-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
             >
               <PanelLeftClose className="h-4 w-4" /> Ẩn Tutor panel
             </button>
           </aside>
         )}
 
-        <main className="flex min-w-0 flex-1 flex-col bg-slate-950">
+        <main className="flex min-w-0 flex-1 flex-col bg-slate-50">
           {!leftVisible && (
             <button
+              type="button"
               onClick={() => setLeftVisible(true)}
-              className="m-3 flex w-fit items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 px-3.5 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition shadow-md"
+              className="m-3 flex w-fit items-center gap-2 rounded-2xl border-2 border-b-4 border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all duration-150 hover:bg-slate-100 active:translate-y-1 active:border-b-2"
             >
-              <PanelLeftOpen className="h-4 w-4 text-indigo-400" /> Hiện Counselor panel
+              <PanelLeftOpen className="h-4 w-4 text-emerald-700" /> Hiện Counselor panel
             </button>
           )}
-          <div className="flex items-center justify-between border-b border-slate-800 px-6 py-3.5 bg-slate-900/40">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
-              <Target className="h-4 w-4 text-indigo-400" /> Your essay
+          <div className="flex items-center justify-between border-b-2 border-slate-100 bg-white px-6 py-3.5">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+              <Target className="h-4 w-4 text-emerald-700" /> Your essay
             </div>
-            <div className={`text-xs font-bold ${wordCount >= 250 ? "text-emerald-400" : "text-slate-400"}`}>
+            <div className={`text-xs font-bold ${wordCount >= 250 ? "text-emerald-700" : "text-slate-500"}`}>
               {wordCount} / 250 words
             </div>
           </div>
           <div className="relative flex min-h-0 flex-1 flex-col p-6">
-            <div className="absolute left-6 right-6 top-2 h-1 overflow-hidden rounded-full bg-slate-800">
+            <div className="absolute left-6 right-6 top-2 h-1 overflow-hidden rounded-full bg-slate-200">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-300 shadow-sm"
+                className="h-full rounded-full bg-emerald-400 transition-all duration-300 shadow-sm"
                 style={{ width: `${Math.min(progress, 100)}%` }}
               />
             </div>
@@ -238,14 +243,14 @@ export default function IeltsWritingPage() {
               value={userEssay}
               onChange={(event) => setUserEssay(event.target.value)}
               placeholder="Start with a clear introduction that paraphrases the question and presents your position..."
-              className="mt-3 min-h-0 flex-1 resize-none rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 font-sans text-sm leading-8 text-slate-100 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition placeholder:text-slate-600 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] shadow-2xl backdrop-blur-xl"
+              className="mt-3 min-h-0 flex-1 resize-none rounded-3xl border-2 border-slate-100 bg-white p-6 font-sans text-sm leading-8 text-slate-800 outline-none shadow-sm transition placeholder:text-slate-400 focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
               aria-label="Bài viết của bạn"
             />
           </div>
-          <div className="flex shrink-0 items-center justify-between border-t border-slate-800 px-6 py-3.5 text-xs text-slate-400 bg-slate-900/40">
+          <div className="flex shrink-0 items-center justify-between border-t-2 border-slate-100 bg-white px-6 py-3.5 text-xs text-slate-500">
             <span className="flex items-center gap-2 font-medium">
               <CheckCircle2
-                className={`h-4 w-4 ${draftSaved ? "text-emerald-400" : "text-slate-600"}`}
+                className={`h-4 w-4 ${draftSaved ? "text-emerald-600" : "text-slate-400"}`}
               />
               {draftSaved ? "Draft auto-saved" : "Saving draft..."}
             </span>
