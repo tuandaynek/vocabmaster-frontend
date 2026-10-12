@@ -23,6 +23,13 @@ import ProfilePage from "./pages/Profile";
 import WallOfLovePage from './pages/WallOfLovePage'
 import IeltsHubPage from "./features/website/components/IeltsHubPage";
 import VocabHubPage from "./features/website/components/VocabHubPage";
+import GrammarHubPage from "./pages/GrammarHubPage";
+
+import SentencePuzzleGame from "./features/grammar/components/screens/SentencePuzzleGame";
+import SpeedGrammarQuiz from "./features/grammar/components/screens/SpeedGrammarQuiz";
+import ErrorSpotterGame from "./features/grammar/components/screens/ErrorSpotterGame";
+import SentenceTransformerGame from "./features/grammar/components/screens/SentenceTransformerGame"
+import ContextMatchGame from "./features/grammar/components/screens/ContextMatchGame"
 
 // Protected Route Component
 import ProtectedRoute from "./features/auth/components/ProtectedRoute";
@@ -94,6 +101,13 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/ielts" element={<IeltsHubPage/>}/>
               <Route path="/vocab" element={<VocabHubPage/>}/>
+
+              <Route path="/grammar" element={<GrammarHubPage/>}/>
+              <Route path="/grammar/puzzle" element={<SentencePuzzleGame/>}/>
+              <Route path="/grammar/speed" element={<SpeedGrammarQuiz/>}/>
+              <Route path="/grammar/error" element={<ErrorSpotterGame/>}/>
+              <Route path="/grammar/transformer" element={<SentenceTransformerGame/>}/>
+              <Route path="/grammar/context" element={<ContextMatchGame/>}/>
 
               {/* Vocabulary module */}
               <Route path="/vocab-extractor" element={<VocabExtractorPage />} />
