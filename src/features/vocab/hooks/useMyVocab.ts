@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { vocabApi } from "../api/vocabApi";
 import type { UserVocabularyItem } from "../types";
-import { type FilterKey, getStatusBucket } from "../utils/vocabUtils";
+import {
+  type FilterKey,
+  getStatusBucket,
+  getVocabErrorMessage,
+} from "../utils/vocabUtils";
 
 export function useMyVocab() {
   const [items, setItems] = useState<UserVocabularyItem[]>([]);
@@ -11,21 +15,27 @@ export function useMyVocab() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const fetchItems = async () => {
-    try {
-      setLoading(true);
-      const res = await vocabApi.getUserList();
-      setItems(res?.data ?? []);
-    } catch (error: any) {
-      console.error("Failed to load user vocab list:", error);
-      toast.error(error?.response?.data?.message || "Không thể tải kho từ cá nhân");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    void fetchItems();
+    let active = true;
+    void vocabApi
+      .getUserList()
+      .then((response) => {
+        if (active) setItems(response?.data ?? []);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          toast.error(
+            getVocabErrorMessage(error, "Không thể tải kho từ cá nhân"),
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const filteredItems = useMemo(() => {
@@ -50,9 +60,8 @@ export function useMyVocab() {
       await vocabApi.deleteUserVocabulary(id);
       toast.success("Đã xoá khỏi kho từ cá nhân");
       setItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (error: any) {
-      console.error("Delete user vocab failed:", error);
-      toast.error(error?.response?.data?.message || "Không thể xoá từ này");
+    } catch (error: unknown) {
+      toast.error(getVocabErrorMessage(error, "Không thể xoá từ này"));
     } finally {
       setDeletingId(null);
     }

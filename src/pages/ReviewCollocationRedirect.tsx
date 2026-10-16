@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { collocationApi } from "@/features/collocations/api/collocationApi";
 import { toast } from "sonner";
 import { CheckCircle2, Home, BookOpen, Sparkles } from "lucide-react";
+import { getErrorMessage } from "@/features/collocations/utils/errorMessage";
 
 export default function ReviewCollocationRedirect() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function ReviewCollocationRedirect() {
         );
 
         if (dueItem?.collocation_id) {
-          const itemStep = (dueItem as any).step ?? (dueItem as any).user_step ?? 0;
+          const itemStep = dueItem.step ?? dueItem.user_step ?? 0;
           navigate(`/collocation/review/${dueItem.collocation_id}`, {
             replace: true,
             state: { step: itemStep },
@@ -37,7 +38,7 @@ export default function ReviewCollocationRedirect() {
         );
 
         if (learningItem?.collocation_id) {
-          const itemStep = (learningItem as any).step ?? (learningItem as any).user_step ?? 0;
+          const itemStep = learningItem.step ?? learningItem.user_step ?? 0;
           navigate(`/collocation/review/${learningItem.collocation_id}`, {
             replace: true,
             state: { step: itemStep },
@@ -57,9 +58,8 @@ export default function ReviewCollocationRedirect() {
 
         // Nếu tất cả đều không có -> bật trạng thái No Data / Hoàn thành bài học
         setNoData(true);
-      } catch (error) {
-        console.error("Redirect error:", error);
-        toast.error("Có lỗi xảy ra khi tìm bài học");
+      } catch (error: unknown) {
+        toast.error(getErrorMessage(error, "Có lỗi xảy ra khi tìm bài học"));
         setNoData(true);
       } finally {
         setLoading(false);

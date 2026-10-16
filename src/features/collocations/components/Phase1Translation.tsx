@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2, ArrowRight, HelpCircle, Loader2 } from "lucide-react";
 import { collocationApi } from "@/features/collocations/api/collocationApi";
-import type { Phase1DataResponse, CollocationReviewData } from "../types";
+import type {
+  Phase1DataResponse,
+  Phase1TranslationApiResponse,
+  CollocationReviewData,
+} from "../types";
+import { getErrorMessage } from "../utils/errorMessage";
 
 interface Props {
   collocation: CollocationReviewData;
@@ -14,19 +19,22 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
   const [input, setInput] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTranslationData = async () => {
-      const targetId = collocation.collocationId || (collocation as any).id;
+      const targetId = collocation.collocationId || collocation.id;
       if (!targetId) return;
 
       try {
         setLoading(true);
+        setError(null);
         const res = await collocationApi.getPhase1Translation(targetId);
-        const raw = (res as any)?.data ?? res;
+        const raw: Phase1TranslationApiResponse = res.data;
 
-        // Map dữ liệu từ snake_case sang camelCase
         const normalizedData: Phase1DataResponse = {
+          collocationId: collocation.collocationId,
+          phrase: collocation.phrase,
           viSentence: raw?.viSentence || raw?.vi_sentence || "",
           acceptedAnswer: raw?.acceptedAnswer || raw?.accepted_answer || "",
           suggestedVocab: (
@@ -34,7 +42,7 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
             raw?.suggest_vocab ||
             raw?.suggested_vocab ||
             []
-          ).map((v: any) => ({
+          ).map((v) => ({
             word: v.word,
             meaning: v.meaning,
           })),
@@ -42,7 +50,7 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
 
         setPhaseData(normalizedData);
       } catch (err) {
-        console.error("Lỗi khi tải dữ liệu Phase 1 Translation:", err);
+        setError(getErrorMessage(err, "Không thể tải dữ liệu bài dịch."));
       } finally {
         setLoading(false);
       }
@@ -81,6 +89,12 @@ export default function Phase1Translation({ collocation, onNext }: Props) {
           {showHint ? "Ẩn gợi ý" : "Gợi ý từ vựng"}
         </button>
       </div>
+
+      {error && (
+        <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-700">
+          {error}
+        </p>
+      )}
 
       {/* Câu Tiếng Việt từ AI/Cache */}
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">

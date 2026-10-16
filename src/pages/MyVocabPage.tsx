@@ -4,7 +4,9 @@ import { ArrowLeft, ArrowRight, BookOpenText, BrainCircuit, Loader2, Search } fr
 import { useMyVocab } from "@/features/vocab/hooks/useMyVocab";
 import { VocabItemCard } from "@/features/vocab/components/VocabItemCard";
 import { FILTER_OPTIONS } from "@/features/vocab/utils/vocabUtils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+const ITEMS_PER_PAGE = 12;
 
 export default function MyVocabPage() {
   const navigate = useNavigate();
@@ -21,14 +23,15 @@ export default function MyVocabPage() {
     stats,
   } = useMyVocab();
 
-  // State Phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 12; // Số lượng vocab hiển thị trên 1 trang
-
-  // Reset về trang 1 khi đổi bộ lọc hoặc tìm kiếm
-  useEffect(() => {
+  const handleFilterChange = (nextFilter: typeof filter) => {
+    setFilter(nextFilter);
     setCurrentPage(1);
-  }, [filter, search]);
+  };
+  const handleSearchChange = (nextSearch: string) => {
+    setSearch(nextSearch);
+    setCurrentPage(1);
+  };
 
   // Tính toán items cho trang hiện tại
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -109,7 +112,7 @@ export default function MyVocabPage() {
               return (
                 <button
                   key={option.key}
-                  onClick={() => setFilter(option.key)}
+                  onClick={() => handleFilterChange(option.key)}
                   className={`rounded-2xl border-b-4 px-5 py-2.5 text-sm font-bold transition-all duration-150 active:translate-y-1 active:border-b-0 ${
                     active
                       ? "border-amber-600 bg-amber-400 text-amber-950 shadow-sm hover:bg-amber-500"
@@ -127,7 +130,7 @@ export default function MyVocabPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Tìm kiếm từ hoặc nghĩa..."
               className="w-full border-0 bg-transparent text-slate-800 outline-none placeholder:text-slate-400"
             />

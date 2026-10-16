@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import {  useRating } from "@/contexts/RatingContext";
+import { useRating } from "@/contexts/useRating";
 import { toast } from "sonner";
 import {
   ArrowLeft,
-  CheckCircle2,
   Home,
-  PartyPopper,
   Flame,
-  Sparkles,
-  Bot,
-  Lightbulb,
-  Trophy,
   Zap,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { collocationApi } from "@/features/collocations/api/collocationApi";
 import type { CollocationReviewData } from "@/features/collocations/types";
+import { getErrorMessage } from "@/features/collocations/utils/errorMessage";
 
 // Passive Drill Components (Step 0)
 import Phase1Shadowing from "@/features/collocations/components/Phase1Shadowing";
@@ -27,6 +22,8 @@ import Phase3VariationPractice from "@/features/collocations/components/Phase3Va
 import Phase1Translation from "@/features/collocations/components/Phase1Translation";
 import Phase2FreeSentence from "@/features/collocations/components/Phase2FreeSentence";
 import Phase3ShortStory from "@/features/collocations/components/Phase3ShortStory";
+import ReviewCollocationSidebar from "@/features/collocations/components/ReviewCollocationSidebar";
+import ReviewCompletionOverlay from "@/features/collocations/components/ReviewCompletionOverlay";
 
 export default function ReviewCollocation() {
   const { collocationId } = useParams<{ collocationId: string }>();
@@ -55,10 +52,8 @@ export default function ReviewCollocation() {
         setError(null);
         const data = await collocationApi.getReview(collocationId);
         setCollocation(data);
-      } catch (err: any) {
-        console.error("Failed to fetch collocation review:", err);
-        const errorMsg =
-          err?.data?.message || err?.message || "Không thể tải dữ liệu bài học";
+      } catch (err: unknown) {
+        const errorMsg = getErrorMessage(err, "Không thể tải dữ liệu bài học");
         setError(errorMsg);
         toast.error(errorMsg);
       } finally {
@@ -72,22 +67,18 @@ export default function ReviewCollocation() {
   // Xác định step chính xác: ưu tiên Router State, nếu không có thì lấy từ API data
   const currentStep =
     initialStepFromState ??
-    (collocation as any)?.step ??
-    (collocation as any)?.user_step ??
+    collocation?.step ??
+    collocation?.user_step ??
     0;
 
   const triggerLightConfetti = () => {
-    try {
-      confetti({
-        particleCount: 60,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ["#8b5cf6", "#ec4899", "#3b82f6", "#10b981"],
-        disableForReducedMotion: true,
-      });
-    } catch {
-      // Bỏ qua nếu chưa cài package canvas-confetti
-    }
+    confetti({
+      particleCount: 60,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#8b5cf6", "#ec4899", "#3b82f6", "#10b981"],
+      disableForReducedMotion: true,
+    });
   };
 
   const handlePhaseComplete = async () => {
@@ -100,7 +91,7 @@ export default function ReviewCollocation() {
     } else if (currentPhase === 3) {
       if (!collocation) return;
 
-      const targetId = collocation.collocationId || collocation.id;
+      const targetId = collocation.collocationId;
 
       try {
         await collocationApi.completeReview(targetId, "good");
@@ -127,9 +118,8 @@ export default function ReviewCollocation() {
           }
         });
 
-      } catch (err) {
-        console.error("Lỗi khi lưu tiến trình:", err);
-        toast.error("Không thể lưu tiến trình bài học");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Không thể lưu tiến trình bài học"));
       }
     }
   };
@@ -268,109 +258,16 @@ export default function ReviewCollocation() {
           </div>
         </div>
 
-        {/* CỘT PHẢI: SIDEBAR (STICKY) */}
-        <div className="w-full space-y-4 lg:sticky lg:top-6 lg:col-span-4">
-          {/* Card 1: Mascot Assistant */}
-          <div className="flex items-start gap-3.5 rounded-3xl border-2 border-slate-100 bg-white p-4 shadow-sm">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-600">
-              <Bot className="h-5 w-5" />
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-sky-700">
-                <Sparkles className="w-3.5 h-3.5" /> Trợ lý AI
-              </div>
-              <h4 className="text-xs font-bold text-slate-800">
-                {!isActiveMode ? (
-                  <>
-                    {currentPhase === 1 && "Luyện phát âm chuẩn nhịp"}
-                    {currentPhase === 2 && "Luyện đọc tròn vành rõ chữ"}
-                    {currentPhase === 3 && "Phản xạ câu biến thể"}
-                  </>
-                ) : (
-                  <>
-                    {currentPhase === 1 && "Dịch thuật Active Recall"}
-                    {currentPhase === 2 && "Tự đặt câu tự do"}
-                    {currentPhase === 3 && "Sáng tác mẩu chuyện"}
-                  </>
-                )}
-              </h4>
-              <p className="pt-0.5 text-xs leading-relaxed text-slate-500">
-                {!isActiveMode ? (
-                  <>
-                    {currentPhase === 1 && "Nhại giọng bản xứ để tăng phản xạ ghi nhớ."}
-                    {currentPhase === 2 && "Đặt cụm từ vào ngữ cảnh câu hoàn chỉnh."}
-                    {currentPhase === 3 && "Linh hoạt thay đổi cấu trúc ngữ pháp."}
-                  </>
-                ) : (
-                  <>
-                    {currentPhase === 1 && "Kích hoạt phản xạ xuôi/ngược bằng dịch trực tiếp."}
-                    {currentPhase === 2 && "Sáng tạo câu riêng với AI chấm điểm trực tiếp."}
-                    {currentPhase === 3 && "Kết nối ngữ cảnh đoạn văn ở mức nâng cao."}
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-
-          {/* Card 2: Academic IELTS Tip Widget */}
-          <div className="space-y-1.5 rounded-3xl border-2 border-amber-200 bg-amber-50 p-4 shadow-sm">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-800">
-              <Lightbulb className="h-4 w-4 fill-amber-400 text-amber-600" /> IELTS Tip
-            </div>
-            <p className="text-xs font-medium leading-relaxed text-slate-600">
-              Dùng cụm{" "}
-              <strong className="font-bold text-amber-800 underline">
-                {collocation.phrase}
-              </strong>{" "}
-              sẽ giúp tăng điểm Lexical Resource rõ rệt!
-            </p>
-          </div>
-
-          {/* Card 3: Phase Overview Badge */}
-          <div className="flex items-center justify-between rounded-3xl border-2 border-slate-100 bg-white p-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 font-bold text-amber-700">
-                <Trophy className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  Mục tiêu
-                </p>
-                <p className="mt-0.5 text-xs font-bold text-slate-800">
-                  {isActiveMode ? "Active Recall" : "Passive Drill"}
-                </p>
-              </div>
-            </div>
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-extrabold text-amber-700">
-              +15 XP
-            </span>
-          </div>
-        </div>
+        <ReviewCollocationSidebar
+          currentPhase={currentPhase}
+          isActiveMode={isActiveMode}
+          phrase={collocation.phrase}
+        />
       </main>
 
       {/* Overlay Chúc mừng hoàn thành */}
       {isCompletedAll && (
-        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm fade-in duration-300">
-          <div className="w-full max-w-sm space-y-4 rounded-3xl border-2 border-emerald-100 bg-white p-8 text-center shadow-xl animate-in zoom-in-95 duration-300">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-emerald-200 bg-emerald-50 text-emerald-600">
-              <CheckCircle2 className="w-10 h-10" />
-            </div>
-            <h3 className="flex items-center justify-center gap-2 text-2xl font-extrabold tracking-tight text-slate-800">
-              Xuất sắc! <PartyPopper className="h-6 w-6 text-amber-500" />
-            </h3>
-            <p className="text-sm font-medium leading-relaxed text-slate-600">
-              Bạn đã hoàn thành trọn vẹn cả 3 Phase cho cụm từ{" "}
-              <span className="font-bold text-emerald-700 underline">
-                &ldquo;{collocation.phrase}&rdquo;
-              </span>
-            </p>
-            <div className="border-t-2 border-slate-100 pt-3">
-              <p className="text-xs font-semibold text-slate-500">
-                🚀 Đang chuyển hướng về trang danh sách...
-              </p>
-            </div>
-          </div>
-        </div>
+        <ReviewCompletionOverlay phrase={collocation.phrase} />
       )}
     </div>
   );

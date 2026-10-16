@@ -1,84 +1,30 @@
 import { useState } from 'react';
 import { Bug, RefreshCw } from 'lucide-react';
-import { useGameSound } from '../shared/useGameSound';
+import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
 import VictoryModal from '../shared/VictoryModal';
 import GameReward from '../shared/GameReward';
+import type { CampaignAnswer, GameStageResult } from '../../types/gameAnalytics';
+import type { ErrorQuestion, ErrorWordOption } from '../../types/grammarData';
+import EmptyGameState from '../shared/EmptyGameState';
 
-interface WordOption {
-  key: 'A' | 'B' | 'C' | 'D';
-  text: string;
-  isError: boolean;
-  correctForm?: string;
+interface ErrorSpotterGameProps {
+  onBack?: () => void;
+  onComplete?: (result: GameStageResult) => void;
+  onAnswer?: (answer: CampaignAnswer) => void;
+  questions?: ErrorQuestion[];
+  stageTitle?: string;
+  stageId?: string;
+  subTopicTitle?: string;
+  initialLives?: number;
 }
 
-interface ErrorQuestion {
-  id: string;
-  sentenceParts: {
-    prefix?: string;
-    optionA: WordOption;
-    mid1?: string;
-    optionB: WordOption;
-    mid2?: string;
-    optionC: WordOption;
-    mid3?: string;
-    optionD: WordOption;
-    suffix?: string;
-  };
-  explanation: string;
-}
-
-const FAKE_ERROR_QUESTIONS: ErrorQuestion[] = [
-  {
-    id: 'err-1',
-    sentenceParts: {
-      prefix: '',
-      optionA: { key: 'A', text: 'Despite of', isError: true, correctForm: 'Despite / In spite of' },
-      mid1: ' the heavy rain, ',
-      optionB: { key: 'B', text: 'they decided', isError: false },
-      mid2: ' to go camping ',
-      optionC: { key: 'C', text: 'with their', isError: false },
-      mid3: ' friends last ',
-      optionD: { key: 'D', text: 'weekend.', isError: false },
-    },
-    explanation: 'Không dùng "Despite of". Chỉ dùng "Despite + N/V-ing" hoặc "In spite of + N/V-ing".'
-  },
-  {
-    id: 'err-2',
-    sentenceParts: {
-      prefix: 'Neither the teacher nor ',
-      optionA: { key: 'A', text: 'his students', isError: false },
-      mid1: ' ',
-      optionB: { key: 'B', text: 'was present', isError: true, correctForm: 'were present' },
-      mid2: ' at the meeting ',
-      optionC: { key: 'C', text: 'when the principal', isError: false },
-      mid3: ' ',
-      optionD: { key: 'D', text: 'arrived.', isError: false },
-    },
-    explanation: 'Cấu trúc "Neither... nor..." động từ chia theo chủ ngữ thứ hai (his students - số nhiều) -> phải dùng "were present".'
-  },
-  {
-    id: 'err-3',
-    sentenceParts: {
-      prefix: 'She is ',
-      optionA: { key: 'A', text: 'one of the most', isError: false },
-      mid1: ' talented ',
-      optionB: { key: 'B', text: 'musician', isError: true, correctForm: 'musicians' },
-      mid2: ' who ',
-      optionC: { key: 'C', text: 'have ever performed', isError: false },
-      mid3: ' on this ',
-      optionD: { key: 'D', text: 'famous stage.', isError: false },
-    },
-    explanation: 'Cấu trúc "One of + the + So sánh nhất + Danh từ số nhiều" -> "musician" phải đổi thành "musicians".'
-  }
-];
-
-export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () => void; onComplete?: () => void }) {
+export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questions = [], stageTitle, stageId = 'error', subTopicTitle = stageTitle ?? 'Ngữ pháp', initialLives = 5 }: ErrorSpotterGameProps) {
   const { playSelect, playCorrect, playIncorrect, playGameOver, playVictory } = useGameSound();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lives, setLives] = useState(5);
+  const [lives, setLives] = useState(initialLives);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
 
@@ -89,16 +35,30 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
   const [isGameOver, setIsGameOver] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
 
-  const currentQ = FAKE_ERROR_QUESTIONS[currentIndex];
+  const currentQ = questions[currentIndex];
+  if (!currentQ) return <EmptyGameState onBack={onBack} />;
   const parts = currentQ.sentenceParts;
 
   const optionsList = [parts.optionA, parts.optionB, parts.optionC, parts.optionD];
   const errorOption = optionsList.find(o => o.isError);
 
-  const handleSelectWord = (option: WordOption) => {
+  const handleSelectWord = (option: ErrorWordOption) => {
     if (status !== 'playing' || isGameOver) return;
     playSelect();
     setSelectedKey(option.key);
+    const sentencePrompt = [
+      parts.prefix, parts.optionA.text, parts.mid1, parts.optionB.text,
+      parts.mid2, parts.optionC.text, parts.mid3, parts.optionD.text, parts.suffix
+    ].filter(Boolean).join('');
+    onAnswer?.({
+      stageId,
+      subTopicTitle,
+      questionId: currentQ.id,
+      prompt: sentencePrompt,
+      correctAnswer: errorOption?.text ?? '',
+      submittedAnswer: option.text,
+      isCorrect: option.isError
+    });
 
     if (option.isError) {
       playCorrect();
@@ -121,7 +81,7 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
 
   const handleNext = () => {
     playSelect();
-    if (currentIndex < FAKE_ERROR_QUESTIONS.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setSelectedKey(null);
       setStatus('playing');
@@ -133,7 +93,7 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
 
   const handleRetryGame = () => {
     playSelect();
-    setLives(5);
+    setLives(initialLives);
     setXp(0);
     setStreak(0);
     setCurrentIndex(0);
@@ -143,7 +103,7 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
     setIsVictory(false);
   };
 
-  const renderWordButton = (option: WordOption) => {
+  const renderWordButton = (option: ErrorWordOption) => {
     const isSelected = selectedKey === option.key;
     let btnClass = "px-2.5 py-1.5 rounded-xl font-bold border-2 border-b-4 transition-all mx-1 cursor-pointer select-none ";
 
@@ -183,9 +143,9 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
           lives={lives}
           xp={xp}
           streak={streak}
-          title="Săn Lỗi Sai (Error Spotter)"
+          title={stageTitle ?? 'Săn Lỗi Sai (Error Spotter)'}
           currentStep={currentIndex + 1}
-          totalSteps={FAKE_ERROR_QUESTIONS.length}
+          totalSteps={questions.length}
         />
 
         {/* --- GAME CARD CHÍNH --- */}
@@ -237,7 +197,7 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
               onClick={handleNext}
               className="w-full md:w-auto px-7 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 font-black rounded-2xl shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
             >
-              Câu tiếp theo 🚀
+              Câu tiếp theo
             </button>
           </div>
         )}
@@ -278,7 +238,7 @@ export default function ErrorSpotterGame({ onBack, onComplete }: { onBack?: () =
       <VictoryModal 
         isOpen={isVictory} 
         xpEarned={xp} 
-        onNext={onComplete || onBack || (() => {})} 
+        onNext={() => onComplete ? onComplete({ xpEarned: xp, livesRemaining: lives }) : onBack?.()} 
         onReplay={handleRetryGame}
       />
     </div>

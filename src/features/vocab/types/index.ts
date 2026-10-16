@@ -1,8 +1,20 @@
 export type FocusMode =
   | "IELTS Academic"
   | "SAT / GMAT"
-  | "Collocations & Phrasal Verbs"
-  | "Prefix & Suffix Deep Dive";
+  | "Collocations & Phrasal Verbs";
+
+export interface WordFamilyItem {
+  word?: string;
+  pos?: string;
+  meaning?: string;
+}
+
+export interface CollocationInfo {
+  phrase?: string;
+  meaning?: string;
+  type?: string;
+  usage_note?: string;
+}
 
 export interface VocabExtractItem {
   word: string;
@@ -25,9 +37,15 @@ export interface VocabSavePayload {
   selectedWords: VocabExtractItem[];
 }
 
+export interface VocabSaveResponse {
+  success: boolean;
+  savedCount: number;
+  message: string;
+}
+
 export interface VocabListItem extends VocabExtractItem {
   selected: boolean;
-  word_family?: Array<{ word?: string; pos?: string; meaning?: string }>;
+  word_family?: WordFamilyItem[];
   prefix_suffix?: Record<string, string>;
   ipa?: string | null;
   pos?: string;
@@ -56,13 +74,8 @@ export interface GlobalWordInfo {
   context_sentence?: string | null;
   context_sentences?: string[];
   prefix_suffix?: Record<string, string>;
-  word_family?: Array<{ word?: string; pos?: string; meaning?: string }>;
-  collocations?: Array<{
-    phrase?: string;
-    meaning?: string;
-    type?: string;
-    usage_note?: string;
-  }>;
+  word_family?: WordFamilyItem[];
+  collocations?: CollocationInfo[];
 }
 
 export interface GlobalDictionaryItem extends GlobalWordInfo {
@@ -90,6 +103,7 @@ export interface UserVocabularyItem {
   step: number;
   interval: number;
   next_review: string;
+  user_id?: string;
   created_at?: string;
   word_id?: string;
   global_words: GlobalWordInfo | null;
@@ -106,6 +120,18 @@ export interface ReviewRequestPayload {
 export interface UserVocabularyListResponse {
   success: boolean;
   data: UserVocabularyItem[];
+}
+
+export interface VocabReviewResponse {
+  success: boolean;
+  data?: UserVocabularyItem;
+  message?: string;
+}
+
+export interface VocabDeleteResponse {
+  success: boolean;
+  data?: { deletedId: string };
+  message?: string;
 }
 
 export interface GlobalDictionaryQueryParams {

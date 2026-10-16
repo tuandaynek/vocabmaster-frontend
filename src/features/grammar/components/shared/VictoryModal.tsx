@@ -1,4 +1,4 @@
-import { Trophy, Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
+import { Trophy, ArrowRight, RotateCcw } from 'lucide-react';
 
 interface VictoryModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ export default function VictoryModal({ isOpen, xpEarned, onNext, onReplay }: Vic
         
         <div className="space-y-2">
           <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-black inline-flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> Hoàn thành xuất sắc
+            Hoàn thành xuất sắc
           </span>
           <h3 id="victory-title" className="text-2xl font-black text-slate-800">Quá Đỉnh, Phá Đảo Chặng! 🎉</h3>
           <p className="text-sm text-slate-600 font-bold">

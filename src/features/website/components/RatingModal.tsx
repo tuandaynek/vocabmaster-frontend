@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Star, X, MessageSquare, Check} from "lucide-react";
+import { Star, X, MessageSquare, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DEFAULT_RATING_TAGS } from "../constants/ratingConstants";
+import type { RatingSubmission } from "../types";
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -8,27 +10,15 @@ interface RatingModalProps {
   title?: string;
   description?: string;
   fastComments?: string[];
-  onSubmitRating: (data: {
-    rating: number;
-    fastComments: string[];
-    comment: string;
-  }) => Promise<void> | void;
+  onSubmitRating: (data: RatingSubmission) => Promise<void> | void;
 }
-
-const DEFAULT_TAGS = [
-  "Rất chính xác",
-  "Tốc độ phản hồi nhanh",
-  "Giao diện trực quan",
-  "Kết quả chưa sát",
-  "Cần cải thiện thêm",
-];
 
 export function RatingModal({
   isOpen,
   onClose,
   title = "Đánh giá trải nghiệm AI",
   description = "Trải nghiệm tính năng này của bạn thế nào?",
-  fastComments = DEFAULT_TAGS,
+  fastComments = DEFAULT_RATING_TAGS,
   onSubmitRating,
 }: RatingModalProps) {
   const [rating, setRating] = useState<number>(0);
@@ -59,8 +49,8 @@ export function RatingModal({
         setComment("");
         onClose();
       }, 1600);
-    } catch (error) {
-      console.error("Lỗi khi gửi đánh giá:", error);
+    } catch {
+      return;
     } finally {
       setIsSubmitting(false);
     }

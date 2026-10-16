@@ -1,9 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Mic, Square, Send, User, Bot, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type {
   AssistantTab,
+  CollocationItem,
   Question,
   EvaluationResponse,
+  IdeaHints,
+  SpeechRecognitionConstructorLike,
+  SpeechRecognitionInstanceLike,
 } from "../types/speaking.types";
 import { AssistantSidebar } from "./AssistantSidebar";
 import { EvaluationModal } from "./EvaluationModal";
@@ -21,13 +26,6 @@ interface Message {
   text: string;
 }
 
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
-
 export function SpeakingWorkspace({
   question,
   targetBand,
@@ -41,16 +39,15 @@ export function SpeakingWorkspace({
   const [isEvalModalOpen, setIsEvalModalOpen] = useState(false);
   const [evalData, setEvalData] = useState<EvaluationResponse | null>(null);
 
-  // State quản lý ghi âm và Speech-to-Text
   const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false); // Trạng thái đang Speech-to-Text
   const [sessionAudioBlobs, setSessionAudioBlobs] = useState<Blob[]>([]);
+  const [hints, setHints] = useState<IdeaHints | null>(null);
+  const [isLoadingHints, setIsLoadingHints] = useState(false);
+  const [hintsRequestVersion, setHintsRequestVersion] = useState(0);
 
-  const transcriptRef = useRef<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const recognitionRef = useRef<any>(null);
-  // Ref để lưu trữ toàn bộ transcript tích lũy trong suốt session, dùng cho evaluation
+  const recognitionRef = useRef<SpeechRecognitionInstanceLike | null>(null);
   const accumulatedTranscriptRef = useRef<string>("");
   const isManuallyStoppedRef = useRef<boolean>(false);
 
@@ -65,39 +62,78 @@ export function SpeakingWorkspace({
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Tự động cuộn xuống tin nhắn mới nhất
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isProcessingStep]);
 
-  // Mock data tạm cho AssistantSidebar
-  const mockHints = {
-    answerStructure: [
-      "State your main opinion directly.",
-      "Provide 1-2 examples from experience.",
-      "Conclude briefly.",
-    ],
-    prompts: [
-      "Why is this topic important to you?",
-      "How has this changed recently?",
-    ],
-  };
+  useEffect(() => {
+    if (activeTab !== "hints" || hints || hintsRequestVersion === 0) return;
 
-  const [collocations, setCollocations] = useState([
-    { phrase: "broaden one's horizons", meaning: "mở rộng tầm mắt/kiến thức" },
-  ]);
+    let isCurrentRequest = true;
+    const loadHints = async () => {
+      try {
+        const result = await speakingApi.getIdeaHints({
+          question: question.text,
+          history: messages.map(({ sender, text }) => ({
+            role: sender,
+            content: text,
+          })),
+        });
+        if (isCurrentRequest) setHints(result);
+      } catch {
+        if (isCurrentRequest) {
+          toast.error("Unable to load idea hints. Please try again.");
+        }
+      } finally {
+        if (isCurrentRequest) setIsLoadingHints(false);
+      }
+    };
+    void loadHints();
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [activeTab, hints, hintsRequestVersion, messages, question.text]);
+
+  useEffect(
+    () => () => {
+      isManuallyStoppedRef.current = true;
+      recognitionRef.current?.stop();
+      const mediaRecorder = mediaRecorderRef.current;
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.onstop = null;
+        mediaRecorder.stop();
+      }
+      mediaRecorder?.stream.getTracks().forEach((track) => track.stop());
+    },
+    [],
+  );
+
+  const [collocations, setCollocations] = useState<CollocationItem[]>([]);
+
+  const handleAssistantTabChange = (tab: AssistantTab) => {
+    setActiveTab(tab);
+    if (tab === "hints" && !hints) {
+      setIsLoadingHints(true);
+      setHintsRequestVersion((version) => version + 1);
+    }
+  };
 
   const handleGetCollocations = async () => {
     if (!phrase.trim()) return;
-    const res = await speakingApi.getCollocations({
-      vietnamesePhrase: phrase.trim(),
-      currentQuestion: question.text,
-      targetBand,
-    });
-    if (res && res.length > 0) {
-      setCollocations((prev) => [...prev, ...res]);
+    try {
+      const result = await speakingApi.getCollocations({
+        vietnamesePhrase: phrase.trim(),
+        currentQuestion: question.text,
+        targetBand,
+      });
+      if (result.length > 0) {
+        setCollocations((previous) => [...previous, ...result]);
+      }
+      setPhrase("");
+    } catch {
+      toast.error("Unable to load collocations. Please try again.");
     }
-    setPhrase("");
   };
 
   // ==========================================
@@ -131,20 +167,22 @@ export function SpeakingWorkspace({
         userResponse: text,
       });
 
-      if (res.needsFollowUp && res.followUpQuestion) {
+      const followUpQuestion = res.followUpQuestion;
+      if (res.needsFollowUp && followUpQuestion) {
         setMessages((prev) => [
           ...prev,
           {
             id: (Date.now() + 1).toString(),
             sender: "examiner",
-            text: res.followUpQuestion,
+            text: followUpQuestion,
           },
         ]);
       }
       setTextInput("");
       setIsProcessingStep(false);
-    } catch (error) {
-      console.error("Error processing chat step:", error);
+    } catch {
+      toast.error("Unable to get a response from the speaking examiner.");
+    } finally {
       setIsProcessingStep(false);
     }
   };
@@ -153,19 +191,20 @@ export function SpeakingWorkspace({
   // HANDLE RECORDING
   // ==========================================
   const startRecording = async () => {
+    let stream: MediaStream | null = null;
     try {
       // Reset toàn bộ state & ref trước khi ghi âm mới
-      transcriptRef.current = "";
       accumulatedTranscriptRef.current = "";
       isManuallyStoppedRef.current = false;
       setTextInput("");
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = activeStream;
       const mimeType = MediaRecorder.isTypeSupported("audio/webm")
         ? "audio/webm"
         : "audio/mp4";
 
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      const mediaRecorder = new MediaRecorder(activeStream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -177,7 +216,9 @@ export function SpeakingWorkspace({
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-        stream.getTracks().forEach((track) => track.stop());
+        activeStream.getTracks().forEach((track) => track.stop());
+        mediaRecorderRef.current = null;
+        recognitionRef.current = null;
 
         // Lấy toàn bộ văn bản đã cộng dồn tích lũy
         const finalTranscript = accumulatedTranscriptRef.current.trim();
@@ -185,8 +226,12 @@ export function SpeakingWorkspace({
       };
 
       // --- CẤU HÌNH WEB SPEECH API ---
+      const speechWindow = window as Window & {
+        SpeechRecognition?: SpeechRecognitionConstructorLike;
+        webkitSpeechRecognition?: SpeechRecognitionConstructorLike;
+      };
       const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
+        speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
 
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
@@ -194,7 +239,7 @@ export function SpeakingWorkspace({
         recognition.interimResults = true;
         recognition.lang = "en-US";
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event) => {
           let interimTranscript = "";
           let finalSegment = "";
 
@@ -216,18 +261,17 @@ export function SpeakingWorkspace({
           const fullLiveText = (
             accumulatedTranscriptRef.current + interimTranscript
           ).trim();
-          transcriptRef.current = fullLiveText;
           setTextInput(fullLiveText);
         };
 
         // TỰ ĐỘNG RESTART NẾU CHƯA BẤM DỪNG THỦ CÔNG
         // Trình duyệt thường tự ngắt SpeechRecognition khi im lặng quá 3-5 giây
         recognition.onend = () => {
-          if (!isManuallyStoppedRef.current && isRecording) {
+          if (!isManuallyStoppedRef.current) {
             try {
-              recognition.start(); // Khởi động lại ngay lập tức
-            } catch (e) {
-              console.log("Re-starting speech recognition...");
+              recognition.start();
+            } catch {
+              recognitionRef.current = null;
             }
           }
         };
@@ -238,8 +282,13 @@ export function SpeakingWorkspace({
 
       mediaRecorder.start();
       setIsRecording(true);
-    } catch (error) {
-      console.error("Mic error:", error);
+    } catch {
+      stream?.getTracks().forEach((track) => track.stop());
+      recognitionRef.current?.stop();
+      mediaRecorderRef.current = null;
+      recognitionRef.current = null;
+      setIsRecording(false);
+      toast.error("Unable to access the microphone. Check your browser permissions.");
     }
   };
 
@@ -262,10 +311,7 @@ export function SpeakingWorkspace({
     setIsRecording(false);
   };
 
-  const handleAudioRecorded = async (
-    audioBlob: Blob,
-    finalTranscript: string,
-  ) => {
+  const handleAudioRecorded = (audioBlob: Blob, finalTranscript: string) => {
     // Đưa file Audio vừa thu vào mảng session audio blobs
     setSessionAudioBlobs((prev) => [...prev, audioBlob]);
 
@@ -275,7 +321,6 @@ export function SpeakingWorkspace({
 
       // Reset lại toàn bộ bộ nhớ tạm
       setTextInput("");
-      transcriptRef.current = "";
       accumulatedTranscriptRef.current = "";
     }
   };
@@ -326,8 +371,9 @@ export function SpeakingWorkspace({
       setEvalData(res);
       setIsEvaluating(false);
       setIsEvalModalOpen(true);
-    } catch (error) {
-      console.error("Lỗi khi chấm điểm session:", error);
+    } catch {
+      toast.error("Unable to evaluate this speaking session. Please try again.");
+    } finally {
       setIsEvaluating(false);
     }
   };
@@ -403,14 +449,6 @@ export function SpeakingWorkspace({
                   </div>
                 ))}
 
-                {/* Trạng thái đang chuyển giọng nói thành text */}
-                {isTranscribing && (
-                  <div className="flex items-center gap-2 text-xs italic text-sky-700">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Converting audio to text...
-                  </div>
-                )}
-
                 {/* Trạng thái Examiner đang phản hồi */}
                 {isProcessingStep && (
                   <div className="flex items-center gap-2 text-xs italic text-slate-500">
@@ -427,7 +465,7 @@ export function SpeakingWorkspace({
                 <button
                   type="button"
                   onClick={handleToggleRecord}
-                  disabled={isTranscribing || isProcessingStep}
+                  disabled={isProcessingStep}
                   className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-b-4 transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
                     isRecording
                       ? "border-rose-700 bg-rose-500 text-white animate-pulse shadow-sm active:translate-y-1 active:border-b-0"
@@ -455,7 +493,7 @@ export function SpeakingWorkspace({
                         ? "Listening... Click red button to stop"
                         : "Type your answer here..."
                     }
-                    disabled={isRecording || isTranscribing}
+                    disabled={isRecording}
                     className="w-full rounded-2xl border-2 border-slate-200 bg-white px-4 py-3 pr-10 text-xs font-medium text-slate-800 placeholder-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none disabled:bg-slate-100"
                   />
                   <button
@@ -465,8 +503,7 @@ export function SpeakingWorkspace({
                     disabled={
                       !textInput.trim() ||
                       isProcessingStep ||
-                      isRecording ||
-                      isTranscribing
+                      isRecording
                     }
                     className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-500 transition hover:text-emerald-700 disabled:opacity-40"
                   >
@@ -480,12 +517,13 @@ export function SpeakingWorkspace({
           {/* AI Assistant Sidebar */}
           <AssistantSidebar
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={handleAssistantTabChange}
             phrase={phrase}
             setPhrase={setPhrase}
             onGetCollocations={handleGetCollocations}
-            hints={mockHints}
+            hints={hints}
             collocations={collocations}
+            loadingHints={isLoadingHints}
             onEvaluate={handleEvaluate}
             isEvaluating={isEvaluating}
           />

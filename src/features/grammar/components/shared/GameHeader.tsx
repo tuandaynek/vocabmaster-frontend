@@ -1,5 +1,5 @@
 import { ArrowLeft, Heart, Zap, Flame, Timer } from 'lucide-react';
-import { useGameSound } from './useGameSound';
+import { useGameSound } from '../../hooks/useGameSound';
 
 interface GameHeaderProps {
   onBack?: () => void;

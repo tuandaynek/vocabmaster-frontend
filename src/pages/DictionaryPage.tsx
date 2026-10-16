@@ -11,6 +11,7 @@ import { DictionaryCard } from "@/features/vocab/components/DictionaryCard";
 import { DictionaryFilters } from "@/features/vocab/components/DictionaryFilters";
 import { CollocationCard } from "@/features/collocations/components/CollocationCard";
 import { CollocationFilters } from "@/features/collocations/components/CollocationFilters";
+import { getErrorMessage } from "@/features/collocations/utils/errorMessage";
 
 const PAGE_SIZE = 6;
 
@@ -83,8 +84,8 @@ export default function DictionaryPage() {
         setTotalPages(response.pagination?.totalPages || 1);
         setTotalItems(response.pagination?.total || 0);
       }
-    } catch (error) {
-      console.error("Failed to load dictionary:", error);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Không thể tải từ điển."));
       setItems([]);
       setTotalPages(1);
       setTotalItems(0);
@@ -139,8 +140,6 @@ export default function DictionaryPage() {
         const response = await vocabApi.save({ selectedWords: payload });
         toast.success(`Đã thêm ${response?.savedCount ?? payload.length} từ vào từ điển cá nhân.`);
       } else {
-        // Lưu Collocations
-        console.log("Selected Collocations to save:", selectedItems);
         const payload = selectedItems.filter((item): item is GlobalCollocationItem => !isWordItem(item)).map((item) => ({
           id: item.id,
           base_sentence: item.base_sentence?.trim() || "",
@@ -150,8 +149,7 @@ export default function DictionaryPage() {
       }
       setSelectedMap({});
     } catch (error: unknown) {
-      console.error("Failed to save:", error);
-      toast.error(error instanceof Error ? error.message : "Không thể lưu vào từ điển cá nhân.");
+      toast.error(getErrorMessage(error, "Không thể lưu vào từ điển cá nhân."));
     }
   };
 

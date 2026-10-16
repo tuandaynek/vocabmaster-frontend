@@ -56,5 +56,20 @@ export const ENDPOINTS = {
     SUBMIT_RATING: "/website/submit-rating",
     GET_MY_RATING: "/website/my-rating",
     STATS_PUBLIC: "/website/stats/public",
+  },
+  GRAMMAR: {
+    GET_TOPICS: "/grammar/topics",
+    GET_SUB_TOPICS: (topicId: string) =>
+      `/grammar/topics/${encodeURIComponent(topicId)}/sub-topics`,
+    GET_SUB_TOPIC_DETAIL: (subTopicId: string) =>
+      `/grammar/sub-topics/${encodeURIComponent(subTopicId)}`,
+    GET_STAGES: (subTopicId: string) =>
+      `/grammar/sub-topics/${encodeURIComponent(subTopicId)}/stages`,
+    GET_QUESTIONS: (stageId: string) =>
+      `/grammar/stages/${encodeURIComponent(stageId)}/questions`,
+    SUBMIT_SESSION: "/grammar/sessions/submit",
+    GET_USER_PROGRESS: (userId: string) =>
+      `/grammar/users/${encodeURIComponent(userId)}/progress`,
+    ADMIN_IMPORT_FULL_SUB_TOPIC: "/admin/grammar/sub-topics/import-full",
   }
 };

@@ -6,29 +6,28 @@ File này định nghĩa kiến trúc kỹ thuật, quy chuẩn đồng bộ UI/
 
 ## 🏗️ 1. Kiến trúc dùng chung (Shared Infrastructure)
 
+Topics và sub-topics được cache theo user trong localStorage; cache curriculum không chứa theory hoặc question payload. Theory chỉ được tải khi mở Theory Mode, còn stages/questions chỉ tải khi bắt đầu campaign. Các request được điều phối qua `api/grammarApi.ts`, kiểu dùng chung nằm trong `types/`, và `hooks/useGrammarHubData.ts` quản lý cache cùng tiến độ. Kết quả campaign được gửi về backend để lưu mastery và XP.
+
+Luồng học: Grammar Hub → chọn topic → chọn sub-topic → Theory Mode (mục lục nhảy nhanh, bốn slide, phím tắt, vuốt và phát âm ví dụ) hoặc Game Campaign (chọn mức ôn nhanh, tiêu chuẩn hoặc toàn bộ).
+
+Mỗi campaign ghi nhận kết quả theo chuyên đề và lưu các câu trả lời sai trong phiên. Khi hoàn tất toàn bộ chặng, màn tổng kết hiển thị XP, số tim còn lại, thời lượng, độ chính xác và danh sách câu cần ôn.
+
 Để đảm bảo **sửa 1 game là cả 5 game được thừa hưởng**, tất cả 5 mini-games BẮT BUỘC phải sử dụng các module dùng chung đặt tại `src/features/grammar/`:
 
 src/features/grammar/
-├── grammar-game.md               # Source of Truth
-└── GrammarCampaignSession.tsx    # Màn campaign 3 chặng
-└──components/                   # THƯ MỤC COMPONENTS CHÍNH
-    ├── shared/                   # Subfolder 1: Đồ dùng chung
-    │   ├── useGameSound.ts       # Hook phát SFX
-    │   ├── GameHeader.tsx        # Header đồng bộ
-    │   ├── GameOverModal.tsx     # Modal thua cuộc (Game Over)
-    │   ├── VictoryModal.tsx      # Modal chiến thắng
-    │   ├── WordBlock.tsx         # Khối từ nảy 3D
-    │   ├── game-animation.css    # Keyframe animations (shake, pop-in, reward)
-    │   └── GameReward.tsx        # Floating XP and combo feedback
-    │
-    └── screens/                  # Subfolder 2: Các màn chơi / games / pages UI
-        ├── SentencePuzzleGame.tsx
-        ├── ErrorSpotterGame.tsx
-        ├── SpeedGrammarQuiz.tsx
-        ├── SentenceTransformerGame.tsx
-        └── ContextMatchGame.tsx
+├── api/
+│   └── grammarApi.ts             # Backend requests and DB-to-game data mapping
+├── components/
+│   ├── GrammarCampaignSession.tsx # Campaign state and stage orchestration
+│   ├── screens/                   # Game, theory, and topic screens
+│   └── shared/                    # Reusable game UI and animation styles
+├── constants/                     # Game and theory configuration
+├── hooks/                         # Game sound and Grammar Hub data hooks
+├── types/                         # Curriculum, game, and progress types
+├── utils/                         # Cache adapters and pure helpers
+└── grammar-game.md                # Source of Truth
 
-## 🔊 2. Âm thanh đồng bộ (`useGameSound.ts`)
+## 🔊 2. Âm thanh đồng bộ (`hooks/useGameSound.ts`)
 
 Mọi game đều gọi chung một hook âm thanh duy nhất để tạo trải nghiệm thính giác đồng nhất:
 

@@ -1,52 +1,32 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { RatingModal } from "@/features/website/components/RatingModal";
 import { websiteApi } from "@/features/website/api/websiteApi";
+import { toast } from "sonner";
+import { RatingContext } from "./rating-context";
+import type { RatingMeta } from "./rating-context";
 
-interface RatingMeta {
-  feature: string;
-  title?: string;
-  description?: string;
-  fastComments?: string[];
-  onClose?: () => void;
+function readRatedFeatures(): string[] {
+  const cached = localStorage.getItem("rated_features");
+  if (!cached) return [];
+
+  try {
+    const parsed: unknown = JSON.parse(cached);
+    if (Array.isArray(parsed) && parsed.every((feature) => typeof feature === "string")) {
+      return parsed;
+    }
+  } catch {
+    localStorage.removeItem("rated_features");
+    return [];
+  }
+
+  localStorage.removeItem("rated_features");
+  return [];
 }
-
-interface RatingContextType {
-  openRating: (meta: RatingMeta) => void;
-  closeRating: () => void;
-  isFeatureRated: (featureName: string) => boolean;
-}
-
-const RatingContext = createContext<RatingContextType | undefined>(undefined);
 
 export function RatingProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [ratingMeta, setRatingMeta] = useState<RatingMeta | null>(null);
-  
-  // Khởi tạo state bằng cách đọc ngay từ localStorage (nếu có)
-  const [ratedFeatures, setRatedFeatures] = useState<string[]>(() => {
-    try {
-      const cached = localStorage.getItem("rated_features");
-      return cached ? JSON.parse(cached) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  // 1. Khi app load, chỉ đơn giản đọc cache lên state để có dữ liệu sẵn sàng
-  useEffect(() => {
-    const loadCache = () => {
-      const cached = localStorage.getItem("rated_features");
-      if (cached) {
-        try {
-          setRatedFeatures(JSON.parse(cached));
-        } catch (e) {
-          console.error("Lỗi parse cache rated_features:", e);
-        }
-      }
-    };
-
-    loadCache();
-  }, []);
+  const [ratedFeatures, setRatedFeatures] = useState<string[]>(readRatedFeatures);
 
   // Kiểm tra tính năng có nằm trong danh sách đã rate hay không
   const isFeatureRated = (featureName: string) => {
@@ -57,9 +37,8 @@ export function RatingProvider({ children }: { children: ReactNode }) {
   const openRating = async (meta: RatingMeta) => {
     // Kiểm tra ngay trong state/local hiện tại xem đã chứa CHÍNH XÁC feature này chưa
     if (ratedFeatures.includes(meta.feature)) {
-      console.log(`Tính năng "${meta.feature}" đã có trong danh sách đã đánh giá.`);
       if (meta.onClose) meta.onClose();
-      return; // Đã rate tính năng này rồi thì bỏ qua luôn
+      return;
     }
 
     // Nếu chưa có, gọi backend lấy danh sách mới nhất về để check lại cho chắc chắn
@@ -76,8 +55,8 @@ export function RatingProvider({ children }: { children: ReactNode }) {
         if (meta.onClose) meta.onClose();
         return;
       }
-    } catch (error) {
-      console.error("Lỗi đồng bộ danh sách đã rate:", error);
+    } catch {
+      toast.error("Không thể đồng bộ lịch sử đánh giá. Bạn vẫn có thể gửi đánh giá.");
     }
 
     // Nếu check cả local lẫn server đều chưa có -> Mở modal cho user rate
@@ -126,11 +105,3 @@ export function RatingProvider({ children }: { children: ReactNode }) {
     </RatingContext.Provider>
   );
 }
-
-export const useRating = () => {
-  const context = useContext(RatingContext);
-  if (!context) {
-    throw new Error("useRating phải được sử dụng bên trong RatingProvider");
-  }
-  return context;
-};

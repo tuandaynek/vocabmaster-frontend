@@ -5,7 +5,7 @@ import { vocabApi } from "@/features/vocab/api/vocabApi";
 import type { ReviewRating, UserVocabularyItem } from "@/features/vocab/types";
 import { FlashcardItem } from "@/features/vocab/components/FlashcardItem";
 import { SrsRatingButtons } from "@/features/vocab/components/SrsRatingButtons";
-import { useRating } from "@/contexts/RatingContext";
+import { useRating } from "@/contexts/useRating";
 
 export default function FlashcardsPage() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function FlashcardsPage() {
   const progressPercent =
     totalCards > 0 ? ((currentIndex + 1) / totalCards) * 100 : 0;
 
-  const fetchDueCards = async () => {
+  const fetchDueCards = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -34,18 +34,20 @@ export default function FlashcardsPage() {
       setCards(dueCards);
       setCurrentIndex(0);
       setIsFlipped(false);
-    } catch (err) {
-      console.error("Failed to load due cards:", err);
+    } catch {
       setError("Không thể tải danh sách thẻ ôn tập. Vui lòng thử lại.");
       setCards([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchDueCards();
-  }, []);
+    const fetchTimer = window.setTimeout(() => {
+      void fetchDueCards();
+    }, 0);
+    return () => window.clearTimeout(fetchTimer);
+  }, [fetchDueCards]);
 
   const handleReview = useCallback(
     async (rating: ReviewRating) => {
@@ -92,14 +94,13 @@ export default function FlashcardsPage() {
             }, 300);
           },
         });
-      } catch (err) {
-        console.error("Failed to review card:", err);
+      } catch {
         setError("Cập nhật kết quả ôn tập thất bại. Vui lòng thử lại.");
         setSubmitting(false);
       }
       // LƯU Ý: Đã chuyển setSubmitting(false) vào trong setTimeout & catch, bỏ ở finally để tránh mở lại button quá sớm.
     },
-    [currentCard, submitting, cards],
+    [currentCard, submitting, cards, openRating],
   );
 
   // Xử lý phím tắt Space & 1-4
@@ -107,7 +108,8 @@ export default function FlashcardsPage() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!currentCard || submitting) return;
       // Ngăn chặn thao tác khi đang focus vào input hoặc textarea (ví dụ khi user đang nhập comment)
-      if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
+      const activeTagName = document.activeElement?.tagName;
+      if (activeTagName === "INPUT" || activeTagName === "TEXTAREA") {
         return;
       }
 

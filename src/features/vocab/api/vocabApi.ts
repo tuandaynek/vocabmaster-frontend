@@ -8,45 +8,61 @@ import type {
   VocabExtractPayload,
   VocabExtractResponse,
   VocabSavePayload,
-  UserVocabularyItem,
+  VocabSaveResponse,
+  VocabReviewResponse,
+  VocabDeleteResponse,
 } from "../types";
+
+// The shared Axios client unwraps response.data at runtime without reflecting that in its AxiosInstance type.
+const asApiResponse = <T,>(request: Promise<unknown>): Promise<T> =>
+  request as unknown as Promise<T>;
 
 export const vocabApi = {
   extract: (data: VocabExtractPayload): Promise<VocabExtractResponse> => {
-    return axiosClient.post<VocabExtractResponse>(
-      ENDPOINTS.VOCAB.EXTRACT,
-      data,
-    ) as unknown as Promise<VocabExtractResponse>;
+    return asApiResponse(
+      axiosClient.post<VocabExtractResponse>(ENDPOINTS.VOCAB.EXTRACT, data),
+    );
   },
 
-  save: (
-    data: VocabSavePayload,
-  ): Promise<{ success: boolean; savedCount: number; message: string }> => {
-    return axiosClient.post(ENDPOINTS.VOCAB.SAVE, data) as unknown as Promise<{ success: boolean; savedCount: number; message: string }>;
+  save: (data: VocabSavePayload): Promise<VocabSaveResponse> => {
+    return asApiResponse(
+      axiosClient.post<VocabSaveResponse>(ENDPOINTS.VOCAB.SAVE, data),
+    );
   },
 
   getUserList: (): Promise<UserVocabularyListResponse> => {
-    return axiosClient.get(ENDPOINTS.VOCAB.USER_LIST) as unknown as Promise<UserVocabularyListResponse>;
+    return asApiResponse(
+      axiosClient.get<UserVocabularyListResponse>(ENDPOINTS.VOCAB.USER_LIST),
+    );
   },
 
-  deleteUserVocabulary: (
-    id: string,
-  ): Promise<{ success: boolean; message?: string }> => {
-    return axiosClient.delete(ENDPOINTS.VOCAB.DELETE(id)) as unknown as Promise<{ success: boolean; message?: string }>;
+  deleteUserVocabulary: (id: string): Promise<VocabDeleteResponse> => {
+    return asApiResponse(
+      axiosClient.delete<VocabDeleteResponse>(ENDPOINTS.VOCAB.DELETE(id)),
+    );
   },
 
-  getGlobalDictionary: (params?: GlobalDictionaryQueryParams): Promise<GlobalDictionaryResponse> => {
-    return axiosClient.get(ENDPOINTS.VOCAB.GLOBAL_LIST, { params }) as unknown as Promise<GlobalDictionaryResponse>;
+  getGlobalDictionary: (
+    params?: GlobalDictionaryQueryParams,
+  ): Promise<GlobalDictionaryResponse> => {
+    return asApiResponse(
+      axiosClient.get<GlobalDictionaryResponse>(ENDPOINTS.VOCAB.GLOBAL_LIST, {
+        params,
+      }),
+    );
   },
 
   getDueCards: (): Promise<UserVocabularyListResponse> => {
-    return axiosClient.get(ENDPOINTS.VOCAB.DUE_CARDS) as unknown as Promise<UserVocabularyListResponse>;
+    return asApiResponse(
+      axiosClient.get<UserVocabularyListResponse>(ENDPOINTS.VOCAB.DUE_CARDS),
+    );
   },
 
   reviewCard: (
     data: ReviewRequestPayload,
-  ): Promise<{ success: boolean; data?: any; message?: string }> => {
-    return axiosClient.post(ENDPOINTS.VOCAB.REVIEW, data) as unknown as Promise<{ success: boolean; data?: UserVocabularyItem; message?: string }>;
+  ): Promise<VocabReviewResponse> => {
+    return asApiResponse(
+      axiosClient.post<VocabReviewResponse>(ENDPOINTS.VOCAB.REVIEW, data),
+    );
   },
-
 };

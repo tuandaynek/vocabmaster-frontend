@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import type { CollocationReviewData } from "../types";
 import { useSpeechPractice } from "../hooks/useSpeechPractice";
-import { isWordInCollocation, getCleanWords } from "../utils/collocationUtils";
+import SentencePronunciationFeedback from "./SentencePronunciationFeedback";
 import { Mic, Volume2, Sparkles, RefreshCw, ArrowRight, Quote } from "lucide-react";
 
 interface Phase2Props {
@@ -22,7 +22,7 @@ export default function Phase2BaseSentence({
   const audioRef = useRef(new Audio(collocation.audioUrl || undefined));
 
   // Tích hợp custom hook quản lý thu âm, nhận diện & tính điểm (GIỮ NGUYÊN LOGIC)
-  const { isRecording, spokenText, score, startRecording } = useSpeechPractice({
+  const { isRecording, spokenText, score, speechError, startRecording } = useSpeechPractice({
     targetSentence: baseSentence,
   });
 
@@ -35,63 +35,6 @@ export default function Phase2BaseSentence({
         audioRef.current.onended = () => setIsPlayingAudio(false);
       })
       .catch(() => setIsPlayingAudio(false));
-  };
-
-  const renderSentenceWithFeedback = () => {
-    const rawWords = baseSentence.split(/\s+/);
-    const targetWordsClean = getCleanWords(baseSentence);
-    const spokenWordsClean = spokenText ? getCleanWords(spokenText) : [];
-
-    return (
-      <div className="flex flex-wrap justify-center items-center gap-2 leading-relaxed my-2 min-h-[80px]">
-        {rawWords.map((word, idx) => {
-          const cleanWord = targetWordsClean[idx];
-          const spokenAtIdx = spokenWordsClean[idx];
-          const isTargetCollocation = isWordInCollocation(
-            idx,
-            baseSentence,
-            collocation.phrase
-          );
-
-          if (!spokenText) {
-            return (
-              <span
-                key={idx}
-                className={`rounded-2xl border-2 px-3 py-1.5 text-lg font-bold transition-all ${
-                  isTargetCollocation
-                    ? "border-amber-300 bg-amber-50 text-amber-800"
-                    : "border-slate-200 bg-white text-slate-700"
-                }`}
-              >
-                {word}
-              </span>
-            );
-          }
-
-          const isCorrect = spokenAtIdx === cleanWord;
-          const isMissing = !spokenAtIdx;
-
-          return (
-            <div key={idx} className="flex flex-col items-center">
-              <span
-                className={`rounded-2xl border-2 px-3 py-1.5 text-lg font-bold transition-all ${
-                  isCorrect
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                    : "border-rose-200 bg-rose-50 text-rose-700"
-                }`}
-              >
-                {word}
-              </span>
-              {!isCorrect && (
-                <span className="mt-1.5 rounded-xl border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-700 shadow-sm">
-                  {isMissing ? "thiếu" : `≠ "${spokenAtIdx}"`}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
   };
 
   return (
@@ -119,7 +62,11 @@ export default function Phase2BaseSentence({
       <div className="relative my-3 overflow-hidden rounded-3xl border-2 border-slate-100 bg-slate-50 p-6 shadow-sm">
         <Quote className="pointer-events-none absolute -right-1 -top-1 h-12 w-12 rotate-180 text-slate-200" />
         
-        {renderSentenceWithFeedback()}
+        <SentencePronunciationFeedback
+          sentence={baseSentence}
+          targetPhrase={collocation.phrase}
+          spokenText={spokenText}
+        />
 
         {collocation.meaning && (
           <p className="mt-4 border-t border-slate-200 pt-3 text-xs font-semibold italic text-slate-500">
@@ -146,6 +93,11 @@ export default function Phase2BaseSentence({
       </div>
 
       {/* Score Box */}
+      {speechError && (
+        <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-700">
+          {speechError}
+        </p>
+      )}
       {score !== null && (
         <div className="my-4 flex items-center justify-between rounded-2xl border-2 border-slate-100 bg-white px-5 p-4 shadow-sm">
           <div className="text-left">

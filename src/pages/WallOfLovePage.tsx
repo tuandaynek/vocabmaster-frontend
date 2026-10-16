@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Star,
   MessageSquare,
@@ -8,6 +8,11 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { websiteApi } from "@/features/website/api/websiteApi";
+import type {
+  PublicWebsiteStats,
+  WebsiteFeedback,
+  WebsiteStats,
+} from "@/features/website/types";
 import { useNavigate } from "react-router-dom";
 
 const CATEGORIES = [
@@ -22,35 +27,35 @@ const CATEGORIES = [
 export default function WallOfLovePage() {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("Tất cả");
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [stats, setStats] = useState({
+  const [feedbacks, setFeedbacks] = useState<WebsiteFeedback[]>([]);
+  const [stats, setStats] = useState<WebsiteStats>({
     totalUsers: 0,
     avgRating: 0,
     totalRatings: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Hàm gọi API lấy dữ liệu từ backend
-  useEffect(() => {
-    const fetchWallOfLoveData = async () => {
-      try {
-        setLoading(true);
-
-        const response = await websiteApi.getStatsPublic();
-
-        console.log(response);
-
-        setStats(response.stats);
-        setFeedbacks(response.recentFeed);
-      } catch (error) {
-        console.error("Không thể tải dữ liệu Wall of Love:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWallOfLoveData();
+  const fetchWallOfLoveData = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response: PublicWebsiteStats = await websiteApi.getStatsPublic();
+      setStats(response.stats);
+      setFeedbacks(response.recentFeed);
+    } catch {
+      setError("Không thể tải đánh giá. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    const fetchTimer = window.setTimeout(() => {
+      void fetchWallOfLoveData();
+    }, 0);
+    return () => window.clearTimeout(fetchTimer);
+  }, [fetchWallOfLoveData]);
 
   const filteredFeedbacks =
     selectedTab === "Tất cả"
@@ -87,6 +92,23 @@ export default function WallOfLovePage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 text-slate-500">
         <RefreshCw className="h-8 w-8 animate-spin text-emerald-600" />
         <p className="text-sm font-medium">Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 px-4 text-slate-600">
+        <p role="alert" className="text-center text-sm font-medium">
+          {error}
+        </p>
+        <button
+          type="button"
+          onClick={() => void fetchWallOfLoveData()}
+          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700"
+        >
+          Thử lại
+        </button>
       </div>
     );
   }
@@ -200,19 +222,19 @@ export default function WallOfLovePage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3.5">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-100 text-sm font-bold text-emerald-800">
-                      {item.users.avatar_url ? (
+                      {item.users?.avatar_url ? (
                         <img
                           src={item.users.avatar_url}
-                          alt=""
+                          alt={`${item.users.username} avatar`}
                           className="h-full w-full rounded-2xl object-cover"
                         />
                       ) : (
-                        getInitials(item.users.username)
+                        getInitials(item.users?.username ?? "Ẩn danh")
                       )}
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-800 transition-colors group-hover:text-emerald-700">
-                        {item.users.username}
+                        {item.users?.username ?? "Ẩn danh"}
                       </h4>
                       <span className="text-xs font-medium text-slate-500">
                         {new Date(item.created_at).toLocaleDateString("vi-VN", {

@@ -1,24 +1,13 @@
 export type ReviewRating = "again" | "hard" | "good" | "easy";
 
-export type CollocationType = "grammatical" | "lexical" | "opinion" | "frequency";
+import {
+  CEFR_LEVELS,
+  COLLOCATION_TYPES,
+  CORE_TOPICS,
+} from "../constants";
 
-export const CEFR_LEVELS = ["A1", "A2", "B1", "B2"] as const;
+export type CollocationType = (typeof COLLOCATION_TYPES)[number];
 export type CEFRLevel = (typeof CEFR_LEVELS)[number];
-
-export const CORE_TOPICS = [
-  "Hometown",
-  "Work & Study",
-  "Accommodation",
-  "Personal Background",
-  "Daily Routine",
-  "Hobbies & Leisure",
-  "Food & Cooking",
-  "Shopping",
-  "Travel & Holidays",
-  "Technology",
-  "Health & Fitness",
-  "Environment",
-] as const;
 export type CoreTopicType = (typeof CORE_TOPICS)[number];
 
 export interface DrillVariations {
@@ -42,6 +31,20 @@ export interface GlobalCollocationItem {
   created_at?: string;
 }
 
+export interface CollocationImportItem {
+  id?: string;
+  phrase: string;
+  meaning: string;
+  type?: CollocationType;
+  pattern?: string;
+  cefr_level?: CEFRLevel;
+  topic?: string;
+  base_sentence?: string;
+  drill_variations?: DrillVariations;
+  audio_url?: string | null;
+  created_at?: string;
+}
+
 export interface CollocationSavePayload {
   selectedCollocations: Array<{ id: string; collocation_id?: string; base_sentence?: string }>;
 }
@@ -53,6 +56,7 @@ export interface UserCollocationItem {
   context_sentence: string;
   status: string;
   step: number;
+  user_step?: number;
   interval: number;
   next_review: string;
   ease_factor?: number;
@@ -91,10 +95,43 @@ export interface GlobalCollocationsResponse {
 
 export interface CollocationReviewData {
   collocationId: string;
+  id?: string;
   phrase: string;
   meaning: string;
   audioUrl?: string | null;
   baseSentence?: string;
+  sample_sentences?: string[];
+  step?: number;
+  user_step?: number;
+}
+
+export interface CollocationVariation {
+  id: number;
+  type: string;
+  sentence: string;
+  note: string;
+}
+
+export interface CollocationVariationsResponse {
+  mode: "ACTIVE" | "DRILL";
+  step: number;
+  variations?: CollocationVariation[];
+}
+
+export interface ApiDataEnvelope<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface Phase1TranslationApiResponse {
+  vi_sentence?: string;
+  accepted_answer?: string;
+  suggested_vocab?: SuggestedVocab[];
+  suggest_vocab?: SuggestedVocab[];
+  viSentence?: string;
+  acceptedAnswer?: string;
+  suggestedVocab?: SuggestedVocab[];
 }
 
 export interface NextCollocationItem {
@@ -142,7 +179,13 @@ export interface EvaluatePhase3Payload {
 // Response cho Phase 3 (Short Story / Translation)
 export interface EvaluatePhase3Response {
   state: EvaluationState;
+  score?: number;
+  isPassed?: boolean;
   feedback: string;
   correctedStory?: string;
   communityStories: string[]; // Tối đa 5 bài Short Story Excellent
+  highlightedErrors?: Array<{
+    error: string;
+    correction: string;
+  }>;
 }

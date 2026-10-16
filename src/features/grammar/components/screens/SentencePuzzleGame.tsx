@@ -1,41 +1,31 @@
 import { useState } from 'react';
-import { Sparkles, RefreshCw } from 'lucide-react';
-import { useGameSound } from '../shared/useGameSound';
+import { RefreshCw } from 'lucide-react';
+import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
 import VictoryModal from '../shared/VictoryModal';
 import WordBlock from '../shared/WordBlock';
 import GameReward from '../shared/GameReward';
-import { shuffleItems } from '../shared/shuffleItems';
+import type { CampaignAnswer, GameStageResult } from '../../types/gameAnalytics';
+import { shuffleItems } from '../../utils/shuffleItems';
+import type { PuzzleQuestion } from '../../types/grammarData';
+import EmptyGameState from '../shared/EmptyGameState';
 
 interface WordItem {
   id: string;
   text: string;
 }
 
-interface PuzzleQuestion {
-  id: string;
-  vietnamesePrompt: string;
-  correctSentence: string[];
+interface SentencePuzzleGameProps {
+  onBack?: () => void;
+  onComplete?: (result: GameStageResult) => void;
+  onAnswer?: (answer: CampaignAnswer) => void;
+  questions?: PuzzleQuestion[];
+  stageTitle?: string;
+  stageId?: string;
+  subTopicTitle?: string;
+  initialLives?: number;
 }
-
-const FAKE_PUZZLES: PuzzleQuestion[] = [
-  {
-    id: 'q1',
-    vietnamesePrompt: 'Cô ấy còn quá trẻ để xem bộ phim này.',
-    correctSentence: ['She', 'is', 'too', 'young', 'to', 'watch', 'this', 'movie.']
-  },
-  {
-    id: 'q2',
-    vietnamesePrompt: 'Mặc dù trời mưa rất to, họ vẫn đi ra ngoài.',
-    correctSentence: ['Although', 'it', 'rained', 'heavily,', 'they', 'went', 'out.']
-  },
-  {
-    id: 'q3',
-    vietnamesePrompt: 'Nếu tôi biết sự thật, tôi đã nói với bạn rồi.',
-    correctSentence: ['Had', 'I', 'known', 'the', 'truth,', 'I', 'would', 'have', 'told', 'you.']
-  }
-];
 
 const createWordPool = (question: PuzzleQuestion): WordItem[] =>
   shuffleItems(question.correctSentence.map((word, idx) => ({
@@ -43,15 +33,17 @@ const createWordPool = (question: PuzzleQuestion): WordItem[] =>
     text: word
   })));
 
-export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: () => void; onComplete?: () => void }) {
+export default function SentencePuzzleGame({ onBack, onComplete, onAnswer, questions = [], stageTitle, stageId = 'puzzle', subTopicTitle = stageTitle ?? 'Ngữ pháp', initialLives = 5 }: SentencePuzzleGameProps) {
   const { playSelect, playCorrect, playIncorrect, playGameOver, playVictory } = useGameSound();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lives, setLives] = useState(5);
+  const [lives, setLives] = useState(initialLives);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
   
-  const [poolWords, setPoolWords] = useState<WordItem[]>(() => createWordPool(FAKE_PUZZLES[0]));
+  const [poolWords, setPoolWords] = useState<WordItem[]>(() =>
+    questions[0] ? createWordPool(questions[0]) : [],
+  );
   const [selectedWords, setSelectedWords] = useState<WordItem[]>([]);
   const [status, setStatus] = useState<'playing' | 'correct' | 'incorrect'>('playing');
   
@@ -59,7 +51,9 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
   const [isGameOver, setIsGameOver] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
 
-  const currentQ = FAKE_PUZZLES[currentIndex];
+  const currentQ = questions[currentIndex];
+
+  if (!currentQ) return <EmptyGameState onBack={onBack} />;
 
   const handleSelectWord = (item: WordItem) => {
     if (status !== 'playing' || isGameOver) return;
@@ -80,8 +74,18 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
 
     const userSentence = selectedWords.map(w => w.text).join(' ');
     const targetSentence = currentQ.correctSentence.join(' ');
+    const isCorrect = userSentence === targetSentence;
+    onAnswer?.({
+      stageId,
+      subTopicTitle,
+      questionId: currentQ.id,
+      prompt: currentQ.vietnamesePrompt,
+      correctAnswer: targetSentence,
+      submittedAnswer: userSentence,
+      isCorrect
+    });
 
-    if (userSentence === targetSentence) {
+    if (isCorrect) {
       playCorrect();
       setStatus('correct');
       setXp(prev => prev + 25 + streak * 5);
@@ -102,8 +106,8 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
 
   const handleNext = () => {
     playSelect();
-    if (currentIndex < FAKE_PUZZLES.length - 1) {
-      const nextQuestion = FAKE_PUZZLES[currentIndex + 1];
+    if (currentIndex < questions.length - 1) {
+      const nextQuestion = questions[currentIndex + 1];
       setPoolWords(createWordPool(nextQuestion));
       setSelectedWords([]);
       setStatus('playing');
@@ -116,11 +120,11 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
 
   const handleRetryGame = () => {
     playSelect();
-    setLives(5);
+    setLives(initialLives);
     setXp(0);
     setStreak(0);
     setCurrentIndex(0);
-    setPoolWords(createWordPool(FAKE_PUZZLES[0]));
+    setPoolWords(createWordPool(questions[0]));
     setSelectedWords([]);
     setStatus('playing');
     setIsGameOver(false);
@@ -137,9 +141,9 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
           lives={lives}
           xp={xp}
           streak={streak}
-          title="Ghép Khối Từ (Sentence Puzzle)"
+          title={stageTitle ?? 'Ghép Khối Từ (Sentence Puzzle)'}
           currentStep={currentIndex + 1}
-          totalSteps={FAKE_PUZZLES.length}
+          totalSteps={questions.length}
         />
 
         {/* --- GAME CARD CHÍNH --- */}
@@ -147,7 +151,7 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
-              <Sparkles className="w-4 h-4 text-emerald-500" /> Sắp xếp câu hoàn chỉnh từ các từ xáo trộn
+              Sắp xếp câu hoàn chỉnh từ các từ xáo trộn
             </span>
             <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">
               "{currentQ.vietnamesePrompt}"
@@ -204,7 +208,7 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
                 : 'bg-slate-100 text-slate-400 border-2 border-slate-200 cursor-not-allowed'
             }`}
           >
-            Kiểm tra đáp án ✨
+            Kiểm tra đáp án
           </button>
         )}
 
@@ -223,7 +227,7 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
               onClick={handleNext}
               className="px-7 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 font-black rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer"
             >
-              Tiếp tục 🚀
+              Tiếp tục
             </button>
           </div>
         )}
@@ -266,7 +270,7 @@ export default function SentencePuzzleGame({ onBack, onComplete }: { onBack?: ()
       <VictoryModal 
         isOpen={isVictory} 
         xpEarned={xp} 
-        onNext={onComplete || onBack || (() => {})} 
+        onNext={() => onComplete ? onComplete({ xpEarned: xp, livesRemaining: lives }) : onBack?.()} 
         onReplay={handleRetryGame}
       />
     </div>

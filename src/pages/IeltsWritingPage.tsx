@@ -15,7 +15,7 @@ import { ENDPOINTS } from "@/api/endpoints";
 import WritingTutorChat from "@/features/writing/components/WritingTutorChat";
 import { WritingReportView } from "@/features/writing/components/WritingReportView";
 import type { Evaluation } from "@/features/writing/types/writing.types";
-import { useRating } from "@/contexts/RatingContext";
+import { useRating } from "@/contexts/useRating";
 
 const DRAFT_KEY = "ielts-writing-task-2-draft";
 const TOTAL_SECONDS = 40 * 60;
@@ -95,12 +95,10 @@ export default function IeltsWritingPage() {
         userEssay,
         targetBand: parseFloat(targetBand),
       })) as { data: Evaluation };
-      console.log("Writing evaluation response:", response.data);
       setEvaluation(response.data);
       setTimerRunning(false);
       toast.success("Báo cáo chấm bài đã sẵn sàng.");
-    } catch (error) {
-      console.error("Writing evaluation failed:", error);
+    } catch {
       toast.error("Không thể kết nối Writing Tutor lúc này.");
     } finally {
       setLoading(null);
@@ -121,7 +119,6 @@ export default function IeltsWritingPage() {
     return (
       <WritingReportView
         evaluation={evaluation}
-        targetBand={targetBand}
         onBackToWorkspace={() => {
           // Bật rating trước khi cho về workspace
           openRating({

@@ -1,61 +1,41 @@
 import { useState } from 'react';
-import { Wand2, RefreshCw } from 'lucide-react';
-import { useGameSound } from '../shared/useGameSound';
+import { RefreshCw } from 'lucide-react';
+import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
 import VictoryModal from '../shared/VictoryModal';
 import WordBlock from '../shared/WordBlock';
 import GameReward from '../shared/GameReward';
-import { shuffleItems } from '../shared/shuffleItems';
+import type { CampaignAnswer, GameStageResult } from '../../types/gameAnalytics';
+import { shuffleItems } from '../../utils/shuffleItems';
+import type { TransformerQuestion } from '../../types/grammarData';
+import EmptyGameState from '../shared/EmptyGameState';
 
-interface TransformerQuestion {
-  id: string;
-  originalSentence: string;
-  targetPrompt: string;
-  correctBlocks: string[];
-  distractorBlocks: string[];
-  explanation: string;
+interface SentenceTransformerGameProps {
+  onBack?: () => void;
+  onComplete?: (result: GameStageResult) => void;
+  onAnswer?: (answer: CampaignAnswer) => void;
+  questions?: TransformerQuestion[];
+  stageTitle?: string;
+  stageId?: string;
+  subTopicTitle?: string;
+  initialLives?: number;
 }
-
-const FAKE_TRANSFORMER_QUESTIONS: TransformerQuestion[] = [
-  {
-    id: 'tr-1',
-    originalSentence: 'If I had known you were coming, I would have cooked dinner.',
-    targetPrompt: 'Had I...',
-    correctBlocks: ['Had I', 'known you', 'were coming,', 'I would have', 'cooked dinner.'],
-    distractorBlocks: ['did I know', 'would I know'],
-    explanation: 'Đảo ngữ câu điều kiện loại 3: Bỏ "If", đảo "Had" lên trước chủ ngữ.'
-  },
-  {
-    id: 'tr-2',
-    originalSentence: 'Although he worked very hard, he couldn’t complete the project on time.',
-    targetPrompt: 'In spite of...',
-    correctBlocks: ['In spite of', 'working very hard,', 'he couldn’t', 'complete the project', 'on time.'],
-    distractorBlocks: ['he worked hard,', 'his hard work,'],
-    explanation: 'Biến đổi từ "Although + S + V" sang "In spite of + V-ing/N".'
-  },
-  {
-    id: 'tr-3',
-    originalSentence: 'People say that the new museum was built in 1920.',
-    targetPrompt: 'The new museum...',
-    correctBlocks: ['The new museum', 'is said to', 'have been built', 'in 1920.'],
-    distractorBlocks: ['was said to', 'is said that'],
-    explanation: 'Câu bị động khách quan (Impersonal Passive).'
-  }
-];
 
 const createAvailableBlocks = (question: TransformerQuestion): string[] =>
   shuffleItems([...question.correctBlocks, ...question.distractorBlocks]);
 
-export default function SentenceTransformerGame({ onBack, onComplete }: { onBack?: () => void; onComplete?: () => void }) {
+export default function SentenceTransformerGame({ onBack, onComplete, onAnswer, questions = [], stageTitle, stageId = 'transformer', subTopicTitle = stageTitle ?? 'Ngữ pháp', initialLives = 5 }: SentenceTransformerGameProps) {
   const { playSelect, playCorrect, playIncorrect, playGameOver, playVictory } = useGameSound();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lives, setLives] = useState(5);
+  const [lives, setLives] = useState(initialLives);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
 
-  const [availableBlocks, setAvailableBlocks] = useState<string[]>(() => createAvailableBlocks(FAKE_TRANSFORMER_QUESTIONS[0]));
+  const [availableBlocks, setAvailableBlocks] = useState<string[]>(() =>
+    questions[0] ? createAvailableBlocks(questions[0]) : [],
+  );
   const [selectedBlocks, setSelectedBlocks] = useState<string[]>([]);
   const [status, setStatus] = useState<'playing' | 'correct' | 'incorrect'>('playing');
 
@@ -63,7 +43,9 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
   const [isGameOver, setIsGameOver] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
 
-  const currentQ = FAKE_TRANSFORMER_QUESTIONS[currentIndex];
+  const currentQ = questions[currentIndex];
+
+  if (!currentQ) return <EmptyGameState onBack={onBack} />;
 
   const handleSelectBlock = (block: string, index: number) => {
     if (status !== 'playing' || isGameOver) return;
@@ -84,8 +66,18 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
 
     const userSentence = selectedBlocks.join(' ').replace(/\s+/g, ' ').trim();
     const correctSentence = currentQ.correctBlocks.join(' ').replace(/\s+/g, ' ').trim();
+    const isCorrect = userSentence === correctSentence;
+    onAnswer?.({
+      stageId,
+      subTopicTitle,
+      questionId: currentQ.id,
+      prompt: `${currentQ.originalSentence} · ${currentQ.targetPrompt}`,
+      correctAnswer: correctSentence,
+      submittedAnswer: userSentence,
+      isCorrect
+    });
 
-    if (userSentence === correctSentence) {
+    if (isCorrect) {
       playCorrect();
       setStatus('correct');
       setXp(prev => prev + 30 + streak * 5);
@@ -106,8 +98,8 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
 
   const handleNext = () => {
     playSelect();
-    if (currentIndex < FAKE_TRANSFORMER_QUESTIONS.length - 1) {
-      const nextQuestion = FAKE_TRANSFORMER_QUESTIONS[currentIndex + 1];
+    if (currentIndex < questions.length - 1) {
+      const nextQuestion = questions[currentIndex + 1];
       setAvailableBlocks(createAvailableBlocks(nextQuestion));
       setSelectedBlocks([]);
       setStatus('playing');
@@ -120,11 +112,11 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
 
   const handleRetryGame = () => {
     playSelect();
-    setLives(5);
+    setLives(initialLives);
     setXp(0);
     setStreak(0);
     setCurrentIndex(0);
-    setAvailableBlocks(createAvailableBlocks(FAKE_TRANSFORMER_QUESTIONS[0]));
+    setAvailableBlocks(createAvailableBlocks(questions[0]));
     setSelectedBlocks([]);
     setStatus('playing');
     setIsGameOver(false);
@@ -141,9 +133,9 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
           lives={lives}
           xp={xp}
           streak={streak}
-          title="Biến Đổi Câu (Sentence Transformer)"
+          title={stageTitle ?? 'Biến Đổi Câu (Sentence Transformer)'}
           currentStep={currentIndex + 1}
-          totalSteps={FAKE_TRANSFORMER_QUESTIONS.length}
+          totalSteps={questions.length}
         />
 
         {/* --- GAME CARD CHÍNH --- */}
@@ -151,7 +143,7 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
-              <Wand2 className="w-4 h-4 text-indigo-500" /> Viết lại câu không đổi nghĩa
+              Viết lại câu không đổi nghĩa
             </span>
             <div className="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl shadow-inner">
               <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Câu gốc:</p>
@@ -214,7 +206,7 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
                 : 'bg-slate-100 text-slate-400 border-2 border-slate-200 cursor-not-allowed'
             }`}
           >
-            Biến đổi câu ✨
+            Biến đổi câu
           </button>
         )}
 
@@ -225,7 +217,7 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
                 🪄
               </div>
               <div>
-                <h4 className="font-black text-lg">Biến đổi câu chuẩn như phù thủy!</h4>
+                <h4 className="font-black text-lg">Chính xác rồi!</h4>
                 <p className="text-xs text-emerald-100 font-bold">+{30 + Math.max(0, streak - 1) * 5} XP · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'} · {currentQ.explanation}</p>
               </div>
             </div>
@@ -233,7 +225,7 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
               onClick={handleNext}
               className="px-7 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 font-black rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer"
             >
-              Tiếp tục 🚀
+              Tiếp tục
             </button>
           </div>
         )}
@@ -275,7 +267,7 @@ export default function SentenceTransformerGame({ onBack, onComplete }: { onBack
       <VictoryModal 
         isOpen={isVictory} 
         xpEarned={xp} 
-        onNext={onComplete || onBack || (() => {})} 
+        onNext={() => onComplete ? onComplete({ xpEarned: xp, livesRemaining: lives }) : onBack?.()} 
         onReplay={handleRetryGame}
       />
     </div>

@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Flame,
   BookOpen,
   Layers,
   Zap,
   Award,
-  Calendar,
   Target,
   Sparkles,
   RefreshCw,
@@ -16,6 +15,19 @@ import ActivityCalendar from "@/features/profile/components/ActivityCalendar";
 import { profileApi } from "@/features/profile/api/profileApi";
 import type { UserProfile } from "@/features/profile/types";
 import { useNavigate } from "react-router-dom";
+
+function getProfileErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+  return "Không thể tải dữ liệu hồ sơ.";
+}
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -29,23 +41,25 @@ export default function ProfilePage() {
     progressPercent: 0,
   };
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const res = await profileApi.getProfile();
-      console.log(res.data);
       setUser(res.data);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể tải dữ liệu hồ sơ.");
+    } catch (err: unknown) {
+      setError(getProfileErrorMessage(err));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
+    const fetchTimer = window.setTimeout(() => {
+      void fetchProfileData();
+    }, 0);
+    return () => window.clearTimeout(fetchTimer);
+  }, [fetchProfileData]);
 
   if (loading) {
     return (

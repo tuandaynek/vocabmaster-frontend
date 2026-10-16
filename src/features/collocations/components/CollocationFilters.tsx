@@ -1,5 +1,5 @@
 import { Search, SlidersHorizontal, Trash2 } from "lucide-react";
-import { CEFR_LEVELS, CORE_TOPICS } from "../types";
+import { CEFR_LEVELS, CORE_TOPICS } from "../constants";
 
 interface CollocationFiltersProps {
   search: string;

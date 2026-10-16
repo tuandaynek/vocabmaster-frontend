@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import type { CollocationReviewData } from "../types";
+import type { SpeechRecognitionLike } from "../types/speechRecognition";
+import { getSpeechRecognitionConstructor } from "../utils/speechRecognition";
 import { Mic, Volume2, Sparkles, AlertCircle, Award, CheckCircle2 } from "lucide-react";
 
 interface Phase1ShadowingProps {
@@ -21,15 +23,12 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [stage, setStage] = useState<"NORMAL" | "BONUS" | "COMPLETED">("NORMAL");
   const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [speechError, setSpeechError] = useState<string | null>(null);
 
   const audioRef = useRef(new Audio(collocation.audioUrl || undefined));
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
-  useEffect(() => {
-    playSampleAudio();
-  }, []);
-
-  const playSampleAudio = (onEndedCallback?: () => void) => {
+  const playSampleAudio = useCallback((onEndedCallback?: () => void) => {
     setIsPlayingAudio(true);
     audioRef.current.currentTime = 0;
     audioRef.current
@@ -43,7 +42,17 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
       setIsPlayingAudio(false);
       if (onEndedCallback) onEndedCallback();
     };
-  };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    const autoplayTimer = window.setTimeout(playSampleAudio, 0);
+    return () => {
+      window.clearTimeout(autoplayTimer);
+      audio.pause();
+      recognitionRef.current?.stop();
+    };
+  }, [playSampleAudio]);
 
   // Tính điểm & Đánh giá (GIỮ NGUYÊN LOGIC)
   const evaluateSpeech = (spoken: string) => {
@@ -126,14 +135,14 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
   };
 
   const handleRecord = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = getSpeechRecognitionConstructor();
 
     if (!SpeechRecognition) {
-      alert("Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome!");
+      setSpeechError("Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome!");
       return;
     }
 
+    setSpeechError(null);
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = false;
@@ -144,15 +153,18 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
       setIsRecording(true);
     };
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       evaluateSpeech(transcript);
     };
 
-    recognition.onerror = (event: any) => {
-      console.error("Speech recognition error:", event.error);
+    recognition.onerror = (event) => {
       setIsRecording(false);
-      evaluateSpeech("");
+      setSpeechError(
+        event.error === "not-allowed"
+          ? "Vui lòng cấp quyền sử dụng micro để luyện nói."
+          : "Không thể nhận diện giọng nói. Vui lòng thử lại.",
+      );
     };
 
     recognition.onend = () => {
@@ -178,7 +190,7 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
     const spokenWords = activeAttemptData.spokenText
       .trim()
       .toLowerCase()
-      .replace(/[.,/#!\$%^&*;:{}=\-_`~()]/g, "")
+      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
       .split(/\s+/);
 
     return (
@@ -187,8 +199,8 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
           const cleanTarget = word.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
           const spokenAtIdx = spokenWords[idx];
 
-          let isCorrect = spokenAtIdx === cleanTarget;
-          let isMissing = !spokenAtIdx;
+          const isCorrect = spokenAtIdx === cleanTarget;
+          const isMissing = !spokenAtIdx;
 
           return (
             <div key={idx} className="flex flex-col items-center">
@@ -290,6 +302,11 @@ export default function Phase1Shadowing({ collocation, onComplete }: Phase1Shado
 
       {/* Thông báo trạng thái */}
       <div className="min-h-[48px] flex flex-col items-center justify-center text-xs font-bold">
+        {speechError && (
+          <p role="alert" className="mb-2 rounded-2xl border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-rose-700">
+            {speechError}
+          </p>
+        )}
         {resetMessage && (
           <p className="flex items-center gap-1.5 rounded-2xl border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-rose-700">
             <AlertCircle className="w-4 h-4" /> {resetMessage}

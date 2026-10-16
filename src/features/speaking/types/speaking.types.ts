@@ -21,6 +21,8 @@ export interface IdeaHints {
   prompts: string[];
 }
 
+export type IdeaHintsResponse = IdeaHints;
+
 export interface CollocationItem {
   phrase: string;
   meaning: string;
@@ -93,7 +95,6 @@ export interface EvaluationResponse {
   sampleAnswer: string;
 }
 
-// (Optional) Giữ lại EvaluationResult nếu cần làm Alias để không vỡ các code cũ
 export type EvaluationResult = EvaluationResponse;
 
 export interface ChatStepRequest {
@@ -101,6 +102,20 @@ export interface ChatStepRequest {
   targetBand: string;
   history: { role: string; content: string }[];
   userResponse: string;
+}
+
+export interface ChatStepResponse {
+  needsFollowUp: boolean;
+  followUpQuestion?: string;
+}
+
+export interface IdeaHintsRequest {
+  question: string;
+  history: { role: string; content: string }[];
+}
+
+export interface SpeakingApiResponse<T> {
+  data: T;
 }
 
 export interface EvaluatePayload {
@@ -116,3 +131,47 @@ export interface CollocationsPayload {
   currentQuestion: string;
   targetBand: string;
 }
+
+export interface SaveSpeakingHistoryPayload {
+  question: string;
+  audioUrl?: string;
+  transcript?: string;
+  overallBand: number;
+  detailedScores: BandScores;
+  createdAt: string;
+}
+
+export interface TtsResponse {
+  audioBase64: string;
+}
+
+export interface SpeechRecognitionAlternativeLike {
+  transcript: string;
+}
+
+export interface SpeechRecognitionResultLike {
+  readonly isFinal: boolean;
+  readonly 0: SpeechRecognitionAlternativeLike;
+}
+
+export interface SpeechRecognitionResultListLike {
+  readonly length: number;
+  readonly [index: number]: SpeechRecognitionResultLike;
+}
+
+export interface SpeechRecognitionResultEventLike {
+  resultIndex: number;
+  results: SpeechRecognitionResultListLike;
+}
+
+export interface SpeechRecognitionInstanceLike {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionResultEventLike) => void) | null;
+  onend?: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+export type SpeechRecognitionConstructorLike = new () => SpeechRecognitionInstanceLike;

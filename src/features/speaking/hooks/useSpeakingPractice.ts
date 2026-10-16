@@ -34,14 +34,18 @@ export function useSpeakingWorkspace(question: string, targetBand: string) {
       const result = await speakingApi.chatStep({
         question,
         targetBand,
-        history: transcript,
+        history: transcript.map(({ sender, text }) => ({
+          role: sender,
+          content: text,
+        })),
         userResponse: trimmedResponse,
       });
 
-      if (result.needsFollowUp && result.followUpQuestion) {
+      const followUpQuestion = result.followUpQuestion;
+      if (result.needsFollowUp && followUpQuestion) {
         setTranscript((current) => [
           ...current,
-          { sender: "ai", text: result.followUpQuestion },
+          { sender: "ai", text: followUpQuestion },
         ]);
       } else {
         setResponseReadyForEvaluation(true);
@@ -75,13 +79,14 @@ export function useSpeakingWorkspace(question: string, targetBand: string) {
       const result = await speakingApi.getCollocations({
         vietnamesePhrase,
         currentQuestion: question,
+        targetBand,
       });
       setCollocations(result);
       return result;
     } finally {
       setLoading((current) => ({ ...current, collocations: false }));
     }
-  }, [question]);
+  }, [question, targetBand]);
 
   const evaluate = useCallback(async () => {
     setLoading((current) => ({ ...current, evaluation: true }));
@@ -89,7 +94,7 @@ export function useSpeakingWorkspace(question: string, targetBand: string) {
       const result = await speakingApi.evaluate({
         question,
         targetBand,
-        fullTranscript: transcript,
+        fullTranscript: transcript.map(({ text }) => text).join(" "),
       });
       setEvaluationResult(result);
       setIsEvaluationOpen(true);
@@ -102,7 +107,12 @@ export function useSpeakingWorkspace(question: string, targetBand: string) {
   const evaluateAudio = useCallback(async (audioBlob: Blob) => {
     setLoading((current) => ({ ...current, evaluation: true }));
     try {
-      const result = await speakingApi.evaluateAudioSession(audioBlob, question, targetBand, transcript);
+      const result = await speakingApi.evaluate({
+        question,
+        targetBand,
+        fullTranscript: transcript.map(({ text }) => text).join(" "),
+        audioBlob,
+      });
       setEvaluationResult({ ...result, userAudioUrl: URL.createObjectURL(audioBlob) });
       setIsEvaluationOpen(true);
       return result;

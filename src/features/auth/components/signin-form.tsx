@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 import { authApi } from "../api/authApi";
 import { useAuthStore } from "../stores/authStore";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
@@ -16,27 +17,23 @@ export default function SignInForm() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    
-    try{
+
+    try {
       const response = await authApi.login({ email, password });
       const { accessToken, user } = response;
       setAuth(user, accessToken);
-    } catch(error){
-      const err = error as { message?: string };
-      toast.error(err?.message || "Đăng nhập thất bại. Vui lòng thử lại.");
-    } finally{
+      toast.success("Đăng nhập thành công!");
+      navigate("/");
+    } catch (error: unknown) {
+      toast.error(
+        getErrorMessage(error, "Đăng nhập thất bại. Vui lòng thử lại."),
+      );
+    } finally {
       setLoading(false);
     }
-
-    // Mô phỏng gọi API
-    setTimeout(() => {
-      toast.success("Đăng nhập thành công!");
-      setLoading(false);
-      navigate("/");
-    }, 800);
   };
 
   return (
@@ -56,6 +53,7 @@ export default function SignInForm() {
           <Input
             id="email"
             type="email"
+            autoComplete="email"
             placeholder="name@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -72,6 +70,7 @@ export default function SignInForm() {
           <Input
             id="password"
             type="password"
+            autoComplete="current-password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

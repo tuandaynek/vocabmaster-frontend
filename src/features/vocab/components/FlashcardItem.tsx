@@ -1,7 +1,8 @@
 import { BookOpen, Layers } from "lucide-react";
-import type { UserVocabularyItem } from "@/features/vocab/types";
-import { AudioButton, playWordAudio } from "@/components/function/AudioButton";
+import { AudioButton } from "@/components/function/AudioButton";
+import { playWordAudio } from "@/components/function/audioUtils";
 import { useEffect } from "react";
+import type { UserVocabularyItem } from "../types";
 
 interface FlashcardItemProps {
   card: UserVocabularyItem;
@@ -32,7 +33,7 @@ export function FlashcardItem({
 
   return (
     <div
-      onClick={onFlip}
+      onClick={submitting ? undefined : onFlip}
       className="group relative h-[450px] w-full cursor-pointer [perspective:1000px]"
     >
       <div
@@ -130,7 +131,7 @@ export function FlashcardItem({
                     <BookOpen className="h-3.5 w-3.5 text-sky-600" /> Collocations
                   </p>
                   <div className="space-y-1">
-                    {collocations.slice(0, 2).map((col: any, idx: number) => (
+                    {collocations.slice(0, 2).map((col, idx) => (
                       <div key={idx} className="text-xs text-slate-600">
                         <span className="font-bold text-slate-800">{col.phrase}</span>:{" "}
                         <span className="text-slate-500">{col.meaning}</span>
@@ -147,7 +148,7 @@ export function FlashcardItem({
                     <Layers className="h-3.5 w-3.5 text-emerald-600" /> Họ từ
                   </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {wordFamily.slice(0, 4).map((wf: any, idx: number) => (
+                    {wordFamily.slice(0, 4).map((wf, idx) => (
                       <span
                         key={idx}
                         className="rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600"

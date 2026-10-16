@@ -1,112 +1,30 @@
 import { useState } from 'react';
 import { MessageSquareQuote, UserCheck, RefreshCw } from 'lucide-react';
-import { useGameSound } from '../shared/useGameSound';
+import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
 import VictoryModal from '../shared/VictoryModal';
 import GameReward from '../shared/GameReward';
+import type { CampaignAnswer, GameStageResult } from '../../types/gameAnalytics';
+import type { ContextQuestion, ScenarioOption } from '../../types/grammarData';
+import EmptyGameState from '../shared/EmptyGameState';
 
-interface ScenarioOption {
-  id: string;
-  text: string;
-  isCorrect: boolean;
-  nuanceExplanation: string;
+interface ContextMatchGameProps {
+  onBack?: () => void;
+  onComplete?: (result: GameStageResult) => void;
+  onAnswer?: (answer: CampaignAnswer) => void;
+  questions?: ContextQuestion[];
+  stageTitle?: string;
+  stageId?: string;
+  subTopicTitle?: string;
+  initialLives?: number;
 }
 
-interface ContextQuestion {
-  id: string;
-  speakerA: string;
-  speakerBContext: string;
-  options: ScenarioOption[];
-  explanation: string;
-}
-
-const FAKE_CONTEXT_QUESTIONS: ContextQuestion[] = [
-  {
-    id: 'ctx-1',
-    speakerA: 'Look at the heavy dark clouds outside! It’s getting so dark.',
-    speakerBContext: 'Oh dear! It _____ rain very soon. We should hurry home!',
-    options: [
-      { 
-        id: 'opt-1', 
-        text: 'is going to', 
-        isCorrect: true, 
-        nuanceExplanation: 'Chính xác! Dùng "be going to" khi có dấu hiệu trực quan rõ ràng ở hiện tại (mây đen u uất).' 
-      },
-      { 
-        id: 'opt-2', 
-        text: 'will', 
-        isCorrect: false, 
-        nuanceExplanation: '"will" thường chỉ dự đoán bột phát hoặc không có căn cứ trực quan ở hiện tại.' 
-      },
-      { 
-        id: 'opt-3', 
-        text: 'shall', 
-        isCorrect: false, 
-        nuanceExplanation: '"shall" không dùng để dự đoán thời tiết trong tình huống này.' 
-      }
-    ],
-    explanation: 'Dự đoán thời tiết dựa trên bằng chứng trực quan ở hiện tại (mây đen) bắt buộc dùng "be going to + V".'
-  },
-  {
-    id: 'ctx-2',
-    speakerA: 'I failed my driving test yesterday because I was too nervous.',
-    speakerBContext: 'If I were you, I _____ more before taking it again.',
-    options: [
-      { 
-        id: 'opt-1', 
-        text: 'would practice', 
-        isCorrect: true, 
-        nuanceExplanation: 'Chính xác! Cấu trúc "If I were you, I would..." dùng để đưa ra lời khuyên chân thành.' 
-      },
-      { 
-        id: 'opt-2', 
-        text: 'will practice', 
-        isCorrect: false, 
-        nuanceExplanation: 'Câu điều kiện loại 2 giả định trái với hiện tại nên dùng "would + V".' 
-      },
-      { 
-        id: 'opt-3', 
-        text: 'practiced', 
-        isCorrect: false, 
-        nuanceExplanation: 'Thiếu động từ khuyết thiếu "would" trong mệnh đề chính.' 
-      }
-    ],
-    explanation: 'Đưa ra lời khuyên trong giao tiếp dùng câu điều kiện loại 2: "If I were you, I would + V".'
-  },
-  {
-    id: 'ctx-3',
-    speakerA: 'Why didn’t Alex attend the team meeting this morning?',
-    speakerBContext: 'He _____ about the schedule change. Nobody notified him.',
-    options: [
-      { 
-        id: 'opt-1', 
-        text: 'must not have known', 
-        isCorrect: true, 
-        nuanceExplanation: 'Chính xác! Suy đoán chắc chắn về một sự việc trong quá khứ dựa trên bằng chứng ("Nobody notified him").' 
-      },
-      { 
-        id: 'opt-2', 
-        text: 'shouldn’t have known', 
-        isCorrect: false, 
-        nuanceExplanation: '"shouldn’t have V3" nghĩa là lẽ ra không nên làm gì trong quá khứ.' 
-      },
-      { 
-        id: 'opt-3', 
-        text: 'needn’t know', 
-        isCorrect: false, 
-        nuanceExplanation: 'Sai thì và sai ý nghĩa dự đoán quá khứ.' 
-      }
-    ],
-    explanation: 'Suy đoán quá khứ có căn cứ rõ ràng: "must + have + V3/ed" (chắc hẳn là đã...).'
-  }
-];
-
-export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () => void; onComplete?: () => void }) {
+export default function ContextMatchGame({ onBack, onComplete, onAnswer, questions = [], stageTitle, stageId = 'context', subTopicTitle = stageTitle ?? 'Ngữ pháp', initialLives = 5 }: ContextMatchGameProps) {
   const { playSelect, playCorrect, playIncorrect, playGameOver, playVictory } = useGameSound();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lives, setLives] = useState(5);
+  const [lives, setLives] = useState(initialLives);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
 
@@ -117,13 +35,23 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
   const [isGameOver, setIsGameOver] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
 
-  const currentQ = FAKE_CONTEXT_QUESTIONS[currentIndex];
+  const currentQ = questions[currentIndex];
+  if (!currentQ) return <EmptyGameState onBack={onBack} />;
   const selectedOpt = currentQ.options.find(o => o.id === selectedOptionId);
 
   const handleSelectOption = (option: ScenarioOption) => {
     if (status !== 'playing' || isGameOver) return;
     playSelect();
     setSelectedOptionId(option.id);
+    onAnswer?.({
+      stageId,
+      subTopicTitle,
+      questionId: currentQ.id,
+      prompt: `${currentQ.speakerA} · ${currentQ.speakerBContext}`,
+      correctAnswer: currentQ.options.find(candidate => candidate.isCorrect)?.text ?? '',
+      submittedAnswer: option.text,
+      isCorrect: option.isCorrect
+    });
 
     if (option.isCorrect) {
       playCorrect();
@@ -146,7 +74,7 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
 
   const handleNext = () => {
     playSelect();
-    if (currentIndex < FAKE_CONTEXT_QUESTIONS.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setSelectedOptionId(null);
       setStatus('playing');
@@ -158,7 +86,7 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
 
   const handleRetryGame = () => {
     playSelect();
-    setLives(5);
+    setLives(initialLives);
     setXp(0);
     setStreak(0);
     setCurrentIndex(0);
@@ -178,9 +106,9 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
           lives={lives}
           xp={xp}
           streak={streak}
-          title="Ghép Tình Huống (Context Match)"
+          title={stageTitle ?? 'Ghép Tình Huống (Context Match)'}
           currentStep={currentIndex + 1}
-          totalSteps={FAKE_CONTEXT_QUESTIONS.length}
+          totalSteps={questions.length}
         />
 
         {/* --- GAME CARD CHÍNH --- */}
@@ -213,7 +141,7 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
                 B
               </div>
               <div className="bg-teal-500 text-white p-4 rounded-3xl rounded-tr-none border-b-4 border-teal-700 font-bold text-sm md:text-base shadow-md">
-                "{currentQ.speakerBContext.replace('_____', selectedOpt ? `[ ${selectedOpt.text} ]` : '_____')}"
+                "{currentQ.speakerBContext.replace('_____', selectedOpt ? ` ${selectedOpt.text} ` : '_____')}"
               </div>
             </div>
           </div>
@@ -242,7 +170,7 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
                   className={`w-full p-4 font-bold rounded-2xl transition-all text-left flex items-center justify-between text-sm md:text-base active:translate-y-1 cursor-pointer ${style}`}
                 >
                   <span className="flex items-center gap-3">
-                    <UserCheck className={`w-5 h-5 ${isSelected || option.isCorrect ? 'text-white' : 'text-teal-500'}`} />
+                    <UserCheck className={`w-5 h-5 ${isSelected && option.isCorrect ? 'text-black' : 'text-teal-500'}`} />
                     {option.text}
                   </span>
                 </button>
@@ -271,7 +199,7 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
               onClick={handleNext}
               className="w-full md:w-auto px-7 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 font-black rounded-2xl shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
             >
-              Tiếp tục 🚀
+              Tiếp tục
             </button>
           </div>
         )}
@@ -312,7 +240,7 @@ export default function ContextMatchGame({ onBack, onComplete }: { onBack?: () =
       <VictoryModal 
         isOpen={isVictory} 
         xpEarned={xp} 
-        onNext={onComplete || onBack || (() => {})} 
+        onNext={() => onComplete ? onComplete({ xpEarned: xp, livesRemaining: lives }) : onBack?.()} 
         onReplay={handleRetryGame}
       />
     </div>

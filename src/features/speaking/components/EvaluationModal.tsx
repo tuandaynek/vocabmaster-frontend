@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { speakingApi } from "../api/speakingApi";
 import type { EvaluationResponse } from "../types/speaking.types";
-import { useRating } from "@/contexts/RatingContext";
+import { useRating } from "@/contexts/useRating";
 
 interface EvaluationModalProps {
   isOpen: boolean;

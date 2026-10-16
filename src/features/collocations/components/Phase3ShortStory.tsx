@@ -1,22 +1,18 @@
 import { useState } from "react";
 import {
   BookOpen,
-  Sparkles,
-  AlertCircle,
-  Trophy,
   ArrowRight,
   Globe,
   RotateCcw,
   Bot,
   Send,
   AlertTriangle,
-  CheckCircle2,
-  XCircle,
   FileText,
   CheckCheck,
 } from "lucide-react";
 import { collocationApi } from "../api/collocationApi";
 import type { CollocationReviewData, EvaluatePhase3Response } from "../types";
+import { getErrorMessage } from "../utils/errorMessage";
 
 interface Props {
   collocation: CollocationReviewData;
@@ -24,12 +20,13 @@ interface Props {
 }
 
 export default function Phase3ShortStory({ collocation, onComplete }: Props) {
-  const targetId = collocation.collocationId || collocation.id;
+  const targetId = collocation.collocationId;
   const phrase = collocation.phrase;
 
   const [story, setStory] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<EvaluatePhase3Response | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const sentenceCount = story
     .split(/[.!?]+/)
@@ -40,15 +37,15 @@ export default function Phase3ShortStory({ collocation, onComplete }: Props) {
 
     try {
       setLoading(true);
+      setError(null);
       const res = await collocationApi.evaluatePhase3({
         collocationId: targetId,
         userStory: story.trim(),
         mode: "custom_story",
       });
-      const data = res.data as EvaluatePhase3Response;
-      setResult(data);
-    } catch (err: any) {
-      console.error("Phase 3 Evaluation Error:", err);
+      setResult(res.data);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể chấm điểm bài viết."));
     } finally {
       setLoading(false);
     }
@@ -75,6 +72,12 @@ export default function Phase3ShortStory({ collocation, onComplete }: Props) {
             </h3>
           </div>
         </div>
+
+        {error && (
+          <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-700">
+            {error}
+          </p>
+        )}
 
         {/* Điểm số hiển thị góc phải trên cùng khi đã chấm */}
         {result && typeof result.score === "number" && (

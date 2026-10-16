@@ -15,10 +15,6 @@ export const FOCUS_MODES: Array<{ value: FocusMode; description: string }> = [
     value: "Collocations & Phrasal Verbs",
     description: "Chỉ nhặt cụm từ ghép & cụm động từ tự nhiên trong bài"
   },
-  // {
-  //   value: "Prefix & Suffix Deep Dive",
-  //   description: "Bóc tách cấu tạo từ chuyên sâu",
-  // },
 ];
 
 export const SAMPLE_PASSAGES: Record<string, string> = {

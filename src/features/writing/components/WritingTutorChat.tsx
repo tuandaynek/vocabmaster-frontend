@@ -1,4 +1,8 @@
 import { MessageCircle, Send } from "lucide-react";
+import {
+  WRITING_BAND_OPTIONS,
+  WRITING_TUTOR_QUICK_SUGGESTIONS,
+} from "../constants/tutor.constants";
 import { useTutorChat } from "../hooks/useTutorChat";
 import { ChatMessageList } from "./ChatMessageList";
 
@@ -8,12 +12,6 @@ type WritingTutorChatProps = {
   targetBand: string;
   onTargetBandChange: (value: string) => void;
 };
-
-const QUICK_SUGGESTIONS = [
-  "💡 Cho tui ý tưởng cho Body 1",
-  "🔤 Cho tui xin Collocations chủ đề này",
-  "⚠️ Đề này có bẫy gì không?",
-];
 
 export default function WritingTutorChat({
   questionText,
@@ -55,7 +53,7 @@ export default function WritingTutorChat({
             onChange={(e) => onTargetBandChange(e.target.value)}
             className="cursor-pointer rounded-xl border-2 border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 outline-none focus:border-emerald-300"
           >
-            {["6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0"].map((band) => (
+            {WRITING_BAND_OPTIONS.map((band) => (
               <option key={band} value={band}>
                 Band {band}
               </option>
@@ -90,13 +88,13 @@ export default function WritingTutorChat({
       <ChatMessageList
         messages={messages}
         sending={sending}
-        scrollRef={scrollRef as unknown as React.RefObject<HTMLDivElement>}
+        scrollRef={scrollRef}
       />
 
       {/* Chat Input & Suggestions */}
       <div className="shrink-0 border-t-2 border-slate-100 bg-slate-50 p-4">
         <div className="mb-2.5 flex gap-2 overflow-x-auto pb-1">
-          {QUICK_SUGGESTIONS.map((suggestion) => (
+          {WRITING_TUTOR_QUICK_SUGGESTIONS.map((suggestion) => (
             <button
               type="button"
               key={suggestion}

@@ -35,8 +35,7 @@ export function useVocabExtractor() {
         })),
       );
       setHasExtracted(true);
-    } catch (error) {
-      console.error("Vocab extract error:", error);
+    } catch {
       toast.error("Không thể trích xuất từ vựng lúc này. Vui lòng thử lại.");
     } finally {
       setLoading(false);
@@ -45,8 +44,11 @@ export function useVocabExtractor() {
 
   const handleSave = async () => {
     const selectedWords = extractedList
-      .filter((item) => item.selected)
-      .map(({ selected, ...rest }) => rest);
+      .map((item) => {
+        const { selected, ...word } = item;
+        return selected ? word : null;
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
 
     if (selectedWords.length === 0) {
       toast.error("Vui lòng chọn ít nhất một từ để lưu.");
@@ -57,9 +59,9 @@ export function useVocabExtractor() {
       await vocabApi.save({ selectedWords });
       setExtractedList([]);
       toast.success(`Đã lưu ${selectedWords.length} từ vào VocabMaster.`);
-    } catch (error) {
-      console.error("Vocab save error:", error);
+    } catch (error: unknown) {
       toast.error("Không thể lưu danh sách từ vựng lúc này.");
+      throw error;
     }
   };
 

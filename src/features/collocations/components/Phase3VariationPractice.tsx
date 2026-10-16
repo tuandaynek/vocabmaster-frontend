@@ -1,16 +1,10 @@
-import { useState, useEffect } from "react";
-import type { CollocationReviewData } from "../types";
+import { useCallback, useState, useEffect } from "react";
+import type { CollocationReviewData, CollocationVariation } from "../types";
 import { collocationApi } from "../api/collocationApi";
 import { useSpeechPractice } from "../hooks/useSpeechPractice";
-import { isWordInCollocation, getCleanWords } from "../utils/collocationUtils";
+import SentencePronunciationFeedback from "./SentencePronunciationFeedback";
 import { Mic, Sparkles, RefreshCw, ArrowRight, Quote, Loader2, Award } from "lucide-react";
-
-interface VariationItem {
-  id: number;
-  type: string;
-  sentence: string;
-  note: string;
-}
+import { getErrorMessage } from "../utils/errorMessage";
 
 interface Phase3Props {
   collocation: CollocationReviewData;
@@ -21,62 +15,40 @@ export default function Phase3VariationPractice({
   collocation,
   onComplete,
 }: Phase3Props) {
-  const [variations, setVariations] = useState<VariationItem[]>([]);
+  const [variations, setVariations] = useState<CollocationVariation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const baseSentence =
-    collocation.baseSentence ||
-    collocation.sample_sentences?.[0] ||
-    `Buying products with less packaging is a good way to ${collocation.phrase}.`;
-
-  // 1. Fetch 3 câu biến thể từ Backend (GIỮ NGUYÊN LOGIC & FALLBACK)
-  useEffect(() => {
-    const fetchVariations = async () => {
-      setLoading(true);
-      try {
-        const response = await collocationApi.getVariations(
-          collocation.collocationId || collocation.id,
-        );
-
-        const variationsList = response?.data?.variations ?? response?.variations ?? [];
-
-        if (variationsList.length > 0) {
-          setVariations(variationsList);
-        } else {
-          throw new Error("Empty variations list");
-        }
-      } catch (err) {
-        console.warn("API Call failed, using Mock Data fallback:", err);
-        setVariations([
-          {
-            id: 1,
-            type: "Synonym Swap",
-            sentence: baseSentence
-              .replace(/products/i, "goods")
-              .replace(/a good way/i, "a great way"),
-            note: "Thay 'products' ➔ 'goods', 'a good way' ➔ 'a great way'",
-          },
-          {
-            id: 2,
-            type: "Structure Shift",
-            sentence: `People should buy products with less packaging to ${collocation.phrase}.`,
-            note: "Đổi sang cấu trúc 'People should...'",
-          },
-          {
-            id: 3,
-            type: "Gentle Upgrade",
-            sentence: `We should avoid buying items with too much packaging to ${collocation.phrase}.`,
-            note: "Đổi góc nhìn 'Tránh mua đồ nhiều packaging...'",
-          },
-        ]);
-      } finally {
-        setLoading(false);
+  const fetchVariations = useCallback(async () => {
+    try {
+      const response = await collocationApi.getVariations(
+        collocation.collocationId,
+      );
+      const variationsList = response.data.variations ?? [];
+      if (variationsList.length === 0) {
+        throw new Error("Chưa có câu biến thể cho collocation này.");
       }
-    };
 
-    fetchVariations();
-  }, [collocation, baseSentence]);
+      setVariations(variationsList);
+      setCurrentIndex(0);
+    } catch (fetchError: unknown) {
+      setVariations([]);
+      setError(
+        getErrorMessage(fetchError, "Không thể tải các câu biến thể."),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [collocation.collocationId]);
+
+  useEffect(() => {
+    const fetchTimer = window.setTimeout(() => {
+      void fetchVariations();
+    }, 0);
+
+    return () => window.clearTimeout(fetchTimer);
+  }, [fetchVariations]);
 
   const currentItem = variations[currentIndex];
 
@@ -85,8 +57,8 @@ export default function Phase3VariationPractice({
     isRecording,
     spokenText,
     score,
+    speechError,
     startRecording,
-    setScore,
     resetSpeech,
   } = useSpeechPractice({
     targetSentence: currentItem?.sentence || "",
@@ -94,12 +66,8 @@ export default function Phase3VariationPractice({
 
   // Tự động xoá dữ liệu thu âm cũ mỗi khi chuyển sang câu biến thể mới
   useEffect(() => {
-    if (resetSpeech) {
-      resetSpeech();
-    } else {
-      setScore(null);
-    }
-  }, [currentIndex]);
+    resetSpeech();
+  }, [currentIndex, resetSpeech]);
 
   // Chuyển câu biến thể tiếp theo hoặc hoàn thành Phase 3
   const handleNextVariation = () => {
@@ -110,65 +78,6 @@ export default function Phase3VariationPractice({
     }
   };
 
-  const renderSentenceWithFeedback = () => {
-    if (!currentItem) return null;
-
-    const rawWords = currentItem.sentence.split(/\s+/);
-    const targetWordsClean = getCleanWords(currentItem.sentence);
-    const spokenWordsClean = spokenText ? getCleanWords(spokenText) : [];
-
-    return (
-      <div className="flex flex-wrap justify-center items-center gap-2 leading-relaxed my-2 min-h-[80px]">
-        {rawWords.map((word, idx) => {
-          const cleanWord = targetWordsClean[idx];
-          const spokenAtIdx = spokenWordsClean[idx];
-          const isTargetCollocation = isWordInCollocation(
-            idx,
-            currentItem.sentence,
-            collocation.phrase
-          );
-
-          if (!spokenText) {
-            return (
-              <span
-                key={idx}
-                className={`rounded-2xl border-2 px-3 py-1.5 text-lg font-bold transition-all ${
-                  isTargetCollocation
-                    ? "border-amber-300 bg-amber-50 text-amber-800"
-                    : "border-slate-200 bg-white text-slate-700"
-                }`}
-              >
-                {word}
-              </span>
-            );
-          }
-
-          const isCorrect = spokenAtIdx === cleanWord;
-          const isMissing = !spokenAtIdx;
-
-          return (
-            <div key={idx} className="flex flex-col items-center">
-              <span
-                className={`rounded-2xl border-2 px-3 py-1.5 text-lg font-bold transition-all ${
-                  isCorrect
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                    : "border-rose-200 bg-rose-50 text-rose-700"
-                }`}
-              >
-                {word}
-              </span>
-              {!isCorrect && (
-                <span className="mt-1.5 rounded-xl border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-700 shadow-sm">
-                  {isMissing ? "thiếu" : `≠ "${spokenAtIdx}"`}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
   if (loading) {
     return (
       <div className="mx-auto max-w-md rounded-3xl border-2 border-slate-100 bg-white p-10 text-center shadow-sm">
@@ -176,6 +85,27 @@ export default function Phase3VariationPractice({
         <p className="text-sm font-bold text-slate-600">
           Đang tạo các câu biến thể cho bạn...
         </p>
+      </div>
+    );
+  }
+
+  if (error || !currentItem) {
+    return (
+      <div className="mx-auto max-w-md space-y-4 rounded-3xl border-2 border-rose-100 bg-white p-8 text-center shadow-sm">
+        <p role="alert" className="text-sm font-medium text-rose-700">
+          {error ?? "Không có câu biến thể để luyện tập."}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setLoading(true);
+            setError(null);
+            void fetchVariations();
+          }}
+          className="rounded-xl border-b-4 border-emerald-700 bg-emerald-500 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-600"
+        >
+          Thử tải lại
+        </button>
       </div>
     );
   }
@@ -205,7 +135,13 @@ export default function Phase3VariationPractice({
       <div className="relative my-3 overflow-hidden rounded-3xl border-2 border-slate-100 bg-slate-50 p-6 shadow-sm">
         <Quote className="pointer-events-none absolute -right-1 -top-1 h-12 w-12 rotate-180 text-slate-200" />
 
-        {renderSentenceWithFeedback()}
+        {currentItem && (
+          <SentencePronunciationFeedback
+            sentence={currentItem.sentence}
+            targetPhrase={collocation.phrase}
+            spokenText={spokenText}
+          />
+        )}
 
         {currentItem && (
           <div className="mt-4 border-t border-slate-200 pt-3 text-xs font-semibold italic text-slate-500">
@@ -215,6 +151,11 @@ export default function Phase3VariationPractice({
       </div>
 
       {/* Score Box */}
+      {speechError && (
+        <p role="alert" className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-700">
+          {speechError}
+        </p>
+      )}
       {score !== null && (
         <div className="my-4 flex items-center justify-between rounded-2xl border-2 border-slate-100 bg-white px-5 p-4 shadow-sm">
           <div className="text-left">

@@ -1,10 +1,6 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-
-export interface ActivityItem {
-  date: string; // Định dạng "YYYY-MM-DD"
-  xp: number;
-}
+import type { ActivityItem } from "../types";
 
 interface ActivityCalendarProps {
   activityHistory?: ActivityItem[];
@@ -34,7 +30,7 @@ export default function ActivityCalendar({
   const activityMap = useMemo(() => {
     const map = new Map<string, number>();
     activityHistory.forEach((item) => {
-      map.set(item.date, item.xp);
+      map.set(item.date, item.xpGained);
     });
     return map;
   }, [activityHistory]);

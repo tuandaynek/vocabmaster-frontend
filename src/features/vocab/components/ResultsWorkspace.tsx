@@ -3,13 +3,13 @@ import { Check, CheckCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { VocabListItem } from "../types";
 import { WordResultCard } from "./WordResultCard";
-import {  useRating } from "@/contexts/RatingContext";
+import { useRating } from "@/contexts/useRating";
 
 interface ResultsWorkspaceProps {
   extractedList: VocabListItem[];
   onToggleAll: () => void;
   onToggle: (index: number) => void;
-  onSave: () => void | Promise<void>; // Hỗ trợ cả async hàm
+  onSave: () => void | Promise<void>;
 }
 
 export function ResultsWorkspace({
@@ -34,8 +34,8 @@ export function ResultsWorkspace({
   const handleSave = async () => {
     if (!onSave || isSaving || isSaved) return;
 
+    setIsSaving(true);
     try {
-      setIsSaving(true);
       await onSave();
       setIsSaved(true);
 
@@ -49,17 +49,12 @@ export function ResultsWorkspace({
           "Kết quả trích xuất tốt",
           "Rất chính xác và hữu ích",
         ],
-
         onClose: () => {
-          // Reset trạng thái báo thành công sau 2.5s (nếu user vẫn ở trang này)
-          setTimeout(() => {
-            setIsSaved(false);
-          }, 2500);
-        }
+          setTimeout(() => setIsSaved(false), 2500);
+        },
       });
-
-    } catch (error) {
-      console.error("Lỗi khi lưu từ vựng:", error);
+    } catch {
+      return;
     } finally {
       setIsSaving(false);
     }

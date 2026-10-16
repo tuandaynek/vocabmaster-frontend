@@ -1,20 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-
-type SpeechRecognitionResultEvent = Event & {
-  resultIndex: number;
-  results: SpeechRecognitionResultList;
-};
-
-type SpeechRecognitionInstance = {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
-  start: () => void;
-  stop: () => void;
-};
-
-type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
+import type {
+  SpeechRecognitionConstructorLike,
+  SpeechRecognitionInstanceLike,
+} from "../types/speaking.types";
 
 export function useSpeakingAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
@@ -24,7 +12,7 @@ export function useSpeakingAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const accumulatedBlobsRef = useRef<Blob[]>([]);
-  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstanceLike | null>(null);
   const recordingStreamRef = useRef<MediaStream | null>(null);
 
   // Dùng Ref để tránh stale closure khi resolve Promise ở stopRecordingTurn
@@ -41,6 +29,7 @@ export function useSpeakingAudioRecorder() {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
+      recordingStreamRef.current = stream;
       if (!stream.active) {
         stream.getTracks().forEach((track) => track.stop());
         throw new Error("The microphone stream is inactive.");
@@ -66,66 +55,54 @@ export function useSpeakingAudioRecorder() {
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) audioChunksRef.current.push(event.data);
       };
-      mediaRecorder.onerror = (event) => {
-        console.error("MediaRecorder error:", event);
-      };
-
       mediaRecorder.start(1000);
       setIsRecording(true);
 
-    // Khởi tạo Web Speech API cho Speech-to-Text tức thì
-    const SpeechRecognition =
-      (
-        window as Window & {
-          SpeechRecognition?: SpeechRecognitionConstructor;
-          webkitSpeechRecognition?: SpeechRecognitionConstructor;
-        }
-      ).SpeechRecognition ||
-      (
-        window as Window & {
-          webkitSpeechRecognition?: SpeechRecognitionConstructor;
-        }
-      ).webkitSpeechRecognition;
+      const speechWindow = window as Window & {
+        SpeechRecognition?: SpeechRecognitionConstructorLike;
+        webkitSpeechRecognition?: SpeechRecognitionConstructorLike;
+      };
+      const SpeechRecognition =
+        speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
 
       if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
 
-      let finalTranscript = ""; // Lưu trữ các câu đã nói xong trước đó
+        let finalTranscript = "";
 
-      recognition.onresult = (event) => {
-        let currentInterim = "";
+        recognition.onresult = (event) => {
+          let currentInterim = "";
 
-        for (let i = event.resultIndex; i < event.results.length; i += 1) {
-          const transcriptPiece = event.results[i][0].transcript;
+          for (let i = event.resultIndex; i < event.results.length; i += 1) {
+            const transcriptPiece = event.results[i][0].transcript;
 
-          // Nếu cụm từ này đã được nhận diện chính thức (người dùng vừa dừng nghỉ 1 nhịp)
-          if (event.results[i].isFinal) {
-            finalTranscript += transcriptPiece + " ";
-          } else {
-            // Cụm từ đang nói dở chưa chốt
-            currentInterim += transcriptPiece;
+            if (event.results[i].isFinal) {
+              finalTranscript += `${transcriptPiece} `;
+            } else {
+              currentInterim += transcriptPiece;
+            }
           }
-        }
 
-        // Kết hợp cả văn bản đã chốt + văn bản đang nói dở
-        const fullText = (finalTranscript + currentInterim).trim();
+          const fullText = (finalTranscript + currentInterim).trim();
 
-        latestTranscriptRef.current = fullText;
-        setTranscriptText(fullText);
-      };
+          latestTranscriptRef.current = fullText;
+          setTranscriptText(fullText);
+        };
 
-      recognition.start();
+        recognition.start();
         recognitionRef.current = recognition;
       }
     } catch (error) {
       recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
       recordingStreamRef.current = null;
+      mediaRecorderRef.current?.stream
+        .getTracks()
+        .forEach((track) => track.stop());
       mediaRecorderRef.current = null;
       setIsRecording(false);
-      console.error("Unable to initialize microphone recorder:", error);
       throw error;
     }
   }, [isRecording]);
@@ -203,9 +180,11 @@ export function useSpeakingAudioRecorder() {
     mediaRecorderRef.current?.stream
       .getTracks()
       .forEach((track) => track.stop());
+    recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
 
     recognitionRef.current = null;
     mediaRecorderRef.current = null;
+    recordingStreamRef.current = null;
     audioChunksRef.current = [];
     accumulatedBlobsRef.current = [];
     latestTranscriptRef.current = "";

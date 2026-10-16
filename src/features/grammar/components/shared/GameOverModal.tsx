@@ -1,5 +1,5 @@
 import { HeartCrack, RotateCcw, Home } from 'lucide-react';
-import { useGameSound } from './useGameSound';
+import { useGameSound } from '../../hooks/useGameSound';
 
 interface GameOverModalProps {
   isOpen: boolean;

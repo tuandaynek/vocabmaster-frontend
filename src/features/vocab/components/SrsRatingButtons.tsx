@@ -1,4 +1,4 @@
-import type { ReviewRating } from "@/features/vocab/types";
+import type { ReviewRating } from "../types";
 
 interface SrsRatingButtonsProps {
   onReview: (rating: ReviewRating) => void;

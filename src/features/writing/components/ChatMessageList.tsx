@@ -7,7 +7,7 @@ import { sanitizeMarkdown } from "../utils/markdownUtils";
 interface ChatMessageListProps {
   messages: ChatMessage[];
   sending: boolean;
-  scrollRef: RefObject<HTMLDivElement>;
+  scrollRef: RefObject<HTMLDivElement | null>;
 }
 
 export function ChatMessageList({ messages, sending, scrollRef }: ChatMessageListProps) {

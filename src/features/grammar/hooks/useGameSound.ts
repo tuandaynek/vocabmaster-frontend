@@ -1,5 +1,9 @@
 import { useCallback, useRef } from 'react';
 
+const reportAudioError = (error: unknown) => {
+  window.dispatchEvent(new CustomEvent('grammar-audio-error', { detail: error }));
+};
+
 export function useGameSound() {
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -32,12 +36,12 @@ export function useGameSound() {
       if (ctx.state === 'suspended') {
         void ctx.resume()
           .then(() => playAt(ctx.currentTime + delay))
-          .catch(error => console.error('AudioContext resume error:', error));
+          .catch(reportAudioError);
       } else {
         playAt(ctx.currentTime + delay);
       }
-    } catch (e) {
-      console.error('AudioContext error:', e);
+    } catch (error) {
+      reportAudioError(error);
     }
   }, []);
 

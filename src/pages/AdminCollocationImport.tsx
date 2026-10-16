@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collocationApi } from '../features/collocations/api/collocationApi';
-import type { GlobalCollocationItem } from '@/features/collocations/types';
+import type { CollocationImportItem } from '@/features/collocations/types';
+import { getErrorMessage } from '@/features/collocations/utils/errorMessage';
+import { parseCollocationImport } from '@/features/collocations/utils/parseCollocationImport';
 
 export default function AdminCollocationImport() {
   const navigate = useNavigate();
   const [jsonInput, setJsonInput] = useState('');
-  const [parsedCards, setParsedCards] = useState<GlobalCollocationItem[]>([]);
+  const [parsedCards, setParsedCards] = useState<CollocationImportItem[]>([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,12 +30,7 @@ export default function AdminCollocationImport() {
         .replace(/```/g, '')
         .trim();
 
-      const parsed: GlobalCollocationItem[] = JSON.parse(cleanedInput);
-
-      if (!Array.isArray(parsed)) {
-        setError('Dữ liệu JSON phải là một mảng Array [...] các object.');
-        return;
-      }
+      const parsed = parseCollocationImport(JSON.parse(cleanedInput) as unknown);
 
       setParsedCards(parsed);
       // Mặc định chọn tất cả các thẻ khi parse thành công
@@ -88,8 +85,7 @@ export default function AdminCollocationImport() {
       if (remainingCards.length === 0) setJsonInput('');
 
     } catch (err: unknown) {
-      console.error('AdminCollocationImport: Lỗi khi lưu collocations vào DB:', err);
-      setError(err instanceof Error ? err.message : 'Lỗi khi lưu vào database.');
+      setError(getErrorMessage(err, 'Lỗi khi lưu vào database.'));
     } finally {
       setLoading(false);
     }

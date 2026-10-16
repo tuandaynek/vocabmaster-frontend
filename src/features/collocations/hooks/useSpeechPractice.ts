@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
-import { normalizeSpeechText } from "../utils/speechUtils";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCleanWords } from "../utils/collocationUtils";
+import { getSpeechRecognitionConstructor } from "../utils/speechRecognition";
+import type { SpeechRecognitionLike } from "../types/speechRecognition";
 
 interface UseSpeechPracticeProps {
   targetSentence: string;
@@ -11,14 +12,15 @@ export function useSpeechPractice({ targetSentence, onComplete }: UseSpeechPract
   const [isRecording, setIsRecording] = useState(false);
   const [spokenText, setSpokenText] = useState("");
   const [score, setScore] = useState<number | null>(null);
+  const [speechError, setSpeechError] = useState<string | null>(null);
 
-  const recognitionRef = useRef<any>(null);
-  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestTranscriptRef = useRef("");
   const isManualStopRef = useRef(false);
 
   // Đánh giá điểm số
-  const evaluateSpeech = (transcript: string) => {
+  const evaluateSpeech = useCallback((transcript: string) => {
     setSpokenText(transcript);
 
     if (!targetSentence) return;
@@ -48,22 +50,21 @@ export function useSpeechPractice({ targetSentence, onComplete }: UseSpeechPract
     );
 
     setScore(calculatedScore);
-    if (onComplete) onComplete(calculatedScore, transcript);
-  };
+    onComplete?.(calculatedScore, transcript);
+  }, [onComplete, targetSentence]);
 
   // Bắt đầu thu âm
   const startRecording = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = getSpeechRecognitionConstructor();
 
     if (!SpeechRecognition) {
-      alert("Trình duyệt không hỗ trợ nhận diện giọng nói!");
+      setSpeechError("Trình duyệt không hỗ trợ nhận diện giọng nói.");
       return;
     }
 
     if (!targetSentence) return;
 
+    setSpeechError(null);
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
 
     const recognition = new SpeechRecognition();
@@ -84,7 +85,7 @@ export function useSpeechPractice({ targetSentence, onComplete }: UseSpeechPract
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = setTimeout(() => {
         isManualStopRef.current = true;
-        if (recognitionRef.current) recognitionRef.current.stop();
+        recognitionRef.current?.stop();
       }, 4000);
     };
 
@@ -93,10 +94,10 @@ export function useSpeechPractice({ targetSentence, onComplete }: UseSpeechPract
       resetSilenceTimer();
     };
 
-    recognition.onresult = (e: any) => {
+    recognition.onresult = (event) => {
       let currentTranscript = "";
-      for (let i = 0; i < e.results.length; i++) {
-        currentTranscript += e.results[i][0].transcript + " ";
+      for (let i = 0; i < event.results.length; i++) {
+        currentTranscript += `${event.results[i][0].transcript} `;
       }
 
       const cleanCurrent = getCleanWords(currentTranscript).join(" ");
@@ -112,18 +113,32 @@ export function useSpeechPractice({ targetSentence, onComplete }: UseSpeechPract
       resetSilenceTimer();
     };
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event) => {
       if (event.error === "no-speech") return;
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      isManualStopRef.current = true;
       setIsRecording(false);
+      setSpeechError(
+        event.error === "not-allowed"
+          ? "Vui lòng cấp quyền sử dụng micro để luyện nói."
+          : "Không thể nhận diện giọng nói. Vui lòng thử lại.",
+      );
     };
 
     recognition.onend = () => {
       if (!isManualStopRef.current) {
         try {
-          recognition.start();
+          try {
+            recognition.start();
+          } catch {
+            isManualStopRef.current = true;
+            setIsRecording(false);
+            setSpeechError("Không thể khởi động micro. Vui lòng thử lại.");
+          }
           return;
-        } catch (err) {}
+        } catch {
+          isManualStopRef.current = true;
+        }
       }
 
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
@@ -136,19 +151,26 @@ export function useSpeechPractice({ targetSentence, onComplete }: UseSpeechPract
 
   const stopRecording = () => {
     isManualStopRef.current = true;
-    if (recognitionRef.current) recognitionRef.current.stop();
+    recognitionRef.current?.stop();
   };
 
-  const resetSpeech = () => {
-    setSpokenText(null);
+  const resetSpeech = useCallback(() => {
+    setSpokenText("");
     setScore(null);
+    setSpeechError(null);
     latestTranscriptRef.current = "";
-  };
+  }, []);
+
+  useEffect(() => () => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    recognitionRef.current?.stop();
+  }, []);
 
   return {
     isRecording,
     spokenText,
     score,
+    speechError,
     startRecording,
     stopRecording,
     setScore,

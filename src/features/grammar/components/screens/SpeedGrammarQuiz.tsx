@@ -1,48 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
-import { useGameSound } from '../shared/useGameSound';
+import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
 import VictoryModal from '../shared/VictoryModal';
 import GameReward from '../shared/GameReward';
+import type { CampaignAnswer, GameStageResult } from '../../types/gameAnalytics';
+import type { QuizQuestion } from '../../types/grammarData';
+import EmptyGameState from '../shared/EmptyGameState';
 
-interface QuizQuestion {
-  id: string;
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  explanation: string;
+interface SpeedGrammarQuizProps {
+  onBack?: () => void;
+  onComplete?: (result: GameStageResult) => void;
+  onAnswer?: (answer: CampaignAnswer) => void;
+  questions?: QuizQuestion[];
+  stageTitle?: string;
+  stageId?: string;
+  subTopicTitle?: string;
+  initialLives?: number;
 }
 
-const FAKE_QUIZZES: QuizQuestion[] = [
-  {
-    id: 'sq1',
-    question: 'Choose the correct form: "By this time next week, we _____ our final exams."',
-    options: ['will finish', 'will have finished', 'are finishing', 'have finished'],
-    correctAnswer: 'will have finished',
-    explanation: 'Dùng tương lai hoàn thành (will have + V3/ed) với trạng ngữ chỉ thời gian hoàn thành trước một mốc tương lai.'
-  },
-  {
-    id: 'sq2',
-    question: 'Find the correct conditional sentence: "If she had studied harder, she _____ the exam."',
-    options: ['would pass', 'will pass', 'would have passed', 'passed'],
-    correctAnswer: 'would have passed',
-    explanation: 'Câu điều kiện loại 3 diễn tả giả thiết trái ngược quá khứ: If + had V3, would have V3.'
-  },
-  {
-    id: 'sq3',
-    question: 'Select the right relative pronoun: "The scientist _____ discovery changed the world was honored yesterday."',
-    options: ['who', 'whom', 'whose', 'which'],
-    correctAnswer: 'whose',
-    explanation: 'Dùng đại từ quan hệ chỉ sở hữu "whose" đứng trước danh từ (discovery).'
-  }
-];
-
-export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () => void; onComplete?: () => void }) {
+export default function SpeedGrammarQuiz({ onBack, onComplete, onAnswer, questions = [], stageTitle, stageId = 'speed', subTopicTitle = stageTitle ?? 'Ngữ pháp', initialLives = 5 }: SpeedGrammarQuizProps) {
   const { playSelect, playTick, playCorrect, playIncorrect, playGameOver, playVictory } = useGameSound();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lives, setLives] = useState(5);
+  const [lives, setLives] = useState(initialLives);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
 
@@ -56,10 +37,10 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
   const [isGameOver, setIsGameOver] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
 
-  const currentQ = FAKE_QUIZZES[currentIndex];
+  const currentQ = questions[currentIndex];
 
   useEffect(() => {
-    if (status !== 'playing' || isGameOver) return;
+    if (!currentQ || status !== 'playing' || isGameOver) return;
 
     const timer = setTimeout(() => {
       if (timeLeft <= 5) playTick(timeLeft <= 3);
@@ -67,6 +48,15 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
       if (timeLeft <= 1) {
         playIncorrect();
         setStatus('timeout');
+        onAnswer?.({
+          stageId,
+          subTopicTitle,
+          questionId: currentQ.id,
+          prompt: currentQ.question,
+          correctAnswer: currentQ.correctAnswer,
+          submittedAnswer: 'Hết giờ',
+          isCorrect: false
+        });
         const nextLives = Math.max(0, lives - 1);
         setLives(nextLives);
         setStreak(0);
@@ -82,14 +72,26 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [timeLeft, status, lives, isGameOver, playIncorrect, playGameOver, playTick]);
+  }, [timeLeft, status, lives, isGameOver, currentQ, onAnswer, stageId, subTopicTitle, playIncorrect, playGameOver, playTick]);
+
+  if (!currentQ) return <EmptyGameState onBack={onBack} />;
 
   const handleSelectOption = (option: string) => {
     if (status !== 'playing' || isGameOver) return;
     playSelect();
     setSelectedAnswer(option);
+    const isCorrect = option === currentQ.correctAnswer;
+    onAnswer?.({
+      stageId,
+      subTopicTitle,
+      questionId: currentQ.id,
+      prompt: currentQ.question,
+      correctAnswer: currentQ.correctAnswer,
+      submittedAnswer: option,
+      isCorrect
+    });
 
-    if (option === currentQ.correctAnswer) {
+    if (isCorrect) {
       playCorrect();
       setStatus('correct');
       const bonusXp = 15 + streak * 5;
@@ -111,7 +113,7 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
 
   const handleNext = () => {
     playSelect();
-    if (currentIndex < FAKE_QUIZZES.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setTimeLeft(QUESTION_TIME);
       setSelectedAnswer(null);
       setStatus('playing');
@@ -124,7 +126,7 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
 
   const handleRetryGame = () => {
     playSelect();
-    setLives(5);
+    setLives(initialLives);
     setXp(0);
     setStreak(0);
     setCurrentIndex(0);
@@ -146,9 +148,9 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
           xp={xp}
           streak={streak}
           timeLeft={timeLeft}
-          title="Đua Tốc Độ (Speed Quiz)"
+          title={stageTitle ?? 'Đua Tốc Độ (Speed Quiz)'}
           currentStep={currentIndex + 1}
-          totalSteps={FAKE_QUIZZES.length}
+          totalSteps={questions.length}
         />
 
         {/* --- TIMER PROGRESS BAR --- */}
@@ -166,7 +168,7 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-sky-100 text-sky-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
-              <Sparkles className="w-4 h-4 text-sky-500" /> Chọn đáp án đúng trước khi hết giờ!
+              Chọn đáp án đúng trước khi hết giờ!
             </span>
             <h2 className="text-xl md:text-2xl font-black text-slate-800 leading-snug tracking-tight">
               {currentQ.question}
@@ -232,7 +234,7 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
               onClick={handleNext}
               className="w-full md:w-auto px-7 py-3.5 bg-white text-emerald-700 hover:bg-emerald-50 font-black rounded-2xl shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
             >
-              Tiếp tục 🚀
+              Tiếp tục
             </button>
           </div>
         )}
@@ -274,7 +276,7 @@ export default function SpeedGrammarQuiz({ onBack, onComplete }: { onBack?: () =
       <VictoryModal 
         isOpen={isVictory} 
         xpEarned={xp} 
-        onNext={onComplete || onBack || (() => {})} 
+        onNext={() => onComplete ? onComplete({ xpEarned: xp, livesRemaining: lives }) : onBack?.()} 
         onReplay={handleRetryGame}
       />
     </div>

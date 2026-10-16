@@ -22,3 +22,22 @@ export const getStatusLabel = (item: UserVocabularyItem) => {
   if (bucket === "review") return "Cần ôn";
   return "Đang học";
 };
+
+export const getVocabErrorMessage = (
+  error: unknown,
+  fallback: string,
+): string => {
+  if (typeof error !== "object" || error === null) return fallback;
+
+  const value = error as Record<string, unknown>;
+  const response = value.response;
+  if (typeof response === "object" && response !== null) {
+    const data = (response as Record<string, unknown>).data;
+    if (typeof data === "object" && data !== null) {
+      const message = (data as Record<string, unknown>).message;
+      if (typeof message === "string") return message;
+    }
+  }
+
+  return typeof value.message === "string" ? value.message : fallback;
+};

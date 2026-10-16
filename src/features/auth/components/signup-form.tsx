@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { authApi } from "../api/authApi";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export default function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -26,20 +27,17 @@ export default function SignUpForm() {
 
     setLoading(true);
 
-    try{
+    try {
       await authApi.register({ email, password, username });
-    } catch (error) {
-      const err = error as { message?: string };
-      toast.error(err?.message || "Đăng ký thất bại. Vui lòng thử lại.");
-      setLoading(false);
-      return;
-    }
-
-    setTimeout(() => {
       toast.success("Đăng ký tài khoản thành công!");
-      setLoading(false);
       navigate("/signin");
-    }, 800);
+    } catch (error: unknown) {
+      toast.error(
+        getErrorMessage(error, "Đăng ký thất bại. Vui lòng thử lại."),
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

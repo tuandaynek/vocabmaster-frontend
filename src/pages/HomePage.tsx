@@ -16,13 +16,18 @@ export default function HomePage() {
   const { user, isAuthenticated, logout } = useAuthStore();
 
   const handleSignOut = async () => {
+    let signOutFailed = false;
     try {
       await authApi.logout();
-    } catch (error) {
-      console.error("Lỗi signout:", error);
+    } catch {
+      signOutFailed = true;
     } finally {
       logout();
-      toast.success("Đã đăng xuất thành công");
+      if (signOutFailed) {
+        toast.error("Đã đăng xuất khỏi thiết bị nhưng không thể xác nhận với máy chủ.");
+      } else {
+        toast.success("Đã đăng xuất thành công");
+      }
       navigate("/signin");
     }
   };
@@ -144,6 +149,22 @@ export default function HomePage() {
               Vào kho từ vựng <ArrowRight className="h-4 w-4" />
             </div>
           </div>
+
+          <Link
+            to="/grammar"
+            className="group relative rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-md sm:p-8"
+          >
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 text-violet-600 transition-transform duration-200 group-hover:scale-105">
+              <BookOpen className="h-7 w-7" />
+            </div>
+            <h3 className="mb-3 text-2xl font-extrabold text-slate-800">Grammar Quest</h3>
+            <p className="mb-6 text-sm leading-relaxed text-slate-500">
+              Khám phá các chủ đề ngữ pháp, học lý thuyết và luyện tập qua những chặng game tương tác.
+            </p>
+            <div className="flex items-center gap-2 text-sm font-bold text-violet-700 transition-transform group-hover:translate-x-1">
+              Luyện ngữ pháp <ArrowRight className="h-4 w-4" />
+            </div>
+          </Link>
         </div>
       </main>
     </div>

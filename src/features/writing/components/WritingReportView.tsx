@@ -4,7 +4,6 @@ import type { Evaluation } from "../types/writing.types";
 
 interface WritingReportViewProps {
   evaluation: Evaluation;
-  targetBand: string;
   onBackToWorkspace: () => void;
   onResetSession: () => void;
 }
@@ -19,7 +18,6 @@ const SCORE_LABELS: Record<string, string> = {
 
 export function WritingReportView({
   evaluation,
-  targetBand,
   onBackToWorkspace,
   onResetSession,
 }: WritingReportViewProps) {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sparkles, AlertCircle, Trophy, Globe } from "lucide-react";
 import { collocationApi } from "../api/collocationApi";
 import type { EvaluatePhase2Response, CollocationReviewData } from "../types";
+import { getErrorMessage } from "../utils/errorMessage";
 
 interface Props {
   collocation: CollocationReviewData;
@@ -12,24 +13,25 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
   const [sentence, setSentence] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<EvaluatePhase2Response | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Trích xuất collocationId và phrase từ prop collocation
-  const targetId = collocation.collocationId || (collocation as any).id;
+  const targetId = collocation.collocationId || collocation.id;
   const phrase = collocation.phrase;
 
   const handleSubmit = async () => {
     if (!sentence.trim() || !targetId) return;
     try {
       setLoading(true);
+      setError(null);
       const res = await collocationApi.evaluatePhase2({
         collocationId: targetId,
         userSentence: sentence,
       });
       
-      const evalData = (res as any)?.data ?? res;
-      setResult(evalData);
+      setResult(res.data);
     } catch (err) {
-      console.error("Lỗi khi chấm điểm Phase 2:", err);
+      setError(getErrorMessage(err, "Không thể chấm điểm câu trả lời."));
     } finally {
       setLoading(false);
     }
@@ -45,6 +47,12 @@ export default function Phase2FreeSentence({ collocation, onNext }: Props) {
           Hãy viết 1 câu có chứa cụm: <span className="text-emerald-700 underline">&ldquo;{phrase}&rdquo;</span>
         </h3>
       </div>
+
+      {error && (
+        <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-medium text-rose-700">
+          {error}
+        </p>
+      )}
 
       <textarea
         value={sentence}

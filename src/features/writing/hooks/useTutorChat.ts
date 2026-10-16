@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import axiosClient from "@/api/axiosClient";
-import { ENDPOINTS } from "@/api/endpoints";
+import { writingApi } from "../api/writingApi";
 import type { ChatMessage } from "../types/writing.types";
 
 interface UseTutorChatProps {
@@ -48,19 +47,18 @@ export function useTutorChat({ questionText, targetBand }: UseTutorChatProps) {
     setSending(true);
 
     try {
-      const response = (await axiosClient.post(ENDPOINTS.WRITING.TUTOR_CHAT, {
+      const reply = await writingApi.sendTutorMessage({
         questionText,
         targetBand,
         chatHistory: nextMessages,
         userMessage: content,
-      })) as { data: { reply: string } };
+      });
 
       setMessages((current) => [
         ...current,
-        { role: "assistant", content: response.data.reply },
+        { role: "assistant", content: reply },
       ]);
-    } catch (error) {
-      console.error("Writing tutor chat failed:", error);
+    } catch {
       setMessages((current) => [
         ...current,
         {

@@ -58,7 +58,6 @@ function normalizeEvaluation(payload: EvaluationApiPayload): EvaluationResponse 
     coherenceFeedback: payload.coherenceFeedback,
     transcript: payload.transcript,
     wordTimestamps: payload.wordTimestamps,
-    pauseAnalysis: payload.pauseAnalysis,
     userAudioUrl: payload.userAudioUrl,
   };
 }
