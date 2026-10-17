@@ -2,6 +2,14 @@ import { toast } from "sonner";
 import { ENDPOINTS } from "@/api/endpoints";
 import axiosClient from "@/api/axiosClient";
 
+export function requiresMobileAudioGesture(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return (
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
 function readAudioUrl(response: unknown): string | null {
   if (
     typeof response === "object" &&
@@ -15,15 +23,17 @@ function readAudioUrl(response: unknown): string | null {
 }
 
 export const playWordAudio = async (text: string, audioUrl?: string | null) => {
-  const fallbackWebSpeech = () => {
+  const fallbackWebSpeech = (): boolean => {
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
+      return true;
     } else {
       toast.error("Trình duyệt không hỗ trợ phát âm thanh");
+      return false;
     }
   };
 
@@ -36,6 +46,10 @@ export const playWordAudio = async (text: string, audioUrl?: string | null) => {
 
   if (audioUrl) {
     playAudio(audioUrl);
+    return;
+  }
+
+  if (requiresMobileAudioGesture() && fallbackWebSpeech()) {
     return;
   }
 

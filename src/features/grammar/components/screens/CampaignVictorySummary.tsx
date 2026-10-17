@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, Clock3, Heart, Sparkles, Target, Trophy } from 'lucide-react';
 import type { CampaignAnswer, SessionIntensity } from '../../types/gameAnalytics';
 import { useGameSound } from '../../hooks/useGameSound';
+import { useRating } from '@/contexts/useRating';
 
 interface CampaignVictorySummaryProps {
-  xpEarned: number;
+  xpEarned: number | null;
   livesRemaining: number;
   elapsedSeconds: number;
   intensity: SessionIntensity;
   answers: CampaignAnswer[];
+  xpSaving: boolean;
+  xpSaveFailed: boolean;
   onExit: () => void;
 }
 
@@ -24,9 +27,12 @@ export default function CampaignVictorySummary({
   elapsedSeconds,
   intensity,
   answers,
+  xpSaving,
+  xpSaveFailed,
   onExit
 }: CampaignVictorySummaryProps) {
   const { playSelect } = useGameSound();
+  const { openRating, isFeatureRated } = useRating();
   const [showMistakes, setShowMistakes] = useState(true);
   const mistakes = answers.filter(answer => !answer.isCorrect);
   const accuracyBySubTopic = [...answers.reduce((groups, answer) => {
@@ -39,10 +45,21 @@ export default function CampaignVictorySummary({
   const totalCorrect = answers.filter(answer => answer.isCorrect).length;
   const totalAccuracy = answers.length > 0 ? Math.round((totalCorrect / answers.length) * 100) : 0;
   const intensityLabel = intensity === 'quick' ? 'Ôn nhanh' : intensity === 'full' ? 'Thử thách tối đa' : 'Tiêu chuẩn';
+  const hasRatedGrammar = isFeatureRated('grammar_campaign');
 
   const handleExit = () => {
     playSelect();
     onExit();
+  };
+
+  const handleOpenRating = () => {
+    playSelect();
+    openRating({
+      feature: 'grammar_campaign',
+      title: 'Bạn hài lòng với bài học Grammar?',
+      description: 'Đánh giá trải nghiệm học tập của bạn từ 1 đến 5 sao.',
+      fastComments: ['Nội dung hữu ích', 'Game thú vị', 'Độ khó phù hợp', 'Cần cải thiện'],
+    });
   };
 
   return (
@@ -62,8 +79,16 @@ export default function CampaignVictorySummary({
           <div className="grid grid-cols-1 gap-3 p-5 sm:grid-cols-3 md:p-6">
             <article className="rounded-2xl border-2 border-amber-100 bg-amber-50 p-4">
               <Sparkles className="mx-auto h-6 w-6 text-amber-500" />
-              <p className="mt-2 text-2xl font-black text-amber-700">+{xpEarned} XP</p>
-              <p className="text-xs font-bold text-amber-600">XP kiếm được</p>
+              <p className="mt-2 text-2xl font-black text-amber-700">
+                {xpEarned === null
+                  ? xpSaving
+                    ? 'Đang lưu…'
+                    : xpSaveFailed
+                      ? 'Chưa lưu'
+                      : '+0 XP'
+                  : `+${xpEarned} XP`}
+              </p>
+              <p className="text-xs font-bold text-amber-600">XP đã cộng vào tài khoản</p>
             </article>
             <article className="rounded-2xl border-2 border-rose-100 bg-rose-50 p-4">
               <Heart className="mx-auto h-6 w-6 fill-rose-400 text-rose-500" />
@@ -153,6 +178,23 @@ export default function CampaignVictorySummary({
               ))}
             </div>
           )}
+        </section>
+
+        <section className="flex flex-col items-center justify-between gap-3 rounded-3xl border-2 border-amber-100 bg-amber-50/80 p-5 text-center sm:flex-row sm:text-left">
+          <div>
+            <h2 className="font-black text-slate-800">Bạn thấy bài học hôm nay thế nào?</h2>
+            <p className="mt-1 text-sm font-medium text-slate-600">
+              {hasRatedGrammar ? 'Cảm ơn bạn đã gửi đánh giá!' : 'Chia sẻ mức độ hài lòng từ 1 đến 5 sao.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleOpenRating}
+            disabled={hasRatedGrammar}
+            className="shrink-0 rounded-2xl border-b-4 border-amber-700 bg-amber-400 px-5 py-3 font-black text-amber-950 transition hover:bg-amber-300 active:translate-y-1 active:border-b-0 disabled:cursor-default disabled:border-amber-200 disabled:bg-amber-100 disabled:text-amber-700"
+          >
+            {hasRatedGrammar ? 'Đã đánh giá' : 'Đánh giá bài học'}
+          </button>
         </section>
 
         <button

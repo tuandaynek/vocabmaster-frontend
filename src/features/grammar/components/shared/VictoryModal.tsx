@@ -23,7 +23,7 @@ export default function VictoryModal({ isOpen, xpEarned, onNext, onReplay }: Vic
           </span>
           <h3 id="victory-title" className="text-2xl font-black text-slate-800">Quá Đỉnh, Phá Đảo Chặng! 🎉</h3>
           <p className="text-sm text-slate-600 font-bold">
-            Bạn nhận được <span className="text-amber-500 font-black text-lg">+{xpEarned} XP</span> vào tài khoản!
+            Điểm số chặng này: <span className="text-amber-500 font-black text-lg">{xpEarned} điểm</span>.
           </p>
         </div>
 

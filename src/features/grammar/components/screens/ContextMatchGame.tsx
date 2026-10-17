@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageSquareQuote, UserCheck, RefreshCw } from 'lucide-react';
+import { MessageSquareQuote, UserCheck } from 'lucide-react';
 import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
@@ -97,8 +97,8 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
   };
 
   return (
-    <div className={`grammar-game min-h-screen bg-gradient-to-br from-teal-50 via-emerald-50/20 to-sky-50/30 text-slate-800 p-4 md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' ? 'animate-shake' : ''}`}>
-      <div className="max-w-3xl mx-auto w-full space-y-6">
+    <div className={`grammar-game min-h-dvh overflow-x-clip bg-gradient-to-br from-teal-50 via-emerald-50/20 to-sky-50/30 text-slate-800 p-4 pb-[calc(2rem+env(safe-area-inset-bottom))] md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' ? 'animate-shake' : ''}`}>
+      <div className="max-w-3xl min-w-0 mx-auto w-full space-y-6">
 
         {/* --- HEADER --- */}
         <GameHeader 
@@ -112,7 +112,7 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
         />
 
         {/* --- GAME CARD CHÍNH --- */}
-        <div className="game-card bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-6 md:p-8 shadow-xl shadow-teal-200/40 space-y-6">
+        <div className="game-card min-w-0 bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl shadow-teal-200/40 space-y-6">
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
@@ -130,7 +130,7 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
               <div className="w-10 h-10 bg-amber-400 text-amber-950 font-black rounded-2xl flex items-center justify-center shrink-0 shadow-md text-base border-b-2 border-amber-600">
                 A
               </div>
-              <div className="bg-white p-4 rounded-3xl rounded-tl-none border-2 border-slate-200 text-slate-800 font-bold text-sm md:text-base shadow-sm">
+              <div className="min-w-0 break-words [overflow-wrap:anywhere] bg-white p-4 rounded-3xl rounded-tl-none border-2 border-slate-200 text-slate-800 font-bold text-sm md:text-base shadow-sm">
                 "{currentQ.speakerA}"
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
               <div className="w-10 h-10 bg-teal-500 text-white font-black rounded-2xl flex items-center justify-center shrink-0 shadow-md text-base border-b-2 border-teal-700">
                 B
               </div>
-              <div className="bg-teal-500 text-white p-4 rounded-3xl rounded-tr-none border-b-4 border-teal-700 font-bold text-sm md:text-base shadow-md">
+              <div className="min-w-0 break-words [overflow-wrap:anywhere] bg-teal-500 text-white p-4 rounded-3xl rounded-tr-none border-b-4 border-teal-700 font-bold text-sm md:text-base shadow-md">
                 "{currentQ.speakerBContext.replace('_____', selectedOpt ? ` ${selectedOpt.text} ` : '_____')}"
               </div>
             </div>
@@ -169,9 +169,9 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
                   onClick={() => handleSelectOption(option)}
                   className={`w-full p-4 font-bold rounded-2xl transition-all text-left flex items-center justify-between text-sm md:text-base active:translate-y-1 cursor-pointer ${style}`}
                 >
-                  <span className="flex items-center gap-3">
+                  <span className="flex min-w-0 items-center gap-3 break-words">
                     <UserCheck className={`w-5 h-5 ${isSelected && option.isCorrect ? 'text-black' : 'text-teal-500'}`} />
-                    {option.text}
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{option.text}</span>
                   </span>
                 </button>
               );
@@ -192,7 +192,7 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
               </div>
               <div>
                 <h4 className="font-black text-lg">Ghép tình huống chuẩn bài!</h4>
-                <p className="text-xs text-emerald-100 font-bold">+{25 + Math.max(0, streak - 1) * 5} XP · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'} · {selectedOpt?.nuanceExplanation}</p>
+                <p className="text-xs text-emerald-100 font-bold">+{25 + Math.max(0, streak - 1) * 5} điểm · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'} · {selectedOpt?.nuanceExplanation}</p>
               </div>
             </div>
             <button
@@ -216,14 +216,10 @@ export default function ContextMatchGame({ onBack, onComplete, onAnswer, questio
               </div>
             </div>
             <button
-              onClick={() => {
-                playSelect();
-                setStatus('playing');
-                setSelectedOptionId(null);
-              }}
-              className="w-full md:w-auto px-7 py-3.5 bg-white text-rose-700 hover:bg-rose-50 font-black rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+            onClick={handleNext}
+            className="w-full md:w-auto px-7 py-3.5 bg-white text-rose-700 hover:bg-rose-50 font-black rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
             >
-              <RefreshCw className="w-4 h-4" /> Thử lại 🔄
+            Câu tiếp theo
             </button>
           </div>
         )}

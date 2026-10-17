@@ -21,6 +21,8 @@ export const useAuthStore = create<AuthState>()(
 
       setAuth: (user, token) => {
         localStorage.setItem("accessToken", token);
+        localStorage.removeItem("grammar_curriculum_cache")
+        localStorage.removeItem("grammar_progress_cache")
         set({ user, token, isAuthenticated: true });
       },
 

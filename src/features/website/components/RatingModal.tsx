@@ -3,6 +3,7 @@ import { Star, X, MessageSquare, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_RATING_TAGS } from "../constants/ratingConstants";
 import type { RatingSubmission } from "../types";
+import { toast } from "sonner";
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -50,6 +51,7 @@ export function RatingModal({
         onClose();
       }, 1600);
     } catch {
+      toast.error("Không thể gửi đánh giá. Vui lòng thử lại.");
       return;
     } finally {
       setIsSubmitting(false);

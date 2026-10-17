@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bug, RefreshCw } from 'lucide-react';
+import { Bug } from 'lucide-react';
 import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
@@ -105,7 +105,7 @@ export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questio
 
   const renderWordButton = (option: ErrorWordOption) => {
     const isSelected = selectedKey === option.key;
-    let btnClass = "px-2.5 py-1.5 rounded-xl font-bold border-2 border-b-4 transition-all mx-1 cursor-pointer select-none ";
+    let btnClass = "max-w-full whitespace-normal break-words [overflow-wrap:anywhere] px-2.5 py-1.5 rounded-xl font-bold border-2 border-b-4 transition-all mx-1 cursor-pointer select-none ";
 
     if (status !== 'playing') {
       if (option.isError) {
@@ -134,8 +134,8 @@ export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questio
   };
 
   return (
-    <div className={`grammar-game min-h-screen bg-gradient-to-br from-rose-50 via-amber-50/20 to-teal-50/30 text-slate-800 p-4 md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' ? 'animate-shake' : ''}`}>
-      <div className="max-w-3xl mx-auto w-full space-y-6">
+    <div className={`grammar-game min-h-dvh overflow-x-clip bg-gradient-to-br from-rose-50 via-amber-50/20 to-teal-50/30 text-slate-800 p-4 pb-[calc(2rem+env(safe-area-inset-bottom))] md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' ? 'animate-shake' : ''}`}>
+      <div className="mx-auto w-full max-w-3xl min-w-0 space-y-6">
 
         {/* --- HEADER --- */}
         <GameHeader 
@@ -149,7 +149,7 @@ export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questio
         />
 
         {/* --- GAME CARD CHÍNH --- */}
-        <div className="game-card bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-6 md:p-8 shadow-xl shadow-rose-200/40 space-y-6">
+        <div className="game-card min-w-0 bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl shadow-rose-200/40 space-y-6">
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-rose-100 text-rose-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
@@ -161,7 +161,7 @@ export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questio
           </div>
 
           {/* KHU VỰC CÂU VĂN TƯƠNG TÁC */}
-          <div className="p-6 md:p-8 bg-slate-50/80 border-2 border-slate-200/80 rounded-3xl leading-loose text-base md:text-lg font-medium text-slate-800 tracking-wide text-center shadow-inner">
+          <div className="break-words [overflow-wrap:anywhere] p-3 sm:p-6 md:p-8 bg-slate-50/80 border-2 border-slate-200/80 rounded-3xl leading-loose text-base md:text-lg font-medium text-slate-800 tracking-wide text-center shadow-inner">
             {parts.prefix && <span>{parts.prefix} </span>}
             {renderWordButton(parts.optionA)}
             {parts.mid1 && <span>{parts.mid1}</span>}
@@ -188,7 +188,7 @@ export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questio
               <div>
                 <h4 className="font-black text-lg">Bắt đúng con sâu ngữ pháp rồi!</h4>
                 <p className="text-xs text-emerald-100 font-bold">
-                  +{25 + Math.max(0, streak - 1) * 5} XP · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'}{' '}
+                  +{25 + Math.max(0, streak - 1) * 5} điểm · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'}{' '}
                   Sửa đúng: <span className="underline">{errorOption?.correctForm}</span>. {currentQ.explanation}
                 </p>
               </div>
@@ -214,14 +214,10 @@ export default function ErrorSpotterGame({ onBack, onComplete, onAnswer, questio
               </div>
             </div>
             <button
-              onClick={() => {
-                playSelect();
-                setStatus('playing');
-                setSelectedKey(null);
-              }}
+              onClick={handleNext}
               className="w-full md:w-auto px-7 py-3.5 bg-white text-rose-700 hover:bg-rose-50 font-black rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
             >
-              <RefreshCw className="w-4 h-4" /> Thử lại ngay 🔄
+              Câu tiếp theo
             </button>
           </div>
         )}

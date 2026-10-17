@@ -31,7 +31,7 @@ export default function WordBlock({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`px-4 py-2.5 font-bold rounded-2xl border-2 border-b-4 transition-all duration-150 text-sm cursor-pointer select-none active:translate-y-1 active:border-b-0 hover:-translate-y-0.5 ${
+      className={`max-w-full whitespace-normal break-words px-4 py-2.5 font-bold rounded-2xl border-2 border-b-4 transition-all duration-150 text-sm cursor-pointer select-none active:translate-y-1 active:border-b-0 hover:-translate-y-0.5 ${
         variantStyles[variant]
       } ${animationStyles[animation]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >

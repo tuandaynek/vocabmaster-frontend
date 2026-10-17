@@ -30,7 +30,7 @@ export default function ActivityCalendar({
   const activityMap = useMemo(() => {
     const map = new Map<string, number>();
     activityHistory.forEach((item) => {
-      map.set(item.date, item.xpGained);
+      map.set(item.date.slice(0, 10), item.xpGained);
     });
     return map;
   }, [activityHistory]);

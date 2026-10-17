@@ -31,10 +31,9 @@ export default function GrammarCampaignSession({
   intensity = 'standard'
 }: GrammarCampaignSessionProps) {
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
-  const [sessionXp, setSessionXp] = useState(0);
   const [sessionLives, setSessionLives] = useState(5);
   const [answers, setAnswers] = useState<CampaignAnswer[]>([]);
-  const [summary, setSummary] = useState<{ xpEarned: number; livesRemaining: number; elapsedSeconds: number } | null>(null);
+  const [summary, setSummary] = useState<{ livesRemaining: number; elapsedSeconds: number } | null>(null);
   const [progressSaving, setProgressSaving] = useState(false);
   const [progressSavedXp, setProgressSavedXp] = useState<number | null>(null);
   const [progressError, setProgressError] = useState<string | null>(null);
@@ -129,8 +128,6 @@ export default function GrammarCampaignSession({
   }, []);
 
   const handleStageComplete = (result: GameStageResult) => {
-    const finalXp = sessionXp + result.xpEarned;
-    setSessionXp(finalXp);
     setSessionLives(result.livesRemaining);
     const completedStage = currentStage;
     if (
@@ -145,7 +142,6 @@ export default function GrammarCampaignSession({
       setCurrentStageIndex(index => index + 1);
     } else {
       setSummary({
-        xpEarned: finalXp,
         livesRemaining: result.livesRemaining,
         elapsedSeconds: Math.max(0, Math.floor((Date.now() - (sessionStartedAt.current ?? Date.now())) / 1000))
       });
@@ -169,11 +165,13 @@ export default function GrammarCampaignSession({
           </div>
         )}
         <CampaignVictorySummary
-          xpEarned={summary.xpEarned}
+          xpEarned={progressSavedXp}
           livesRemaining={summary.livesRemaining}
           elapsedSeconds={summary.elapsedSeconds}
           intensity={intensity}
           answers={answers}
+          xpSaving={progressSaving}
+          xpSaveFailed={Boolean(progressError)}
           onExit={onExitSession ?? (() => {})}
         />
       </>

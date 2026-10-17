@@ -46,7 +46,7 @@ export function useGrammarHubData(userId: string | undefined) {
         };
         try {
           localStorage.setItem(
-            curriculumCacheKey(userId),
+            curriculumCacheKey(),
             JSON.stringify(curriculumCache),
           );
         } catch (error) {

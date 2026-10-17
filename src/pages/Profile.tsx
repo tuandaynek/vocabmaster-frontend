@@ -254,16 +254,16 @@ export default function ProfilePage() {
 
               {/* XP kiếm được */}
               <div className="flex justify-between text-xs mt-3">
-                <span className="font-semibold text-slate-700">XP đạt được</span>
+                <span className="font-semibold text-slate-700">Tiến độ Level</span>
                 <span className="font-bold text-emerald-700">
-                  {user.totalXp} / 300 XP
+                  {currentLevelXp} / {nextLevelXp} XP
                 </span>
               </div>
               <div className="h-2.5 w-full overflow-hidden rounded-full border border-emerald-200 bg-emerald-50">
                 <div
                   className="bg-emerald-500 h-full rounded-full transition-all duration-300 shadow-sm"
                   style={{
-                    width: `${Math.min(100, (user.totalXp / 300) * 100)}%`,
+                    width: `${progressPercent}%`,
                   }}
                 />
               </div>

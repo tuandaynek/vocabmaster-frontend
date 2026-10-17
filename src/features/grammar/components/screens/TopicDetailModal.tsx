@@ -150,7 +150,7 @@ export default function TopicDetailModal({
                       {questions} câu hỏi
                     </span>
                     <span className="rounded-full border border-amber-100 bg-amber-50 px-2 py-1 text-[10px] font-black text-amber-700 sm:text-[11px]">
-                      +{xp} XP
+                      {xp} điểm tối đa
                     </span>
                   </span>
                 </span>

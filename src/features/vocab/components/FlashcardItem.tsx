@@ -1,6 +1,6 @@
 import { BookOpen, Layers } from "lucide-react";
 import { AudioButton } from "@/components/function/AudioButton";
-import { playWordAudio } from "@/components/function/audioUtils";
+import { playWordAudio, requiresMobileAudioGesture } from "@/components/function/audioUtils";
 import { useEffect } from "react";
 import type { UserVocabularyItem } from "../types";
 
@@ -26,14 +26,22 @@ export function FlashcardItem({
     : [];
 
   useEffect(() => {
-    if (currentWord?.word) {
+    if (currentWord?.word && !requiresMobileAudioGesture()) {
       playWordAudio(currentWord.word, currentWord.audio_url);
     }
   }, [card.id, currentWord?.word, currentWord?.audio_url]);
 
+  const handleCardClick = () => {
+    if (submitting) return;
+    if (requiresMobileAudioGesture() && !isFlipped && currentWord?.word) {
+      void playWordAudio(currentWord.word, currentWord.audio_url);
+    }
+    onFlip();
+  };
+
   return (
     <div
-      onClick={submitting ? undefined : onFlip}
+      onClick={handleCardClick}
       className="group relative h-[450px] w-full cursor-pointer [perspective:1000px]"
     >
       <div

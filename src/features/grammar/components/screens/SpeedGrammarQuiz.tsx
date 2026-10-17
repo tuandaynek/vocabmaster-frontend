@@ -138,8 +138,8 @@ export default function SpeedGrammarQuiz({ onBack, onComplete, onAnswer, questio
   };
 
   return (
-    <div className={`grammar-game min-h-screen bg-gradient-to-br from-sky-50 via-indigo-50/20 to-blue-50/30 text-slate-800 p-4 md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' || status === 'timeout' ? 'animate-shake' : ''}`}>
-      <div className="max-w-3xl mx-auto w-full space-y-6">
+    <div className={`grammar-game min-h-dvh overflow-x-clip bg-gradient-to-br from-sky-50 via-indigo-50/20 to-blue-50/30 text-slate-800 p-4 pb-[calc(2rem+env(safe-area-inset-bottom))] md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' || status === 'timeout' ? 'animate-shake' : ''}`}>
+      <div className="mx-auto w-full max-w-3xl min-w-0 space-y-6">
 
         {/* --- HEADER DÙNG CHUNG --- */}
         <GameHeader 
@@ -164,13 +164,13 @@ export default function SpeedGrammarQuiz({ onBack, onComplete, onAnswer, questio
         </div>
 
         {/* --- GAME CARD CHÍNH --- */}
-        <div className="game-card bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-6 md:p-8 shadow-xl shadow-sky-200/40 space-y-6">
+        <div className="game-card min-w-0 bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl shadow-sky-200/40 space-y-6">
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-sky-100 text-sky-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
               Chọn đáp án đúng trước khi hết giờ!
             </span>
-            <h2 className="text-xl md:text-2xl font-black text-slate-800 leading-snug tracking-tight">
+            <h2 className="break-words text-xl md:text-2xl font-black text-slate-800 leading-snug tracking-tight">
               {currentQ.question}
             </h2>
           </div>
@@ -200,13 +200,13 @@ export default function SpeedGrammarQuiz({ onBack, onComplete, onAnswer, questio
                   onClick={() => handleSelectOption(option)}
                   className={`p-4 font-bold rounded-2xl transition-all text-left flex items-center justify-between text-base active:translate-y-1 cursor-pointer ${btnStyle}`}
                 >
-                  <span className="flex items-center gap-3">
+                  <span className="flex min-w-0 items-center gap-3 break-words">
                     <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-inner ${
                       status !== 'playing' && isCorrect ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
                     }`}>
                       {String.fromCharCode(65 + index)}
                     </span>
-                    {option}
+                    <span className="min-w-0 break-words [overflow-wrap:anywhere]">{option}</span>
                   </span>
                 </button>
               );
@@ -227,7 +227,7 @@ export default function SpeedGrammarQuiz({ onBack, onComplete, onAnswer, questio
               </div>
               <div>
                 <h4 className="font-black text-lg">Quá nhanh quá nguy hiểm!</h4>
-                <p className="text-xs text-emerald-100 font-medium">+{15 + Math.max(0, streak - 1) * 5} XP · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'} · {currentQ.explanation}</p>
+                <p className="text-xs text-emerald-100 font-medium">+{15 + Math.max(0, streak - 1) * 5} điểm · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'} · {currentQ.explanation}</p>
               </div>
             </div>
             <button

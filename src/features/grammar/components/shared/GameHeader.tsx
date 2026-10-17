@@ -62,7 +62,7 @@ export default function GameHeader({
           )}
         </div>
 
-        {/* Stats: Streak, Timer, Lives, XP */}
+        {/* Stats: Streak, Timer, Lives, session score */}
         <div className="flex flex-wrap items-center justify-end gap-1.5 md:gap-2">
           {streak !== undefined && streak > 0 && (
             <div className="px-3 py-1.5 bg-orange-50 border border-orange-200 text-orange-600 rounded-xl font-extrabold flex items-center gap-1 text-xs animate-bounce-short">

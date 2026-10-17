@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { RefreshCw } from 'lucide-react';
 import { useGameSound } from '../../hooks/useGameSound';
 import GameHeader from '../shared/GameHeader';
 import GameOverModal from '../shared/GameOverModal';
@@ -132,8 +131,8 @@ export default function SentencePuzzleGame({ onBack, onComplete, onAnswer, quest
   };
 
   return (
-    <div className={`grammar-game min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50/20 to-teal-50/30 text-slate-800 p-4 md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' ? 'animate-shake' : ''}`}>
-      <div className="max-w-3xl mx-auto w-full space-y-6">
+    <div className={`grammar-game min-h-dvh overflow-x-clip bg-gradient-to-br from-amber-50 via-emerald-50/20 to-teal-50/30 text-slate-800 p-4 pb-[calc(2rem+env(safe-area-inset-bottom))] md:p-8 font-sans flex flex-col justify-between ${status === 'incorrect' ? 'animate-shake' : ''}`}>
+      <div className="max-w-3xl min-w-0 mx-auto w-full space-y-6">
 
         {/* --- HEADER DÙNG CHUNG --- */}
         <GameHeader 
@@ -147,7 +146,7 @@ export default function SentencePuzzleGame({ onBack, onComplete, onAnswer, quest
         />
 
         {/* --- GAME CARD CHÍNH --- */}
-        <div className="game-card bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-6 md:p-8 shadow-xl shadow-emerald-200/40 space-y-6">
+        <div className="game-card min-w-0 bg-white/90 backdrop-blur-md border-2 border-white rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl shadow-emerald-200/40 space-y-6">
           
           <div className="space-y-3 text-center">
             <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
@@ -159,7 +158,7 @@ export default function SentencePuzzleGame({ onBack, onComplete, onAnswer, quest
           </div>
 
           {/* KHAY TRẢ LỜI (Drop Zone) */}
-          <div className="min-h-[120px] bg-slate-50/80 border-2 border-dashed border-emerald-300 rounded-3xl p-5 flex flex-wrap gap-2.5 items-center content-start shadow-inner">
+          <div className="min-h-[120px] min-w-0 bg-slate-50/80 border-2 border-dashed border-emerald-300 rounded-3xl p-3 sm:p-5 flex flex-wrap gap-2.5 items-center content-start shadow-inner">
             {selectedWords.length === 0 ? (
               <p className="text-slate-400 text-sm font-bold w-full text-center py-6 animate-pulse">
                 👇 Chạm vào các khối từ bên dưới để sắp xếp vào đây nhé!
@@ -220,7 +219,7 @@ export default function SentencePuzzleGame({ onBack, onComplete, onAnswer, quest
               </div>
               <div>
                 <h4 className="font-black text-lg">Quá đỉnh, chính xác hoàn hảo!</h4>
-                <p className="text-xs text-emerald-100 font-bold">+{25 + Math.max(0, streak - 1) * 5} XP · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'}</p>
+                <p className="text-xs text-emerald-100 font-bold">+{25 + Math.max(0, streak - 1) * 5} điểm · {streak > 1 ? `COMBO x${streak}` : 'Bắt đầu chuỗi thắng!'}</p>
               </div>
             </div>
             <button
@@ -233,26 +232,21 @@ export default function SentencePuzzleGame({ onBack, onComplete, onAnswer, quest
         )}
 
         {status === 'incorrect' && (
-          <div className="bg-rose-500 text-white p-5 rounded-3xl shadow-xl flex items-center justify-between border-2 border-rose-400 animate-shake">
-            <div className="flex items-center gap-3">
+          <div className="bg-rose-500 text-white p-5 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 border-2 border-rose-400 animate-shake">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl">
                 🙈
               </div>
-              <div>
+              <div className="min-w-0">
                 <h4 className="font-black text-lg">Ối, chưa đúng rồi!</h4>
                 <p className="text-xs text-rose-100 font-medium">Đáp án chuẩn: "{currentQ.correctSentence.join(' ')}"</p>
               </div>
             </div>
             <button
-              onClick={() => {
-                playSelect();
-                setStatus('playing');
-                setPoolWords(createWordPool(currentQ));
-                setSelectedWords([]);
-              }}
-              className="px-6 py-3.5 bg-white text-rose-700 hover:bg-rose-50 font-black rounded-2xl shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+              onClick={handleNext}
+              className="w-full md:w-auto shrink-0 px-6 py-3.5 bg-white text-rose-700 hover:bg-rose-50 font-black rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <RefreshCw className="w-4 h-4" /> Thử lại
+              Câu tiếp theo
             </button>
           </div>
         )}

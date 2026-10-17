@@ -28,11 +28,11 @@ const isGameType = (value: unknown): value is GameType =>
   typeof value === 'string' &&
   GRAMMAR_GAME_TYPES.some(gameType => gameType === value);
 
-export const curriculumCacheKey = (userId: string) =>
-  `grammar_curriculum_cache:${userId}`;
+export const curriculumCacheKey = () =>
+  `grammar_curriculum_cache`;
 
-export const progressCacheKey = (userId: string) =>
-  `grammar_progress_cache:${userId}`;
+export const progressCacheKey = () =>
+  `grammar_progress_cache`;
 
 const isCurriculumCache = (
   value: unknown,

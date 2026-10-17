@@ -54,6 +54,12 @@ export default function HomePage() {
                 Về chúng tôi (About)
               </Link>
               <Link
+                to="/about"
+                className="rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+              >
+                Grammar Hub Page
+              </Link>
+              <Link
                 to="/ielts"
                 className="flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
               >
@@ -63,7 +69,7 @@ export default function HomePage() {
                 to="/vocab"
                 className="flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
               >
-                <BookOpen className="h-4 w-4 text-emerald-600" /> Vocab & SRS
+                Vocab & SRS
               </Link>
             </nav>
           </div>
@@ -102,67 +108,67 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto mb-14 max-w-3xl space-y-6 text-center sm:mb-16">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto mb-8 max-w-3xl space-y-4 text-center sm:mb-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wider text-amber-800 sm:text-sm">
             <GraduationCap className="h-4 w-4 text-amber-600" />
             Nền tảng luyện thi thông minh thế hệ mới
           </div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-slate-800 sm:text-6xl">
+          <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-slate-800 sm:text-5xl">
             Chinh phục band điểm mơ ước cùng{" "}
-            <span className="text-emerald-600">AI Tutor</span>
+            <span className="text-emerald-600">AI System</span>
           </h1>
           <p className="text-base leading-relaxed text-slate-500 sm:text-lg">
             Hệ thống tối ưu hóa toàn diện các kỹ năng IELTS và từ vựng chuyên sâu, giúp học sinh bứt phá điểm số một cách tự nhiên nhất.
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
-          <div
-            onClick={() => navigate("/ielts")}
-            className="group relative cursor-pointer rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sky-200 hover:shadow-md sm:p-8"
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 md:grid-cols-3">
+          <Link
+            to="/grammar"
+            className="group relative rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-md sm:p-7"
           >
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-600 transition-transform duration-200 group-hover:scale-105">
-              <Mic2 className="h-7 w-7" />
-            </div>
-            <h3 className="mb-3 text-2xl font-extrabold text-slate-800">IELTS Workspace</h3>
-            <p className="mb-6 text-sm leading-relaxed text-slate-500">
-              Trải nghiệm phòng luyện Speaking ảo với AI Examiner và công cụ chấm bài Writing chuyên sâu theo chuẩn 4 tiêu chí quốc tế.
-            </p>
-            <div className="flex items-center gap-2 text-sm font-bold text-sky-700 transition-transform group-hover:translate-x-1">
-              Khám phá ngay <ArrowRight className="h-4 w-4" />
-            </div>
-          </div>
-
-          <div
-            onClick={() => navigate("/vocab")}
-            className="group relative cursor-pointer rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md sm:p-8"
-          >
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-600 transition-transform duration-200 group-hover:scale-105">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 text-violet-600 transition-transform duration-200 group-hover:scale-105">
               <BookOpen className="h-7 w-7" />
             </div>
-            <h3 className="mb-3 text-2xl font-extrabold text-slate-800">Vocab & SRS Studio</h3>
-            <p className="mb-6 text-sm leading-relaxed text-slate-500">
+            <h3 className="mb-2 text-xl font-extrabold text-slate-800">Grammar Quest</h3>
+            <p className="mb-4 text-sm leading-relaxed text-slate-500">
+              Khám phá các chủ đề ngữ pháp, học lý thuyết và luyện tập qua những chặng game tương tác.
+            </p>
+            <div className="flex items-center gap-2 text-sm font-bold text-violet-700 transition-transform group-hover:translate-x-1">
+              Luyện ngữ pháp <ArrowRight className="h-4 w-4" />
+            </div>
+          </Link>
+
+          <Link
+            to="/vocab"
+            className="group relative cursor-pointer rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md sm:p-7"
+          >
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-600 transition-transform duration-200 group-hover:scale-105">
+              <BookOpen className="h-7 w-7" />
+            </div>
+            <h3 className="mb-2 text-xl font-extrabold text-slate-800">Vocab & SRS Studio</h3>
+            <p className="mb-4 text-sm leading-relaxed text-slate-500">
               Hệ thống trích xuất từ vựng thông minh, ôn tập ngắt quãng (Flashcards SRS) và luyện tập collocation phản xạ cực nhạy.
             </p>
             <div className="flex items-center gap-2 text-sm font-bold text-emerald-700 transition-transform group-hover:translate-x-1">
               Vào kho từ vựng <ArrowRight className="h-4 w-4" />
             </div>
-          </div>
+          </Link>
 
           <Link
-            to="/grammar"
-            className="group relative rounded-3xl border-2 border-slate-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-violet-200 hover:shadow-md sm:p-8"
+            to="/ielts"
+            className="group relative cursor-pointer rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-sky-200 hover:shadow-md sm:p-7"
           >
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 text-violet-600 transition-transform duration-200 group-hover:scale-105">
-              <BookOpen className="h-7 w-7" />
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-600 transition-transform duration-200 group-hover:scale-105">
+              <Mic2 className="h-7 w-7" />
             </div>
-            <h3 className="mb-3 text-2xl font-extrabold text-slate-800">Grammar Quest</h3>
-            <p className="mb-6 text-sm leading-relaxed text-slate-500">
-              Khám phá các chủ đề ngữ pháp, học lý thuyết và luyện tập qua những chặng game tương tác.
+            <h3 className="mb-2 text-xl font-extrabold text-slate-800">IELTS Workspace</h3>
+            <p className="mb-4 text-sm leading-relaxed text-slate-500">
+              Trải nghiệm phòng luyện Speaking ảo với AI Examiner và công cụ chấm bài Writing chuyên sâu theo chuẩn 4 tiêu chí quốc tế.
             </p>
-            <div className="flex items-center gap-2 text-sm font-bold text-violet-700 transition-transform group-hover:translate-x-1">
-              Luyện ngữ pháp <ArrowRight className="h-4 w-4" />
+            <div className="flex items-center gap-2 text-sm font-bold text-sky-700 transition-transform group-hover:translate-x-1">
+              Khám phá ngay <ArrowRight className="h-4 w-4" />
             </div>
           </Link>
         </div>
